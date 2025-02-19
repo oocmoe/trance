@@ -26,7 +26,7 @@ import { Stack, router } from 'expo-router';
 import { atom, useAtom } from 'jotai';
 import { ImportIcon, UserSearchIcon } from 'lucide-react-native';
 import React, { useEffect } from 'react';
-import { Pressable } from 'react-native';
+import { Pressable, ScrollView } from 'react-native';
 import { toast } from 'sonner-native';
 
 // 角色卡列表状态
@@ -95,17 +95,17 @@ function RenderSearchCharacter() {
 function CharacterList() {
   const [list] = useAtom(renderCharacterListAtom);
   return (
-    <>
+    <ScrollView>
       {list && typeof list != undefined ? (
-        <VStack>
+        <VStack space="sm">
           {list.map((item) => (
             <Pressable
               key={item.id}
               onPress={() => router.push(`/(character)/details/${item.id}`)}
               className="h-20 overflow-hidden"
             >
-              <HStack className="flex-1" space="md">
-                <Image source={item.cover} alt={item.name} className="h-20" />
+              <HStack className="flex-1 mx-2" space="md">
+                <Image source={item.cover} alt={item.name} className="h-20 rounded-full" />
                 <VStack className="flex-1 m-2">
                   <Text bold>{item.name}</Text>
                   <Text>{item.version}</Text>
@@ -115,15 +115,15 @@ function CharacterList() {
           ))}
         </VStack>
       ) : (
-        <HStack className="h-24" space="md">
-          <Skeleton className="w-20" />
+        <HStack className="h-24 mx-2" space="md">
+          <Skeleton className="w-20 h-20 rounded-full" />
           <VStack className="m-2" space="md">
             <SkeletonText className="w-20 h-3" />
             <SkeletonText className="w-16 h-2" />
           </VStack>
         </HStack>
       )}
-    </>
+    </ScrollView>
   );
 }
 

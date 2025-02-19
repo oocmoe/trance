@@ -1,5 +1,6 @@
 import { character } from '@/db/schema/character';
 import { useDB } from '@/hook/db';
+import { eq } from 'drizzle-orm';
 import 'react-native-get-random-values';
 import { v7 as uuidv7 } from 'uuid';
 
@@ -8,7 +9,7 @@ const db = useDB();
 /**
  * 新增角色卡
  * @param name
- * @param cover
+ * @param cover base64图片地址
  * @returns
  */
 export async function createCharacter(name: string, cover: string) {
@@ -20,6 +21,21 @@ export async function createCharacter(name: string, cover: string) {
     });
     if (!rows) return;
     return rows.lastInsertRowId;
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+/**
+ * 删除角色卡
+ * @param id
+ * @returns
+ */
+export async function deleteCharacter(id: number) {
+  try {
+    const rows = await db.delete(character).where(eq(character.id, id));
+    if (!rows) return;
+    return rows.changes;
   } catch (e) {
     console.log(e);
   }

@@ -4,7 +4,7 @@ import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
 import { ArrowRightIcon, Icon } from '@/components/ui/icon';
 import { router } from 'expo-router';
-import { Pressable } from 'react-native';
+import { Pressable, ScrollView } from 'react-native';
 import { SvgUri } from 'react-native-svg';
 
 export default function ModelScreen() {
@@ -46,7 +46,7 @@ const items = [
 
 function ModelList() {
   return (
-    <Box>
+    <ScrollView>
       {items.map((item, index) => (
         <Pressable onPress={() => router.push(item.path as any)} key={index} className="h-24">
           <Card>
@@ -60,6 +60,6 @@ function ModelList() {
           </Card>
         </Pressable>
       ))}
-    </Box>
+    </ScrollView>
   );
 }

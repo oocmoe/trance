@@ -1,11 +1,11 @@
+import { useDB } from './db';
 import { character } from '@/db/schema/character';
 import { eq } from 'drizzle-orm';
 import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
 import { useLocalSearchParams } from 'expo-router';
-import { useDB } from './db';
 
 // 初始化数据库
-const db = useDB()
+const db = useDB();
 
 /**
  * 实时查询全部角色卡
@@ -24,6 +24,16 @@ export function useCharacterById(id: number) {
 }
 
 /**
+ * 根据/details/[id] 获取角色卡数据
+ * @returns
+ */
+export function useCharacterDetailsById() {
+  const { id } = useLocalSearchParams();
+  const { data, error, updatedAt } = useCharacterById(Number(id));
+  return data[0];
+}
+
+/**
  * 实时查询角色卡列表
  */
 export function useCharacterList() {
@@ -39,14 +49,4 @@ export function useCharacterList() {
       })
       .from(character),
   );
-}
-
-/**
- * 根据/details/[id] 获取角色卡数据
- * @returns 
- */
-export function useCharacterDetailsById() {
-  const { id } = useLocalSearchParams();
-  const rows = useCharacterById(Number(id))
-  return rows.data
 }
