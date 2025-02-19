@@ -17,14 +17,14 @@
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true
       },
-      "bundleIdentifier": "com.ooctalk.trance"
+      "bundleIdentifier": "com.oocmoe.trance"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.ooctalk.trance"
+      "package": "com.oocmoe.trance"
     },
     "web": {
       "bundler": "metro",

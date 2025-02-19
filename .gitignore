@@ -44,7 +44,8 @@ android/
 drizzle/
 
 # other
-.vscode/
-eas.json
 *.lock
+.vscode/
+package-lock.json
+eas.json
 app.json
