@@ -8,6 +8,7 @@ node_modules/
 dist/
 web-build/
 expo-env.d.ts
+eas.json
 
 # Native
 *.orig.*
@@ -41,3 +42,9 @@ android/
 
 # drizzle
 drizzle/
+
+# other
+.vscode/
+eas.json
+*.lock
+app.json

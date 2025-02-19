@@ -57,7 +57,11 @@ function IDCard() {
         <Card className="m-4">
           <HStack space="md">
             <Box>
-              <Image source={character.cover} alt={character.name} className="aspect-[3/4] h-48" />
+              <Image
+                source={character.cover}
+                alt={character.name}
+                className="aspect-[3/4] h-48 rounded-sm"
+              />
             </Box>
             <VStack>
               <Box>
@@ -80,14 +84,19 @@ function IDCard() {
  */
 function Action() {
   return (
-    <Card className="m-4">
-      <ScrollView>
-        <VStack space="4xl">
-          <CreateRoom />
-          <DeleteCharacter />
-        </VStack>
-      </ScrollView>
-    </Card>
+    <Box className="m-4">
+      <VStack space="sm">
+        <Text>选项</Text>
+        <Card>
+          <ScrollView>
+            <VStack space="4xl">
+              <CreateRoom />
+              <DeleteCharacter />
+            </VStack>
+          </ScrollView>
+        </Card>
+      </VStack>
+    </Box>
   );
 }
 

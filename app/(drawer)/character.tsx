@@ -1,4 +1,5 @@
-import { Button, ButtonText } from '@/components/ui/button';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { Fab, FabIcon } from '@/components/ui/fab';
 import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
@@ -20,11 +21,11 @@ import { VStack } from '@/components/ui/vstack';
 import { useCharacterList } from '@/hook/character';
 import { modalAtom } from '@/store/modal';
 import { createCharacter } from '@/utils/db/character';
-import { selectCharacterCover } from '@/utils/file/image';
+import { selectCharacterCover } from '@/utils/image/upload';
 import * as FileSystem from 'expo-file-system';
 import { Stack, router } from 'expo-router';
 import { atom, useAtom } from 'jotai';
-import { ImportIcon, UserSearchIcon } from 'lucide-react-native';
+import { FileUpIcon, ImportIcon, UserSearchIcon } from 'lucide-react-native';
 import React, { useEffect } from 'react';
 import { Pressable, ScrollView } from 'react-native';
 import { toast } from 'sonner-native';
@@ -45,6 +46,7 @@ export default function CharacterScreen() {
       <CharacterList />
       <CharacterFab />
       <NewCharacterModal />
+      <ImportCharacterModal />
     </>
   );
 }
@@ -95,41 +97,44 @@ function RenderSearchCharacter() {
 function CharacterList() {
   const [list] = useAtom(renderCharacterListAtom);
   return (
-    <ScrollView>
-      {list && typeof list != undefined ? (
-        <VStack space="sm">
-          {list.map((item) => (
-            <Pressable
-              key={item.id}
-              onPress={() => router.push(`/(character)/details/${item.id}`)}
-              className="h-20 overflow-hidden"
-            >
-              <HStack className="flex-1 mx-2" space="md">
-                <Image source={item.cover} alt={item.name} className="h-20 rounded-full" />
-                <VStack className="flex-1 m-2">
-                  <Text bold>{item.name}</Text>
-                  <Text>{item.version}</Text>
-                </VStack>
-              </HStack>
-            </Pressable>
-          ))}
-        </VStack>
-      ) : (
-        <HStack className="h-24 mx-2" space="md">
-          <Skeleton className="w-20 h-20 rounded-full" />
-          <VStack className="m-2" space="md">
-            <SkeletonText className="w-20 h-3" />
-            <SkeletonText className="w-16 h-2" />
+    <Box className="h-full pt-2 bg-white">
+      <ScrollView>
+        {list && typeof list != undefined ? (
+          <VStack space="sm">
+            {list.map((item) => (
+              <Pressable
+                key={item.id}
+                onPress={() => router.push(`/(character)/details/${item.id}`)}
+                className="h-20 overflow-hidden"
+              >
+                <HStack className="flex-1 mx-2" space="md">
+                  <Image source={item.cover} alt={item.name} className="h-16 w-16 rounded-full" />
+                  <VStack className="flex-1 mx-2">
+                    <Text bold>{item.name}</Text>
+                    <Text>{item.version}</Text>
+                  </VStack>
+                </HStack>
+              </Pressable>
+            ))}
           </VStack>
-        </HStack>
-      )}
-    </ScrollView>
+        ) : (
+          <HStack className="h-20 m-2" space="md">
+            <Skeleton className="w-16 h-16 rounded-full" />
+            <VStack className="m-2" space="md">
+              <SkeletonText className="w-20 h-3" />
+              <SkeletonText className="w-16 h-2" />
+            </VStack>
+          </HStack>
+        )}
+      </ScrollView>
+    </Box>
   );
 }
 
 // 角色卡Fab
 function CharacterFab() {
   const [, setNewCharacterModal] = useAtom(modalAtom('newCharacter'));
+  const [, setImportCharacterModal] = useAtom(modalAtom('importCharacter'));
   return (
     <Menu
       placement="top right"
@@ -151,7 +156,11 @@ function CharacterFab() {
         <Icon as={AddIcon} size="sm" className="mr-2" />
         <MenuItemLabel size="sm">新建角色卡</MenuItemLabel>
       </MenuItem>
-      <MenuItem key="Import character" textValue="Import character">
+      <MenuItem
+        key="Import character"
+        textValue="Import character"
+        onPress={() => setImportCharacterModal(true)}
+      >
         <Icon as={ImportIcon} size="sm" className="mr-2" />
         <MenuItemLabel size="sm">导入角色卡</MenuItemLabel>
       </MenuItem>
@@ -161,7 +170,7 @@ function CharacterFab() {
 
 // 新建角色卡模态框 atom:newCharacter
 function NewCharacterModal() {
-  const [showModal, setShowModal] = useAtom(modalAtom('newCharacter'));
+  const [isOpen, setIsOpen] = useAtom(modalAtom('newCharacter'));
   const [name, setName] = React.useState<string>('');
   const [cover, setCover] = React.useState<string | null>(null);
 
@@ -184,7 +193,7 @@ function NewCharacterModal() {
       if (result) {
         setName('');
         setCover(null);
-        setShowModal(false);
+        setIsOpen(false);
         toast.success('新建角色卡成功: ' + name);
       }
     } catch (e) {
@@ -193,9 +202,9 @@ function NewCharacterModal() {
   };
   return (
     <Modal
-      isOpen={showModal}
+      isOpen={isOpen}
       onClose={() => {
-        setShowModal(false);
+        setIsOpen(false);
       }}
       size="md"
     >
@@ -227,7 +236,7 @@ function NewCharacterModal() {
             variant="outline"
             action="secondary"
             onPress={() => {
-              setShowModal(false);
+              setIsOpen(false);
             }}
           >
             <ButtonText>取消</ButtonText>
@@ -241,6 +250,30 @@ function NewCharacterModal() {
               <ButtonText>保存</ButtonText>
             </Button>
           )}
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+}
+
+// 导入角色卡模态框 atom:importCharacter
+function ImportCharacterModal() {
+  const [isOpen, setIsOpen] = useAtom(modalAtom('importCharacter'));
+  return (
+    <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+      <ModalBackdrop />
+      <ModalContent>
+        <ModalHeader>
+          <Heading>导入角色卡</Heading>
+          <Button>
+            <ButtonIcon as={FileUpIcon} />
+          </Button>
+        </ModalHeader>
+        <ModalBody></ModalBody>
+        <ModalFooter>
+          <Button isDisabled className="w-full">
+            <ButtonText>确认导入</ButtonText>
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>
