@@ -1,10 +1,10 @@
 'use client';
-import React, { useEffect, useLayoutEffect } from 'react';
+
 import { config } from './config';
-import { OverlayProvider } from '@gluestack-ui/overlay';
-import { ToastProvider } from '@gluestack-ui/toast';
-import { setFlushStyles } from '@gluestack-ui/nativewind-utils/flush';
 import { script } from './script';
+import { setFlushStyles } from '@gluestack-ui/nativewind-utils/flush';
+import { OverlayProvider } from '@gluestack-ui/overlay';
+import React, { useEffect, useLayoutEffect } from 'react';
 
 const variableStyleTagId = 'nativewind-style';
 const createStyle = (styleTagId: string) => {
@@ -14,8 +14,7 @@ const createStyle = (styleTagId: string) => {
   return style;
 };
 
-export const useSafeLayoutEffect =
-  typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+export const useSafeLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 export function GluestackUIProvider({
   mode = 'light',
@@ -26,14 +25,14 @@ export function GluestackUIProvider({
 }) {
   let cssVariablesWithMode = ``;
   Object.keys(config).forEach((configKey) => {
-    cssVariablesWithMode +=
-      configKey === 'dark' ? `\n .dark {\n ` : `\n:root {\n`;
-    const cssVariables = Object.keys(
-      config[configKey as keyof typeof config]
-    ).reduce((acc: string, curr: string) => {
-      acc += `${curr}:${config[configKey as keyof typeof config][curr]}; `;
-      return acc;
-    }, '');
+    cssVariablesWithMode += configKey === 'dark' ? `\n .dark {\n ` : `\n:root {\n`;
+    const cssVariables = Object.keys(config[configKey as keyof typeof config]).reduce(
+      (acc: string, curr: string) => {
+        acc += `${curr}:${config[configKey as keyof typeof config][curr]}; `;
+        return acc;
+      },
+      '',
+    );
     cssVariablesWithMode += `${cssVariables} \n}`;
   });
 
@@ -86,9 +85,7 @@ export function GluestackUIProvider({
           __html: `(${script.toString()})('${mode}')`,
         }}
       />
-      <OverlayProvider>
-        <ToastProvider>{props.children}</ToastProvider>
-      </OverlayProvider>
+      <OverlayProvider>{props.children}</OverlayProvider>
     </>
   );
 }

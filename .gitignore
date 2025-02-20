@@ -8,7 +8,9 @@ node_modules/
 dist/
 web-build/
 expo-env.d.ts
+app.json
 eas.json
+.easignore
 
 # Native
 *.orig.*
@@ -47,5 +49,3 @@ drizzle/
 *.lock
 .vscode/
 package-lock.json
-eas.json
-app.json

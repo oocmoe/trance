@@ -12,10 +12,10 @@ import { Text, View } from 'react-native';
  * expo sqlite drizzle 初始化和版本迁移操作
  * 重定向至 /(drawer)/messages
  */
+const expo = openDatabaseSync('trance.db');
+const db = drizzle(expo);
 
 export default function HomeScreen() {
-  const expo = openDatabaseSync('trance.db');
-  const db = drizzle(expo);
   const { success, error } = useMigrations(db, migrations);
   const router = useRouter();
   const [migrationStatus, setMigrationStatus] = React.useState<'loading' | 'error' | 'success'>(

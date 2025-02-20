@@ -3,13 +3,14 @@ const { getDefaultConfig } = require('expo/metro-config');
 const { withNativeWind } = require('nativewind/metro');
 const { wrapWithReanimatedMetroConfig } = require('react-native-reanimated/metro-config');
 
+/** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
 
-// 添加 sql 文件扩展名支持
+// Add support for SQL files
 config.resolver.sourceExts.push('sql');
 
-// 通过 NativeWind 包装配置（传入全局样式文件）
-const configWithNativeWind = withNativeWind(config, { input: './global.css' });
+// Apply Reanimated configuration first
+const reanimatedConfig = wrapWithReanimatedMetroConfig(config);
 
-// 通过 Reanimated 包装配置
-module.exports = wrapWithReanimatedMetroConfig(configWithNativeWind);
+// Then apply NativeWind configuration
+module.exports = withNativeWind(reanimatedConfig, { input: './global.css' });
