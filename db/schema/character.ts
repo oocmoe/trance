@@ -31,19 +31,22 @@ export const character = sqliteTable('character', {
   cover: text('cover').notNull(),
 
   // 角色卡描述 @TavernCardV2:[description|data.description]
-  description: text('description').$type<string | null>(),
+  description: text('description').$type<string>(),
 
   // 开场白 @TavernCardV2:[first_mes + alternate_greetings]
-  prologue: text('prologue').$type<string[]>().default([]).notNull(),
+  prologue: text('prologue', { mode: 'json' })
+    .$type<{ name: string; content: string }[]>()
+    .default([])
+    .notNull(),
 
   // 角色卡作者 @TavernCardV2:[data.creator]
-  creator: text('creator').$type<string | null>().default(null),
+  creator: text('creator').$type<string>(),
 
   // 角色卡使用说明 @TavernCardV2:[data.creator_notes]
-  handbook: text('handbook').$type<string | null>().default(null),
+  handbook: text('handbook').$type<string>(),
 
   // 角色卡作者自定义版本 @TavernCardV2:[data.character_version]
-  version: text('version').$type<string | null>().default(null),
+  version: text('version').$type<string>(),
 
   /**
    * trance 保留字段 用于兼容或者保留外部应用信息,基本不会使用
@@ -51,20 +54,20 @@ export const character = sqliteTable('character', {
    */
 
   // 个性 @TavernCardV2:[personality|data.personality]
-  personality: text('personality').$type<string | null>().default(null),
+  personality: text('personality').$type<string>(),
 
   // 情景 @TavernCardV2:[scenario|data.scenario]
-  scenario: text('scenario').$type<string | null>().default(null),
+  scenario: text('scenario').$type<string>(),
 
   // 消息例子 @TavernCardV2:[mes_example|data.mes_example]
-  mes_example: text('mes_example').$type<string | null>().default(null),
+  mes_example: text('mes_example').$type<string>(),
 
   // 系统提示  @TavernCardV2:[data.system_prompt]
-  system_prompt: text('system_prompt').$type<string | null>().default(null),
+  system_prompt: text('system_prompt').$type<string>(),
 
   // 后期历史说明 @TavernCardV2:[data.post_history_instructions]
-  post_history_instructions: text('post_history_instructions').$type<string | null>()
+  post_history_instructions: text('post_history_instructions').$type<string>()
 });
 
 export type Character = InferSelectModel<typeof character>;
-export type NewCharacter = InferInsertModel<typeof character>;
+export type InsertCharacter = InferInsertModel<typeof character>;

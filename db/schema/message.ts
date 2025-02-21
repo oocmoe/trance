@@ -33,6 +33,9 @@ export const message = sqliteTable('message', {
   type: text('type').$type<'text'>().notNull(),
 
   /**
+   * 0 : 助手
+   * 1 : 用户
+   * 2 : 系统
    * 是否为发送者，一般用于区分消息显示位置
    */
   is_Sender: integer('is_Sender').notNull(),

@@ -20,7 +20,7 @@ import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { useCharacterList } from '@/hook/character';
 import { modalAtom } from '@/store/modal';
-import { createCharacter, insertCharacter } from '@/utils/db/character';
+import { createCharacter, createImportCharacter } from '@/utils/db/character';
 import { pickCharacterCover, pickCharacterPng } from '@/utils/file/picker';
 import * as FileSystem from 'expo-file-system';
 import { Stack, router } from 'expo-router';
@@ -167,8 +167,8 @@ function CharacterFab() {
 // 新建角色卡模态框 atom:newCharacter
 function NewCharacterModal() {
   const [isOpen, setIsOpen] = useAtom(modalAtom('newCharacter'));
-  const [name, setName] = React.useState<string>('');
-  const [cover, setCover] = React.useState<string | null>(null);
+  const [name, setName] = React.useState<string>();
+  const [cover, setCover] = React.useState<string>();
 
   // 选择封面
   const handleSelectCover = async () => {
@@ -183,17 +183,13 @@ function NewCharacterModal() {
 
   // 保存角色卡
   const handleSave = async () => {
-    try {
-      if (!cover) return;
-      const result = await createCharacter(name, cover);
-      if (result) {
-        setName('');
-        setCover(null);
-        setIsOpen(false);
-        toast.success('新建角色卡成功: ' + name);
-      }
-    } catch (e) {
-      console.log(e);
+    if (!cover || !name) return;
+    const result = await createCharacter(name, cover);
+    if (result) {
+      setName(undefined);
+      setCover(undefined);
+      setIsOpen(false);
+      toast.success('新建角色卡成功: ' + name);
     }
   };
   return (
@@ -223,7 +219,9 @@ function NewCharacterModal() {
                 <ButtonText onPress={handleSelectCover}>选择封面</ButtonText>
               </Button>
             </HStack>
-            {cover ? <Image className="w-full h-80" source={{ uri: cover }} alt="cover" /> : null}
+            {cover ? (
+              <Image className="w-full h-80" source={{ uri: cover }} alt="cover" />
+            ) : undefined}
           </VStack>
         </ModalBody>
         <ModalFooter>
@@ -235,11 +233,9 @@ function NewCharacterModal() {
             }}>
             <ButtonText>取消</ButtonText>
           </Button>
-          {name.length > 0 && cover !== null && (
-            <Button onPress={handleSave} isDisabled={name.length === 0 || cover === null}>
-              <ButtonText>保存</ButtonText>
-            </Button>
-          )}
+          <Button onPress={handleSave} isDisabled={name?.length === 0 || !cover}>
+            <ButtonText>保存</ButtonText>
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>
@@ -249,29 +245,31 @@ function NewCharacterModal() {
 // 导入角色卡模态框 atom:importCharacter
 function ImportCharacterModal() {
   const [isOpen, setIsOpen] = useAtom(modalAtom('importCharacter'));
-  const [previewData, setPreviewData] = React.useState<ConvertCharacterResult | null>();
+  const [previewData, setPreviewData] = React.useState<ConvertCharacterResult>();
   const handleImportCharacterPng = async () => {
     const result = await pickCharacterPng();
-    if (!result) return;
+    if (!result) {
+      toast.error('读取角色卡失败,请检查是否为角色卡文件');
+    }
     setPreviewData(result);
   };
   const handleImport = async () => {
     if (!previewData) return;
-    const result = await insertCharacter(previewData.character);
+    const result = await createImportCharacter(previewData.character);
     if (!result) {
       toast.error('导入角色卡失败');
-      setPreviewData(null);
+      setPreviewData(undefined);
       return;
     }
     toast.success('导入角色卡成功');
-    setPreviewData(null);
+    setPreviewData(undefined);
     setIsOpen(false);
   };
   return (
     <Modal
       isOpen={isOpen}
       onClose={() => {
-        setIsOpen(false), setPreviewData(null);
+        setIsOpen(false), setPreviewData(undefined);
       }}>
       <ModalBackdrop />
       <ModalContent>
@@ -306,15 +304,9 @@ function ImportCharacterModal() {
           )}
         </ModalBody>
         <ModalFooter>
-          {previewData ? (
-            <Button className="w-full" onPress={handleImport} isDisabled={!previewData}>
-              <ButtonText>确认导入</ButtonText>
-            </Button>
-          ) : (
-            <Button className="w-full" isDisabled>
-              <ButtonText>确认导入</ButtonText>
-            </Button>
-          )}
+          <Button className="w-full" onPress={handleImport} isDisabled={!previewData}>
+            <ButtonText>确认导入</ButtonText>
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

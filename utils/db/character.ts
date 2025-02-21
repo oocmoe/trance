@@ -1,4 +1,4 @@
-import { character, NewCharacter } from '@/db/schema/character';
+import { character, InsertCharacter } from '@/db/schema/character';
 import { useDB } from '@/hook/db';
 import { eq } from 'drizzle-orm';
 import 'react-native-get-random-values';
@@ -21,24 +21,40 @@ export async function createCharacter(name: string, cover: string) {
     });
     if (!rows) return;
     return rows.lastInsertRowId;
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
   }
 }
 
 /**
- * 插入角色卡数
- * @param data 
+ * 根据Id 读取角色卡
+ * @param id 
+ * @returns 
  */
-export async function insertCharacter(data:NewCharacter) {
+export async function readCharacterById(id:number) {
   try{
-    const rows = await db.insert(character).values({
-      ...data,
-    });
+    const rows = await db.select().from(character).where(eq(character.id,id))
     if(!rows) return
-    return rows.lastInsertRowId
+    return rows[0]
   }catch(error){
     console.log(error)
+  }
+}
+
+
+/**
+ * 插入角色卡数
+ * @param data
+ */
+export async function createImportCharacter(data: InsertCharacter) {
+  try {
+    const rows = await db.insert(character).values({
+      ...data
+    });
+    if (!rows) return;
+    return rows.lastInsertRowId;
+  } catch (error) {
+    console.log(error);
   }
 }
 
@@ -52,7 +68,7 @@ export async function deleteCharacter(id: number) {
     const rows = await db.delete(character).where(eq(character.id, id));
     if (!rows) return;
     return rows.changes;
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
   }
 }

@@ -4,7 +4,7 @@ type ConvertCharacterResult = {
     cover: string;
     name: string;
     description: string;
-    prologue: string[];
+    prologue: { name: string; content: string }[];
     creator: string;
     handbook: string;
     version: string;

@@ -14,8 +14,8 @@ export async function pickFileJson() {
     });
     if (!result) return;
     return result;
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
   }
 }
 
@@ -32,8 +32,8 @@ export async function pickFilePng() {
     if (!result.canceled) {
       return result.assets[0];
     }
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
   }
 }
 
@@ -53,8 +53,8 @@ export async function pickCharacterCover() {
     if (!result.canceled) {
       return result.assets[0];
     }
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
   }
 }
 
@@ -73,7 +73,7 @@ export async function pickCharacterPng() {
     if(!result) return
     return result
 
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
   }
 }

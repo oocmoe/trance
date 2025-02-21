@@ -27,13 +27,13 @@ export const prompt = sqliteTable('prompt', {
   name: text('name').$type<string>().notNull(),
 
   // 提示词作者
-  ceator: text('creator').$type<string | null>().default(null),
+  ceator: text('creator').$type<string>(),
 
   // 提示词版本
-  version: text('version').$type<string | null>().default(null),
+  version: text('version').$type<string>(),
 
   // 提示词使用说明
-  handbook: text('handbook').$type<string | null>().default(null),
+  handbook: text('handbook').$type<string>(),
 
   // 提示词内容
   content: text('content', { mode: 'json' }).$type()

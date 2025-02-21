@@ -11,7 +11,8 @@ const db = useDB();
  * 实时查询全部角色卡
  */
 export function useCharacter() {
-  return useLiveQuery(db.select().from(character));
+  const {data,error,updatedAt} = useLiveQuery(db.select().from(character));
+  return data
 }
 
 /**
@@ -20,7 +21,8 @@ export function useCharacter() {
  * @returns
  */
 export function useCharacterById(id: number) {
-  return useLiveQuery(db.select().from(character).where(eq(character.id, id)));
+  const {data,error,updatedAt} = useLiveQuery(db.select().from(character).where(eq(character.id,id)));
+  return data[0]
 }
 
 /**
@@ -29,8 +31,8 @@ export function useCharacterById(id: number) {
  */
 export function useCharacterDetailsById() {
   const { id } = useLocalSearchParams();
-  const { data, error, updatedAt } = useCharacterById(Number(id));
-  return data[0];
+  const data = useCharacterById(Number(id));
+  return data
 }
 
 /**

@@ -30,10 +30,10 @@ import { VStack } from '@/components/ui/vstack';
 import { useCharacterDetailsById } from '@/hook/character';
 import { deleteCharacter } from '@/utils/db/character';
 import { createDialogRoom } from '@/utils/db/room';
-import React, { useEffect } from 'react';
-import { Pressable, ScrollView } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { MessageCirclePlusIcon, Trash2Icon } from 'lucide-react-native';
+import React, { useEffect } from 'react';
+import { Pressable, ScrollView } from 'react-native';
 import { toast } from 'sonner-native';
 
 export default function DetailsScreen() {
@@ -107,8 +107,8 @@ function Action() {
 function CreateRoom() {
   const character = useCharacterDetailsById();
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
-  const [name, setName] = React.useState<string>('');
-
+  const [name, setName] = React.useState<string>();
+  const [prologue, setPrologue] = React.useState<number>();
   // 初始化数据
   useEffect(() => {
     if (!character) return;
@@ -117,7 +117,11 @@ function CreateRoom() {
 
   // 创建聊天
   const handleCreateDialogRoom = async () => {
-    const result = await createDialogRoom(character.id, name, character.cover);
+    if(!name) {
+      toast.warning("聊天名称不能为空")
+      return
+    }
+    const result = await createDialogRoom(character.id, name, prologue);
     if (result) {
       setIsOpen(false);
       toast.success('创建聊天成功');
@@ -149,11 +153,11 @@ function CreateRoom() {
                   <InputField value={name} />
                 </Input>
               </Box>
-              {character && Array.isArray(character.prologue) && character.prologue.length > 0 ? (
+              {character?.prologue && character.prologue.length > 0 ? (
                 <Box>
                   <Text>开场白</Text>
-                  <Select>
-                    <SelectTrigger>
+                  <Select onValueChange={(value) => setPrologue(Number(value))}>
+                    <SelectTrigger variant="outline" size="md">
                       <SelectInput placeholder="选择一个开场白" />
                     </SelectTrigger>
                     <SelectPortal>
@@ -162,13 +166,9 @@ function CreateRoom() {
                         <SelectDragIndicatorWrapper>
                           <SelectDragIndicator />
                         </SelectDragIndicatorWrapper>
-                        {character.prologue.map((item, index) => {
-                          <SelectItem
-                            key={index}
-                            value={String(index)}
-                            label={item.slice(0, 10)}
-                          />;
-                        })}
+                        {character.prologue.map((item, index) => (
+                          <SelectItem key={index} value={String(index)} label={item.name} />
+                        ))}
                       </SelectContent>
                     </SelectPortal>
                   </Select>
@@ -187,7 +187,7 @@ function CreateRoom() {
               className="flex-grow">
               <ButtonText>取消</ButtonText>
             </Button>
-            <Button size="sm" className="flex-grow">
+            <Button onPress={handleCreateDialogRoom} size="sm" className="flex-grow">
               <ButtonText>创建新聊天</ButtonText>
             </Button>
           </ModalFooter>

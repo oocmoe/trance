@@ -33,10 +33,10 @@ export const room = sqliteTable('room', {
   background: blob('background'),
 
   // 提示词 用于存储此房间使用的提示词id
-  prompt: text('prompt').$type<number | null>().default(null),
+  prompt: text('prompt').$type<number>(),
 
   // model 用于存储房间使用的模型信息
-  model: text('model', { mode: 'json' }).$type<TModelList | null>().default(null),
+  model: text('model', { mode: 'json' }).$type<ModelList>(),
 
   /**
    * 类型
@@ -46,5 +46,5 @@ export const room = sqliteTable('room', {
   type: text('type').$type<'dialog' | 'group'>().notNull(),
 
   // 房间人员
-  personnel: text('personnel').$type<number[]>().default([]).notNull()
+  personnel: text('personnel',).$type<string[]>().default([]).notNull()
 });
