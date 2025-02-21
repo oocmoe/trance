@@ -11,12 +11,12 @@ import {
   ModalBody,
   ModalContent,
   ModalFooter,
-  ModalHeader,
+  ModalHeader
 } from '@/components/ui/modal';
-import * as SecureStore from 'expo-secure-store';
-import { BoltIcon, KeyIcon } from 'lucide-react-native';
 import React, { useEffect } from 'react';
 import { Pressable } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
+import { BoltIcon, KeyIcon } from 'lucide-react-native';
 import { toast } from 'sonner-native';
 
 export default function GeminiScreen() {
@@ -77,8 +77,7 @@ function Key() {
         onClose={() => {
           setShowModal(false);
         }}
-        size="md"
-      >
+        size="md">
         <ModalBackdrop />
         <ModalContent>
           <ModalHeader>
@@ -97,8 +96,7 @@ function Key() {
               action="secondary"
               onPress={() => {
                 setShowModal(false);
-              }}
-            >
+              }}>
               <ButtonText>取消</ButtonText>
             </Button>
             <Button onPress={handleSave}>

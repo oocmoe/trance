@@ -9,7 +9,7 @@ export async function createDialogRoom(
   id: number,
   name: string,
   cover: string,
-  prologueIndex?: number,
+  prologueIndex?: number
 ) {
   try {
     const rows = await db.insert(room).values({
@@ -17,7 +17,7 @@ export async function createDialogRoom(
       name: name,
       cover: cover,
       type: 'dialog',
-      personnel: [id],
+      personnel: [id]
     });
     if (!rows) return;
     return rows.lastInsertRowId;

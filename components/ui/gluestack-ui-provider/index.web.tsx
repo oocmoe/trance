@@ -1,10 +1,10 @@
 'use client';
 
-import { config } from './config';
-import { script } from './script';
+import React, { useEffect, useLayoutEffect } from 'react';
 import { setFlushStyles } from '@gluestack-ui/nativewind-utils/flush';
 import { OverlayProvider } from '@gluestack-ui/overlay';
-import React, { useEffect, useLayoutEffect } from 'react';
+import { config } from './config';
+import { script } from './script';
 
 const variableStyleTagId = 'nativewind-style';
 const createStyle = (styleTagId: string) => {
@@ -31,7 +31,7 @@ export function GluestackUIProvider({
         acc += `${curr}:${config[configKey as keyof typeof config][curr]}; `;
         return acc;
       },
-      '',
+      ''
     );
     cssVariablesWithMode += `${cssVariables} \n}`;
   });
@@ -82,7 +82,7 @@ export function GluestackUIProvider({
       <script
         suppressHydrationWarning
         dangerouslySetInnerHTML={{
-          __html: `(${script.toString()})('${mode}')`,
+          __html: `(${script.toString()})('${mode}')`
         }}
       />
       <OverlayProvider>{props.children}</OverlayProvider>

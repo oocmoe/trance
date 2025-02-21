@@ -1,6 +1,5 @@
 // 定义模型名称
-type TModels = 
-  "Gemini"
+type TModels = 'Gemini';
 
 // 模型版本映射
 type TModelVersionMap = {

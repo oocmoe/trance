@@ -5,6 +5,4 @@ type TRenderCharacterList = Array<{
   name: string;
   creator: string | null;
   version: string | null;
-}>
-
-
+}>;

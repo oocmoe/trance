@@ -16,10 +16,10 @@ export const hstackStyle = tva({
       'xl': 'gap-5',
       '2xl': 'gap-6',
       '3xl': 'gap-7',
-      '4xl': 'gap-8',
+      '4xl': 'gap-8'
     },
     reversed: {
-      true: 'flex-row-reverse',
-    },
-  },
+      true: 'flex-row-reverse'
+    }
+  }
 });

@@ -46,5 +46,5 @@ export const room = sqliteTable('room', {
   type: text('type').$type<'dialog' | 'group'>().notNull(),
 
   // 房间人员
-  personnel: text('personnel').$type<number[]>().default([]).notNull(),
+  personnel: text('personnel').$type<number[]>().default([]).notNull()
 });

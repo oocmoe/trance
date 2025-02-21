@@ -1,8 +1,8 @@
-import { useDB } from './db';
 import { character } from '@/db/schema/character';
 import { eq } from 'drizzle-orm';
 import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
 import { useLocalSearchParams } from 'expo-router';
+import { useDB } from './db';
 
 // 初始化数据库
 const db = useDB();
@@ -45,8 +45,8 @@ export function useCharacterList() {
         cover: character.cover,
         name: character.name,
         creator: character.creator,
-        version: character.version,
+        version: character.version
       })
-      .from(character),
+      .from(character)
   );
 }

@@ -13,7 +13,7 @@ import {
   ModalBody,
   ModalContent,
   ModalFooter,
-  ModalHeader,
+  ModalHeader
 } from '@/components/ui/modal';
 import { Skeleton, SkeletonText } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
@@ -21,13 +21,13 @@ import { VStack } from '@/components/ui/vstack';
 import { useCharacterList } from '@/hook/character';
 import { modalAtom } from '@/store/modal';
 import { createCharacter } from '@/utils/db/character';
-import { selectCharacterCover } from '@/utils/image/upload';
+import { pickCharacterCover, pickCharacterPng } from '@/utils/file/picker';
+import React, { useEffect } from 'react';
+import { Pressable, ScrollView } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import { Stack, router } from 'expo-router';
 import { atom, useAtom } from 'jotai';
 import { FileUpIcon, ImportIcon, UserSearchIcon } from 'lucide-react-native';
-import React, { useEffect } from 'react';
-import { Pressable, ScrollView } from 'react-native';
 import { toast } from 'sonner-native';
 
 // 角色卡列表状态
@@ -40,7 +40,7 @@ export default function CharacterScreen() {
         options={{
           headerRight: () => {
             return <HeaderRight />;
-          },
+          }
         }}
       />
       <CharacterList />
@@ -65,7 +65,7 @@ function RenderSearchCharacter() {
   useEffect(() => {
     if (inputValue.length > 0) {
       const renderList = list.data.filter((item) =>
-        item.name.toLowerCase().includes(inputValue.toLowerCase()),
+        item.name.toLowerCase().includes(inputValue.toLowerCase())
       );
       setRenderCharacterList(renderList);
     } else {
@@ -105,8 +105,7 @@ function CharacterList() {
               <Pressable
                 key={item.id}
                 onPress={() => router.push(`/(character)/details/${item.id}`)}
-                className="h-20 overflow-hidden"
-              >
+                className="h-20 overflow-hidden">
                 <HStack className="flex-1 mx-2" space="md">
                   <Image source={item.cover} alt={item.name} className="h-16 w-16 rounded-full" />
                   <VStack className="flex-1 mx-2">
@@ -146,21 +145,18 @@ function CharacterFab() {
             <FabIcon as={AddIcon} />
           </Fab>
         );
-      }}
-    >
+      }}>
       <MenuItem
         key="Add character"
         textValue="Add character"
-        onPress={() => setNewCharacterModal(true)}
-      >
+        onPress={() => setNewCharacterModal(true)}>
         <Icon as={AddIcon} size="sm" className="mr-2" />
         <MenuItemLabel size="sm">新建角色卡</MenuItemLabel>
       </MenuItem>
       <MenuItem
         key="Import character"
         textValue="Import character"
-        onPress={() => setImportCharacterModal(true)}
-      >
+        onPress={() => setImportCharacterModal(true)}>
         <Icon as={ImportIcon} size="sm" className="mr-2" />
         <MenuItemLabel size="sm">导入角色卡</MenuItemLabel>
       </MenuItem>
@@ -176,10 +172,10 @@ function NewCharacterModal() {
 
   // 选择封面
   const handleSelectCover = async () => {
-    const result = await selectCharacterCover();
+    const result = await pickCharacterCover();
     if (!result) return;
     const file = await FileSystem.readAsStringAsync(result.uri, {
-      encoding: 'base64',
+      encoding: 'base64'
     });
     const cover = `data:${result.mimeType};base64,${file}`;
     setCover(cover);
@@ -206,8 +202,7 @@ function NewCharacterModal() {
       onClose={() => {
         setIsOpen(false);
       }}
-      size="md"
-    >
+      size="md">
       <ModalBackdrop />
       <ModalContent>
         <ModalHeader>
@@ -237,8 +232,7 @@ function NewCharacterModal() {
             action="secondary"
             onPress={() => {
               setIsOpen(false);
-            }}
-          >
+            }}>
             <ButtonText>取消</ButtonText>
           </Button>
           {name.length > 0 && cover != null ? (
@@ -265,11 +259,11 @@ function ImportCharacterModal() {
       <ModalContent>
         <ModalHeader>
           <Heading>导入角色卡</Heading>
-          <Button>
+          <Button onPress={pickCharacterPng}>
             <ButtonIcon as={FileUpIcon} />
           </Button>
         </ModalHeader>
-        <ModalBody></ModalBody>
+        <ModalBody />
         <ModalFooter>
           <Button isDisabled className="w-full">
             <ButtonText>确认导入</ButtonText>

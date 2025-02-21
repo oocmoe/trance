@@ -17,7 +17,7 @@ export async function createCharacter(name: string, cover: string) {
     const rows = await db.insert(character).values({
       global_id: uuidv7(),
       name: name,
-      cover: cover,
+      cover: cover
     });
     if (!rows) return;
     return rows.lastInsertRowId;

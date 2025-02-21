@@ -12,7 +12,7 @@ import {
   ModalBody,
   ModalContent,
   ModalFooter,
-  ModalHeader,
+  ModalHeader
 } from '@/components/ui/modal';
 import {
   Select,
@@ -23,17 +23,17 @@ import {
   SelectInput,
   SelectItem,
   SelectPortal,
-  SelectTrigger,
+  SelectTrigger
 } from '@/components/ui/select';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { useCharacterDetailsById } from '@/hook/character';
 import { deleteCharacter } from '@/utils/db/character';
 import { createDialogRoom } from '@/utils/db/room';
-import { router, useLocalSearchParams } from 'expo-router';
-import { MessageCirclePlusIcon, Trash2Icon } from 'lucide-react-native';
 import React, { useEffect } from 'react';
 import { Pressable, ScrollView } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import { MessageCirclePlusIcon, Trash2Icon } from 'lucide-react-native';
 import { toast } from 'sonner-native';
 
 export default function DetailsScreen() {
@@ -184,8 +184,7 @@ function CreateRoom() {
               action="secondary"
               size="sm"
               onPress={() => setIsOpen(false)}
-              className="flex-grow"
-            >
+              className="flex-grow">
               <ButtonText>取消</ButtonText>
             </Button>
             <Button size="sm" className="flex-grow">
@@ -248,8 +247,7 @@ function DeleteCharacter() {
               action="secondary"
               size="sm"
               onPress={() => setIsOpen(false)}
-              className="flex-grow"
-            >
+              className="flex-grow">
               <ButtonText>算了</ButtonText>
             </Button>
             <Button action="negative" onPress={handleDelte} size="sm" className="flex-grow">

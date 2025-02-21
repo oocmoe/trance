@@ -1,8 +1,7 @@
-import { Dimensions, useWindowDimensions } from 'react-native';
-import { useEffect, useState } from 'react';
-
-import resolveConfig from 'tailwindcss/resolveConfig';
 import * as tailwindConfig from '@/tailwind.config';
+import { useEffect, useState } from 'react';
+import { Dimensions, useWindowDimensions } from 'react-native';
+import resolveConfig from 'tailwindcss/resolveConfig';
 
 const TailwindTheme = resolveConfig(tailwindConfig as any);
 const screenSize = TailwindTheme.theme.screens;
@@ -12,7 +11,7 @@ type breakpoints = keyof typeof screenSize | 'default';
 type BreakPointValue = Partial<Record<breakpoints, any>>;
 
 const resolveScreenWidth: any = {
-  default: 0,
+  default: 0
 };
 
 Object.entries(screenSize).forEach(([key, value]) => {
@@ -29,8 +28,8 @@ export const getBreakPointValue = (values: BreakPointValue, width: number) => {
     {
       key: 'default',
       breakpoint: 0,
-      isValid: true,
-    },
+      isValid: true
+    }
   ];
   Object.keys(resolveScreenWidth).forEach((key) => {
     const isValid = isValidBreakpoint(resolveScreenWidth[key], width);
@@ -38,7 +37,7 @@ export const getBreakPointValue = (values: BreakPointValue, width: number) => {
     mediaQueriesBreakpoints.push({
       key: key,
       breakpoint: resolveScreenWidth[key],
-      isValid: isValid,
+      isValid: isValid
     });
   });
 
@@ -48,8 +47,7 @@ export const getBreakPointValue = (values: BreakPointValue, width: number) => {
     breakpoint.value = values.hasOwnProperty(breakpoint.key)
       ? // @ts-ignore
         values[breakpoint.key]
-      : mediaQueriesBreakpoints[index - 1]?.value ||
-        mediaQueriesBreakpoints[0]?.value;
+      : mediaQueriesBreakpoints[index - 1]?.value || mediaQueriesBreakpoints[0]?.value;
   });
 
   const lastValidObject = getLastValidObject(mediaQueriesBreakpoints);

@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
-import type { VariantProps } from '@gluestack-ui/nativewind-utils';
 import { Animated, Easing, Platform, View } from 'react-native';
+import type { VariantProps } from '@gluestack-ui/nativewind-utils';
 import { skeletonStyle, skeletonTextStyle } from './styles';
 
 type ISkeletonProps = React.ComponentProps<typeof View> &
@@ -16,10 +16,7 @@ type ISkeletonTextProps = React.ComponentProps<typeof View> &
     startColor?: string;
   };
 
-const Skeleton = forwardRef<
-  React.ElementRef<typeof Animated.View>,
-  ISkeletonProps
->(
+const Skeleton = forwardRef<React.ElementRef<typeof Animated.View>, ISkeletonProps>(
   (
     {
       className,
@@ -42,20 +39,20 @@ const Skeleton = forwardRef<
         toValue: 1, // Start with opacity 1
         duration: animationDuration / 2, // Third of the animation duration
         easing: customTimingFunction,
-        useNativeDriver: Platform.OS !== 'web',
+        useNativeDriver: Platform.OS !== 'web'
       }),
       Animated.timing(pulseAnim, {
         toValue: 0.75,
         duration: animationDuration / 2, // Third of the animation duration
         easing: customTimingFunction,
-        useNativeDriver: Platform.OS !== 'web',
+        useNativeDriver: Platform.OS !== 'web'
       }),
       Animated.timing(pulseAnim, {
         toValue: 1,
         duration: animationDuration / 2, // Third of the animation duration
         easing: customTimingFunction,
-        useNativeDriver: Platform.OS !== 'web',
-      }),
+        useNativeDriver: Platform.OS !== 'web'
+      })
     ]);
 
     if (!isLoaded) {
@@ -65,7 +62,7 @@ const Skeleton = forwardRef<
           style={{ opacity: pulseAnim }}
           className={`${startColor} ${skeletonStyle({
             variant,
-            class: className,
+            class: className
           })}`}
           {...props}
           ref={ref}
@@ -79,10 +76,7 @@ const Skeleton = forwardRef<
   }
 );
 
-const SkeletonText = forwardRef<
-  React.ElementRef<typeof View>,
-  ISkeletonTextProps
->(
+const SkeletonText = forwardRef<React.ElementRef<typeof View>, ISkeletonTextProps>(
   (
     {
       className,
@@ -100,15 +94,14 @@ const SkeletonText = forwardRef<
         return (
           <View
             className={`${skeletonTextStyle({
-              gap,
+              gap
             })}`}
-            ref={ref}
-          >
+            ref={ref}>
             {Array.from({ length: _lines }).map((_, index) => (
               <Skeleton
                 key={index}
                 className={`${startColor} ${skeletonTextStyle({
-                  class: className,
+                  class: className
                 })}`}
                 {...props}
               />
@@ -119,7 +112,7 @@ const SkeletonText = forwardRef<
         return (
           <Skeleton
             className={`${startColor} ${skeletonTextStyle({
-              class: className,
+              class: className
             })}`}
             {...props}
             ref={ref}

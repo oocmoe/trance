@@ -3,8 +3,8 @@ import { Card } from '@/components/ui/card';
 import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
 import { ArrowRightIcon, Icon } from '@/components/ui/icon';
-import { router } from 'expo-router';
 import { Pressable, ScrollView } from 'react-native';
+import { router } from 'expo-router';
 import { SvgUri } from 'react-native-svg';
 
 export default function ModelScreen() {
@@ -30,8 +30,8 @@ const items = [
   {
     name: 'Gemini',
     path: '/(model)/gemini/',
-    icon: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/gemini-color.svg',
-  },
+    icon: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/gemini-color.svg'
+  }
   // {
   //   name: 'Claude',
   //   path: '/(model)/gemini/',
