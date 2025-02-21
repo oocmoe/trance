@@ -1,4 +1,4 @@
-type TRenderCharacterList = Array<{
+type RenderCharacterList = Array<{
   id: number;
   global_id: string;
   cover: string;

@@ -1,4 +1,4 @@
-import { character } from '@/db/schema/character';
+import { character, NewCharacter } from '@/db/schema/character';
 import { useDB } from '@/hook/db';
 import { eq } from 'drizzle-orm';
 import 'react-native-get-random-values';
@@ -23,6 +23,22 @@ export async function createCharacter(name: string, cover: string) {
     return rows.lastInsertRowId;
   } catch (e) {
     console.log(e);
+  }
+}
+
+/**
+ * 插入角色卡数
+ * @param data 
+ */
+export async function insertCharacter(data:NewCharacter) {
+  try{
+    const rows = await db.insert(character).values({
+      ...data,
+    });
+    if(!rows) return
+    return rows.lastInsertRowId
+  }catch(error){
+    console.log(error)
   }
 }
 

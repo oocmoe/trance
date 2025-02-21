@@ -1,0 +1,17 @@
+type ConvertCharacterResult = {
+  character: {
+    global_id: string;
+    cover: string;
+    name: string;
+    description: string;
+    prologue: string[];
+    creator: string;
+    handbook: string;
+    version: string;
+    personality: string;
+    scenario: string;
+    mes_example: string;
+    system_prompt: string;
+    post_history_instructions: string;
+  };
+};

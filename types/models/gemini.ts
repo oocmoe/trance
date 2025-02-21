@@ -1,6 +1,6 @@
 // types/models/gemini.ts
 
-type TGeminiModels =
+type GeminiModels =
   | 'gemini-1.5-pro'
   | 'gemini-1.5-flash-8b'
   | 'gemini-1.5-flash'

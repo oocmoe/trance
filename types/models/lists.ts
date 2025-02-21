@@ -1,9 +1,9 @@
 // 定义模型名称
-type TModels = 'Gemini';
+type Models = 'Gemini';
 
 // 模型版本映射
-type TModelVersionMap = {
-  Gemini: TGeminiModels;
+type ModelVersionMap = {
+  Gemini: GeminiModels;
 };
 
 /**
@@ -12,7 +12,7 @@ type TModelVersionMap = {
  * version：指定模型版本
  */
 
-type TModelList = {
-  model: TModels;
-  version: TModelVersionMap[TModels];
+type ModelList = {
+  model: Models;
+  version: ModelVersionMap[Models];
 };

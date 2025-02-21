@@ -20,18 +20,18 @@ import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { useCharacterList } from '@/hook/character';
 import { modalAtom } from '@/store/modal';
-import { createCharacter } from '@/utils/db/character';
+import { createCharacter, insertCharacter } from '@/utils/db/character';
 import { pickCharacterCover, pickCharacterPng } from '@/utils/file/picker';
-import React, { useEffect } from 'react';
-import { Pressable, ScrollView } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import { Stack, router } from 'expo-router';
 import { atom, useAtom } from 'jotai';
-import { FileUpIcon, ImportIcon, UserSearchIcon } from 'lucide-react-native';
+import { CircleCheckBigIcon, FileUpIcon, ImportIcon, UserSearchIcon } from 'lucide-react-native';
+import React, { useEffect } from 'react';
+import { Pressable, ScrollView } from 'react-native';
 import { toast } from 'sonner-native';
 
 // 角色卡列表状态
-const renderCharacterListAtom = atom<TRenderCharacterList>();
+const renderCharacterListAtom = atom<RenderCharacterList>();
 
 export default function CharacterScreen() {
   return (
@@ -235,12 +235,8 @@ function NewCharacterModal() {
             }}>
             <ButtonText>取消</ButtonText>
           </Button>
-          {name.length > 0 && cover != null ? (
-            <Button onPress={handleSave}>
-              <ButtonText>保存</ButtonText>
-            </Button>
-          ) : (
-            <Button isDisabled>
+          {name.length > 0 && cover !== null && (
+            <Button onPress={handleSave} isDisabled={name.length === 0 || cover === null}>
               <ButtonText>保存</ButtonText>
             </Button>
           )}
@@ -253,21 +249,72 @@ function NewCharacterModal() {
 // 导入角色卡模态框 atom:importCharacter
 function ImportCharacterModal() {
   const [isOpen, setIsOpen] = useAtom(modalAtom('importCharacter'));
+  const [previewData, setPreviewData] = React.useState<ConvertCharacterResult | null>();
+  const handleImportCharacterPng = async () => {
+    const result = await pickCharacterPng();
+    if (!result) return;
+    setPreviewData(result);
+  };
+  const handleImport = async () => {
+    if (!previewData) return;
+    const result = await insertCharacter(previewData.character);
+    if (!result) {
+      toast.error('导入角色卡失败');
+      setPreviewData(null);
+      return;
+    }
+    toast.success('导入角色卡成功');
+    setPreviewData(null);
+    setIsOpen(false);
+  };
   return (
-    <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+    <Modal
+      isOpen={isOpen}
+      onClose={() => {
+        setIsOpen(false), setPreviewData(null);
+      }}>
       <ModalBackdrop />
       <ModalContent>
         <ModalHeader>
           <Heading>导入角色卡</Heading>
-          <Button onPress={pickCharacterPng}>
+          <Button onPress={handleImportCharacterPng}>
             <ButtonIcon as={FileUpIcon} />
           </Button>
         </ModalHeader>
-        <ModalBody />
+        <ModalBody>
+          {previewData && previewData.character.cover && (
+            <Box>
+              <HStack space="sm">
+                <Image
+                  className="h-32 object-cover"
+                  source={{ uri: previewData.character.cover }}
+                  alt={previewData.character.name}
+                />
+                <VStack space="sm">
+                  <Heading>{previewData.character.name}</Heading>
+                  <Box>
+                    {previewData.character && (
+                      <HStack space="sm" className="items-center">
+                        <Icon color="green" as={CircleCheckBigIcon} />
+                        <Text>角色卡数据</Text>
+                      </HStack>
+                    )}
+                  </Box>
+                </VStack>
+              </HStack>
+            </Box>
+          )}
+        </ModalBody>
         <ModalFooter>
-          <Button isDisabled className="w-full">
-            <ButtonText>确认导入</ButtonText>
-          </Button>
+          {previewData ? (
+            <Button className="w-full" onPress={handleImport} isDisabled={!previewData}>
+              <ButtonText>确认导入</ButtonText>
+            </Button>
+          ) : (
+            <Button className="w-full" isDisabled>
+              <ButtonText>确认导入</ButtonText>
+            </Button>
+          )}
         </ModalFooter>
       </ModalContent>
     </Modal>

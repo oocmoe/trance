@@ -1,5 +1,6 @@
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
+import { convertCharacter, convertCover } from './convert';
 import { decodeCharacter } from './decode';
 
 /**
@@ -57,12 +58,21 @@ export async function pickCharacterCover() {
   }
 }
 
+/**
+ * 选取PNG格式角色卡
+ * @returns 
+ */
 export async function pickCharacterPng() {
   try {
     const assets = await pickFilePng();
     if (!assets) return;
-    const result = await decodeCharacter(assets.uri);
-    console.log(result);
+    const cover = await convertCover(assets.uri)
+    const decodeResult = await decodeCharacter(assets.uri);
+    if(!decodeResult || !cover) return
+    const result = await convertCharacter(decodeResult,cover)
+    if(!result) return
+    return result
+
   } catch (e) {
     console.log(e);
   }

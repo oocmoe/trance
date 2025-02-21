@@ -1,5 +1,5 @@
 // db/schema/character.ts
-import { sql } from 'drizzle-orm';
+import { InferInsertModel, InferSelectModel, sql } from 'drizzle-orm';
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
 export const character = sqliteTable('character', {
@@ -65,3 +65,6 @@ export const character = sqliteTable('character', {
   // 后期历史说明 @TavernCardV2:[data.post_history_instructions]
   post_history_instructions: text('post_history_instructions').$type<string | null>()
 });
+
+export type Character = InferSelectModel<typeof character>;
+export type NewCharacter = InferInsertModel<typeof character>;
