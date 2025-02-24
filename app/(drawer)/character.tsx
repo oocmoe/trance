@@ -22,12 +22,12 @@ import { useCharacterList } from '@/hook/character';
 import { modalAtom } from '@/store/modal';
 import { createCharacter, createImportCharacter } from '@/utils/db/character';
 import { pickCharacterCover, pickCharacterPng } from '@/utils/file/picker';
+import React, { useEffect } from 'react';
+import { Pressable, ScrollView } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import { Stack, router } from 'expo-router';
 import { atom, useAtom } from 'jotai';
 import { CircleCheckBigIcon, FileUpIcon, ImportIcon, UserSearchIcon } from 'lucide-react-native';
-import React, { useEffect } from 'react';
-import { Pressable, ScrollView } from 'react-native';
 import { toast } from 'sonner-native';
 
 // 角色卡列表状态
@@ -53,11 +53,11 @@ export default function CharacterScreen() {
 
 // Header 右侧按钮
 function HeaderRight() {
-  return <RenderSearchCharacter />;
+  return <SearchCharacter />;
 }
 
 // 渲染搜索的角色卡
-function RenderSearchCharacter() {
+function SearchCharacter() {
   const list = useCharacterList();
   const [isPress, setIsPress] = React.useState<boolean>(false);
   const [inputValue, setInputValue] = React.useState<string>('');
@@ -104,7 +104,7 @@ function CharacterList() {
             {list.map((item) => (
               <Pressable
                 key={item.id}
-                onPress={() => router.push(`/(character)/details/${item.id}`)}
+                onPress={() => router.push(`/character/${item.id}`)}
                 className="h-20 overflow-hidden">
                 <HStack className="flex-1 mx-2" space="md">
                   <Image source={item.cover} alt={item.name} className="h-16 w-16 rounded-full" />
@@ -219,9 +219,7 @@ function NewCharacterModal() {
                 <ButtonText onPress={handleSelectCover}>选择封面</ButtonText>
               </Button>
             </HStack>
-            {cover ? (
-              <Image className="w-full h-80" source={{ uri: cover }} alt="cover" />
-            ) : undefined}
+            {cover && <Image className="w-full h-80" source={{ uri: cover }} alt="cover" />}
           </VStack>
         </ModalBody>
         <ModalFooter>

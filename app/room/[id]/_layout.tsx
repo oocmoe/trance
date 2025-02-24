@@ -1,9 +1,9 @@
 import { Stack } from 'expo-router/stack';
 
-export default function CharacterLayout() {
+export default function RoomLayout() {
   return (
     <Stack>
-      <Stack.Screen name="details/[id]" />
+      <Stack.Screen name="index" />
     </Stack>
   );
 }

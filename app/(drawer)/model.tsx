@@ -29,7 +29,7 @@ const items = [
   // },
   {
     name: 'Gemini',
-    path: '/(model)/gemini/',
+    path: '/model/gemini/',
     icon: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/gemini-color.svg'
   }
   // {

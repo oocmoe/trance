@@ -14,16 +14,17 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <GluestackUIProvider mode="light">
-        <StatusBar translucent />
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" options={{ headerShown: false }} />
-          <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
-          <Stack.Screen name="(model)" options={{ headerShown: false }} />
-          <Stack.Screen name="(character)" options={{ headerShown: false }} />
+        <StatusBar translucent backgroundColor="transparent" />
+        <Stack
+          screenOptions={{
+            headerShown: false
+          }}>
+          <Stack.Screen name="index" />
+          <Stack.Screen name="+not-found" />
+          <Stack.Screen name="(drawer)" />
         </Stack>
-        <Toaster />
       </GluestackUIProvider>
+      <Toaster richColors />
     </GestureHandlerRootView>
   );
 }

@@ -1,5 +1,12 @@
 import { Drawer } from 'expo-router/drawer';
-import { BookUserIcon, BotIcon, InfoIcon, MessageCircleIcon, UserIcon } from 'lucide-react-native';
+import {
+  BookUserIcon,
+  BotIcon,
+  CogIcon,
+  InfoIcon,
+  MessageCircleIcon,
+  UserIcon
+} from 'lucide-react-native';
 
 export default function DrawerLayout() {
   return (
@@ -39,6 +46,13 @@ export default function DrawerLayout() {
         options={{
           title: '模型',
           drawerIcon: ({ color }) => <BotIcon color={color} size={24} />
+        }}
+      />
+      <Drawer.Screen
+        name="setting"
+        options={{
+          title: '设置',
+          drawerIcon: ({ color }) => <CogIcon color={color} size={24} />
         }}
       />
       <Drawer.Screen

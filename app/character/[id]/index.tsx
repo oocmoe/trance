@@ -30,10 +30,10 @@ import { VStack } from '@/components/ui/vstack';
 import { useCharacterDetailsById } from '@/hook/character';
 import { deleteCharacter } from '@/utils/db/character';
 import { createDialogRoom } from '@/utils/db/room';
-import { router, useLocalSearchParams } from 'expo-router';
-import { MessageCirclePlusIcon, Trash2Icon } from 'lucide-react-native';
 import React, { useEffect } from 'react';
 import { Pressable, ScrollView } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import { MessageCirclePlusIcon, Trash2Icon } from 'lucide-react-native';
 import { toast } from 'sonner-native';
 
 export default function DetailsScreen() {
@@ -117,9 +117,9 @@ function CreateRoom() {
 
   // 创建聊天
   const handleCreateDialogRoom = async () => {
-    if(!name) {
-      toast.warning("聊天名称不能为空")
-      return
+    if (!name) {
+      toast.warning('聊天名称不能为空');
+      return;
     }
     const result = await createDialogRoom(character.id, name, prologue);
     if (result) {

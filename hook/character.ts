@@ -11,28 +11,8 @@ const db = useDB();
  * 实时查询全部角色卡
  */
 export function useCharacter() {
-  const {data,error,updatedAt} = useLiveQuery(db.select().from(character));
-  return data
-}
-
-/**
- * 根据ID 实时查询角色卡
- * @param id
- * @returns
- */
-export function useCharacterById(id: number) {
-  const {data,error,updatedAt} = useLiveQuery(db.select().from(character).where(eq(character.id,id)));
-  return data[0]
-}
-
-/**
- * 根据/details/[id] 获取角色卡数据
- * @returns
- */
-export function useCharacterDetailsById() {
-  const { id } = useLocalSearchParams();
-  const data = useCharacterById(Number(id));
-  return data
+  const { data, error, updatedAt } = useLiveQuery(db.select().from(character));
+  return data;
 }
 
 /**
@@ -51,4 +31,26 @@ export function useCharacterList() {
       })
       .from(character)
   );
+}
+
+/**
+ * 根据ID 实时查询角色卡
+ * @param id
+ * @returns
+ */
+export function useCharacterById(id: number) {
+  const { data, error, updatedAt } = useLiveQuery(
+    db.select().from(character).where(eq(character.id, id))
+  );
+  return data[0];
+}
+
+/**
+ * 根据/details/[id] 获取角色卡数据
+ * @returns
+ */
+export function useCharacterDetailsById() {
+  const { id } = useLocalSearchParams();
+  const data = useCharacterById(Number(id));
+  return data;
 }
