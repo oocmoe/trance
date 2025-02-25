@@ -19,15 +19,15 @@ import { Skeleton, SkeletonText } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { useCharacterList } from '@/hook/character';
-import { modalAtom } from '@/store/modal';
+import { modalAtom } from '@/store/core';
 import { createCharacter, createImportCharacter } from '@/utils/db/character';
 import { pickCharacterCover, pickCharacterPng } from '@/utils/file/picker';
-import React, { useEffect } from 'react';
-import { Pressable, ScrollView } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import { Stack, router } from 'expo-router';
 import { atom, useAtom } from 'jotai';
 import { CircleCheckBigIcon, FileUpIcon, ImportIcon, UserSearchIcon } from 'lucide-react-native';
+import React, { useEffect } from 'react';
+import { Pressable, ScrollView } from 'react-native';
 import { toast } from 'sonner-native';
 
 // 角色卡列表状态
@@ -97,7 +97,7 @@ function SearchCharacter() {
 function CharacterList() {
   const [list] = useAtom(renderCharacterListAtom);
   return (
-    <Box className="h-full pt-2 bg-white">
+    <Box className="h-full pt-2">
       <ScrollView>
         {list && typeof list != undefined ? (
           <VStack space="sm">

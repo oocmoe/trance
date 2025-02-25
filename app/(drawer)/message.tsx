@@ -5,10 +5,10 @@ import { Skeleton, SkeletonText } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { useRoomList } from '@/hook/room';
-import { useEffect } from 'react';
-import { Pressable, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { atom, useAtom } from 'jotai';
+import { useEffect } from 'react';
+import { Pressable, ScrollView } from 'react-native';
 
 // 房间列表状态
 const renderRoomListAtom = atom<RenderRoomList>();
@@ -30,7 +30,7 @@ function renderRoomList() {
 function RoomList() {
   const [list] = useAtom(renderRoomListAtom);
   return (
-    <Box className="h-full pt-2 bg-white">
+    <Box className="h-full pt-2">
       <ScrollView>
         {list && typeof list != undefined ? (
           <VStack>

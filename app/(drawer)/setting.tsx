@@ -1,5 +1,5 @@
-import { View } from 'react-native';
-
+// app/(drawer)/setting.tsx
 export default function SettingScreen() {
-  return <View />;
+  return null
 }
+
