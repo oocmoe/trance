@@ -6,12 +6,12 @@ type ModelVersionMap = {
   Gemini: GeminiModels;
 };
 
+
 /**
  * 定义模型列表
  * model: 指定模型名称
  * version：指定模型版本
  */
-
 type ModelList = {
   model: Models;
   version: ModelVersionMap[Models];

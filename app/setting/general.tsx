@@ -1,9 +1,5 @@
-import { Box } from "@/components/ui/box";
+import { Box } from '@/components/ui/box';
 
-export default function SettingGeneralScreen(){
-  return(
-    <Box>
-      
-    </Box>
-  )
+export default function SettingGeneralScreen() {
+  return <Box></Box>;
 }

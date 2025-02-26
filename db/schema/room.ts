@@ -1,5 +1,5 @@
 // db/schema/room.ts
-import { sql } from 'drizzle-orm';
+import { InferInsertModel, InferSelectModel, sql } from 'drizzle-orm';
 import { blob, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
 export const room = sqliteTable('room', {
@@ -48,3 +48,6 @@ export const room = sqliteTable('room', {
   // 房间人员
   personnel: text('personnel',).$type<string[]>().default([]).notNull()
 });
+
+export type Room = InferSelectModel<typeof room>;
+export type InsertRoom = InferInsertModel<typeof room>;

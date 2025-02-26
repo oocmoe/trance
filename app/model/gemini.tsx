@@ -36,8 +36,9 @@ function Key() {
     try {
       await SecureStore.setItem('TRANCE_GEMINI_API_KEY', key);
       setShowModal(false);
-    } catch (e) {
-      console.log(e);
+      toast.success('保存成功');
+    } catch (error) {
+      console.log(error);
       toast.error('保存失败');
     }
   };

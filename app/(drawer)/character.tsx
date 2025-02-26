@@ -22,12 +22,12 @@ import { useCharacterList } from '@/hook/character';
 import { modalAtom } from '@/store/core';
 import { createCharacter, createImportCharacter } from '@/utils/db/character';
 import { pickCharacterCover, pickCharacterPng } from '@/utils/file/picker';
+import React, { useEffect } from 'react';
+import { Pressable, ScrollView } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import { Stack, router } from 'expo-router';
 import { atom, useAtom } from 'jotai';
 import { CircleCheckBigIcon, FileUpIcon, ImportIcon, UserSearchIcon } from 'lucide-react-native';
-import React, { useEffect } from 'react';
-import { Pressable, ScrollView } from 'react-native';
 import { toast } from 'sonner-native';
 
 // 角色卡列表状态
@@ -43,7 +43,9 @@ export default function CharacterScreen() {
           }
         }}
       />
-      <CharacterList />
+      <Box className="h-full p-2 bg-white dark:bg-slate-900">
+        <CharacterList />
+      </Box>
       <CharacterFab />
       <NewCharacterModal />
       <ImportCharacterModal />
@@ -97,36 +99,34 @@ function SearchCharacter() {
 function CharacterList() {
   const [list] = useAtom(renderCharacterListAtom);
   return (
-    <Box className="h-full pt-2">
-      <ScrollView>
-        {list && typeof list != undefined ? (
-          <VStack space="sm">
-            {list.map((item) => (
-              <Pressable
-                key={item.id}
-                onPress={() => router.push(`/character/${item.id}`)}
-                className="h-20 overflow-hidden">
-                <HStack className="flex-1 mx-2" space="md">
-                  <Image source={item.cover} alt={item.name} className="h-16 w-16 rounded-full" />
-                  <VStack className="flex-1 mx-2">
-                    <Text bold>{item.name}</Text>
-                    <Text>{item.version}</Text>
-                  </VStack>
-                </HStack>
-              </Pressable>
-            ))}
+    <ScrollView>
+      {list && typeof list != undefined ? (
+        <VStack space="sm">
+          {list.map((item) => (
+            <Pressable
+              key={item.id}
+              onPress={() => router.push(`/character/${item.id}`)}
+              className="h-20 overflow-hidden">
+              <HStack className="flex-1 mx-2" space="md">
+                <Image source={item.cover} alt={item.name} className="h-16 w-16 rounded-full" />
+                <VStack className="flex-1 mx-2">
+                  <Text bold>{item.name}</Text>
+                  <Text>{item.version}</Text>
+                </VStack>
+              </HStack>
+            </Pressable>
+          ))}
+        </VStack>
+      ) : (
+        <HStack className="h-20 m-2" space="md">
+          <Skeleton className="w-16 h-16 rounded-full" />
+          <VStack className="m-2" space="md">
+            <SkeletonText className="w-20 h-3" />
+            <SkeletonText className="w-16 h-2" />
           </VStack>
-        ) : (
-          <HStack className="h-20 m-2" space="md">
-            <Skeleton className="w-16 h-16 rounded-full" />
-            <VStack className="m-2" space="md">
-              <SkeletonText className="w-20 h-3" />
-              <SkeletonText className="w-16 h-2" />
-            </VStack>
-          </HStack>
-        )}
-      </ScrollView>
-    </Box>
+        </HStack>
+      )}
+    </ScrollView>
   );
 }
 
