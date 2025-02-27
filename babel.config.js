@@ -7,12 +7,12 @@ module.exports = function (api) {
         'module-resolver',
         {
           root: ['./'],
-          alias: { '@': './', 'tailwind.config': './tailwind.config.js' },
-        },
+          alias: { '@': './', 'tailwind.config': './tailwind.config.js' }
+        }
       ],
       ['inline-import', { extensions: ['.sql'] }],
       '@babel/plugin-proposal-export-namespace-from',
-      'react-native-reanimated/plugin',
-    ],
+      'react-native-reanimated/plugin'
+    ]
   };
 };

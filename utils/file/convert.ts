@@ -37,6 +37,21 @@ export async function convertCharacter(characterJson: any, cover: string) {
 }
 
 /**
+ * 转换提示词为 trance格式，这里只做转换检测
+ * @param promptJson
+ */
+export async function convertPrompt(promptJson: any) {
+  try {
+    if (promptJson.prompt_order && promptJson.prompts) {
+      const result = await convertPromptSillyTavern(promptJson as SillyTavermPrompt);
+      return result;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+/**
  * 转换 TavernCardV1
  * @param characterJson
  */
@@ -53,22 +68,22 @@ async function convertCharacterTavernCardV1(characterJson: TavernCardV1) {
  */
 async function covertCharacterTavernCardV2(characterJson: TavernCardV2, cover: string) {
   try {
-    const prologue = () =>{
+    const prologue = () => {
       const first_mes = {
-        name: characterJson.data.first_mes.slice(0,20),
-        content:characterJson.data.first_mes,
-      }
-      const alternate_greetings = characterJson.data.alternate_greetings.map((item)=>{
+        name: characterJson.data.first_mes.slice(0, 20),
+        content: characterJson.data.first_mes
+      };
+      const alternate_greetings = characterJson.data.alternate_greetings.map((item) => {
         return {
-          name:item.slice(0,20),
-          content:item
-        }
-      })
-      if(alternate_greetings.length > 0){
-        return [first_mes,...alternate_greetings]
+          name: item.slice(0, 20),
+          content: item
+        };
+      });
+      if (alternate_greetings.length > 0) {
+        return [first_mes, ...alternate_greetings];
       }
-      return Array(first_mes)
-    }
+      return Array(first_mes);
+    };
 
     const character = {
       global_id: uuidv7(),
@@ -90,6 +105,48 @@ async function covertCharacterTavernCardV2(characterJson: TavernCardV2, cover: s
     };
 
     return converData;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+/**
+ * 转换提示
+ * @param promptJson
+ * @returns
+ */
+async function convertPromptSillyTavern(promptJson: SillyTavermPrompt) {
+  try {
+    const order = promptJson.prompt_order.at(-1);
+    if (!order) return;
+    const prompt = promptJson.prompts.map((item) => {
+      return {
+        name: item.name,
+        role: item.role || 'system',
+        content: item.content,
+        identifier: item.identifier,
+        isEnabled: item.enabled || false
+      };
+    });
+    if (!prompt) return;
+    const orderMap = new Map<string, number>();
+    const isEnabledMap = new Map<string, boolean>();
+    const promptOrder = order.order;
+
+    promptOrder.forEach((item, index) => {
+      orderMap.set(item.identifier, index);
+      isEnabledMap.set(item.identifier, item.enabled);
+    });
+    let idCounter = 1;
+    const sortedPrompt = prompt.map((item) => ({
+      id: idCounter++,
+      identifier: item.identifier,
+      name: item.name,
+      content: item.content,
+      role: item.role,
+      isEnabled: isEnabledMap.get(item.identifier) ?? false
+    }));
+    return sortedPrompt;
   } catch (error) {
     console.log(error);
   }

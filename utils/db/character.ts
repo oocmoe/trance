@@ -28,19 +28,18 @@ export async function createCharacter(name: string, cover: string) {
 
 /**
  * 根据Id 读取角色卡
- * @param id 
- * @returns 
+ * @param id
+ * @returns
  */
-export async function readCharacterById(id:number) {
-  try{
-    const rows = await db.select().from(character).where(eq(character.id,id))
-    if(!rows) return
-    return rows[0]
-  }catch(error){
-    console.log(error)
+export async function readCharacterById(id: number) {
+  try {
+    const rows = await db.select().from(character).where(eq(character.id, id));
+    if (!rows) return;
+    return rows[0];
+  } catch (error) {
+    console.log(error);
   }
 }
-
 
 /**
  * 插入角色卡数

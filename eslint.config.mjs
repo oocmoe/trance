@@ -11,11 +11,7 @@ import tseslint from 'typescript-eslint';
 export default [
   {
     files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'],
-    ignores: [
-      '**/*.config.js',
-      '**/__generated__/**',
-      '.expo/types/**'
-    ]
+    ignores: ['**/*.config.js', '**/__generated__/**', '.expo/types/**']
   },
   {
     files: ['**/*.config.js'],
@@ -27,12 +23,12 @@ export default [
     languageOptions: {
       globals: {
         ...globals.browser,
-        JSX: true,
+        JSX: true
       },
       parserOptions: {
         project: './tsconfig.json'
       }
-    },
+    }
   },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
@@ -40,8 +36,8 @@ export default [
     ...pluginReact.configs.flat.recommended,
     settings: {
       react: {
-        version: '18.3.1',
-      },
+        version: '18.3.1'
+      }
     },
     rules: {
       'react/react-in-jsx-scope': 'off',
@@ -49,21 +45,21 @@ export default [
       'react/no-unescaped-entities': 'off',
       'react/self-closing-comp': 'off',
       'react/no-unknown-property': ['error', { ignore: ['css'] }]
-    },
+    }
   },
   {
     plugins: {
-      'react-hooks': pluginReactHooks,
+      'react-hooks': pluginReactHooks
     },
     rules: {
       'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'off' 
-    },
+      'react-hooks/exhaustive-deps': 'off'
+    }
   },
   {
     plugins: {
       prettier: prettierPlugin,
-      import: pluginImport,
+      import: pluginImport
     },
     rules: {
       ...prettierConfig.rules,
@@ -72,14 +68,14 @@ export default [
         {
           usePrettierrc: true,
           fileInfoOptions: {
-            withNodeModules: false,
-          },
-        },
+            withNodeModules: false
+          }
+        }
       ],
       '@typescript-eslint/no-explicit-any': 'off',
       'import/order': 'off',
       '@typescript-eslint/dot-notation': 'off'
-    },
+    }
   },
   {
     rules: {
@@ -97,8 +93,8 @@ export default [
           varsIgnorePattern: '^_',
           caughtErrorsIgnorePattern: '^_',
           destructuredArrayIgnorePattern: '^_'
-        },
-      ],
-    },
-  },
+        }
+      ]
+    }
+  }
 ];

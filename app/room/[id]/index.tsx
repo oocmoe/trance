@@ -2,6 +2,8 @@ import { Box } from '@/components/ui/box';
 import { Button, ButtonIcon } from '@/components/ui/button';
 import { HStack } from '@/components/ui/hstack';
 import { Input, InputField } from '@/components/ui/input';
+import { VStack } from '@/components/ui/vstack';
+import { useMessageById } from '@/hook/message';
 import { tranceHiGemini } from '@/utils/message/gemini';
 import React from 'react';
 import { ScrollView } from 'react-native';
@@ -18,14 +20,23 @@ export default function RoomScreen() {
           }
         }}
       />
-      <RenderMessage />
+      <ScrollView>
+        <RenderMessage />
+      </ScrollView>
+
       <ActionBar />
     </Box>
   );
 }
 
 function RenderMessage() {
-  return <ScrollView></ScrollView>;
+  const { id } = useLocalSearchParams();
+  const messages = useMessageById(Number(id));
+  return (
+    <Box>
+      <VStack></VStack>
+    </Box>
+  );
 }
 
 function HeaderRight() {

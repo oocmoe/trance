@@ -36,5 +36,14 @@ export const prompt = sqliteTable('prompt', {
   handbook: text('handbook').$type<string>(),
 
   // 提示词内容
-  content: text('content', { mode: 'json' }).$type()
+  content: text('content', { mode: 'json' }).$type<PromptContent>()
 });
+
+export type PromptContent = Array<{
+  id: number;
+  identifier: string;
+  name: string;
+  content: string;
+  role: 'system' | 'user' | 'assistant';
+  isEnabled: boolean;
+}>;

@@ -11,7 +11,7 @@ import { Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
 import { useAtom } from 'jotai';
-import { BookUserIcon, BotIcon, CogIcon, Info } from 'lucide-react-native';
+import { BookUserIcon, BotIcon, CogIcon, HammerIcon, Info } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function DrawerLayout() {
@@ -88,20 +88,27 @@ const drawerNavList = [
     path: '(drawer)/character',
     icon: BookUserIcon
   },
+
   {
     sortId: 3,
+    name: '提示词',
+    path: '(drawer)/prompt',
+    icon: HammerIcon
+  },
+  {
+    sortId: 4,
     name: '模型',
     path: '(drawer)/model',
     icon: BotIcon
   },
   {
-    sortId: 4,
+    sortId: 5,
     name: '设置',
     path: '(drawer)/setting',
     icon: CogIcon
   },
   {
-    sortId: 5,
+    sortId: 6,
     name: '关于',
     path: '(drawer)/about',
     icon: Info

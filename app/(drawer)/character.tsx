@@ -20,6 +20,7 @@ import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { useCharacterList } from '@/hook/character';
 import { modalAtom } from '@/store/core';
+import { ConvertCharacterResult } from '@/types/result';
 import { createCharacter, createImportCharacter } from '@/utils/db/character';
 import { pickCharacterCover, pickCharacterPng } from '@/utils/file/picker';
 import React, { useEffect } from 'react';

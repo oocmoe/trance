@@ -1,8 +1,8 @@
 // components/themeSwitch.tsx
 import { colorModeAtom } from '@/store/core';
+import React from 'react';
 import { Storage } from 'expo-sqlite/kv-store';
 import { useAtom } from 'jotai';
-import React from 'react';
 import { Button, ButtonIcon } from './ui/button';
 import { MoonIcon, SunIcon } from './ui/icon';
 
@@ -10,7 +10,6 @@ const ThemeSwitch = () => {
   const [colorMode, setColorMode] = useAtom(colorModeAtom);
   const handleChangeColorMode = async () => {
     const result = await Storage.getItem('colorMode');
-    console.log(result);
     if (result === 'light') {
       await Storage.setItem('colorMode', 'dark');
       setColorMode('dark');

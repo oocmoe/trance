@@ -5,3 +5,9 @@ type RenderRoomList = Array<{
   cover: string;
   type: 'dialog' | 'group';
 }>;
+
+type RenderPromptList = Array<{
+  id:number;
+  global_id:string,
+  name:string
+}>

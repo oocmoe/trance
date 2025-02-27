@@ -1,4 +1,6 @@
-type ConvertCharacterResult = {
+import { PromptContent } from '@/db/schema/prompt';
+
+export type ConvertCharacterResult = {
   character: {
     global_id: string;
     cover: string;
@@ -14,4 +16,9 @@ type ConvertCharacterResult = {
     system_prompt: string;
     post_history_instructions: string;
   };
+};
+
+export type ConverPromptResult = {
+  name: string;
+  content: PromptContent;
 };

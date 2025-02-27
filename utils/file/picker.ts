@@ -1,7 +1,7 @@
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
-import { convertCharacter, convertCover } from './convert';
-import { decodeCharacter } from './decode';
+import { convertCharacter, convertCover, convertPrompt } from './convert';
+import { decodeCharacter, decodeJson } from './decode';
 
 /**
  * 选择json
@@ -12,7 +12,7 @@ export async function pickFileJson() {
     const result = await DocumentPicker.getDocumentAsync({
       type: ['application/json']
     });
-    if (!result) return;
+    if (result.canceled) return;
     return result;
   } catch (error) {
     console.log(error);
@@ -60,19 +60,36 @@ export async function pickCharacterCover() {
 
 /**
  * 选取PNG格式角色卡
- * @returns 
+ * @returns
  */
 export async function pickCharacterPng() {
   try {
     const assets = await pickFilePng();
     if (!assets) return;
-    const cover = await convertCover(assets.uri)
+    const cover = await convertCover(assets.uri);
     const decodeResult = await decodeCharacter(assets.uri);
-    if(!decodeResult || !cover) return
-    const result = await convertCharacter(decodeResult,cover)
-    if(!result) return
-    return result
+    if (!decodeResult || !cover) return;
+    const result = await convertCharacter(decodeResult, cover);
+    if (!result) return;
+    return result;
+  } catch (error) {
+    console.log(error);
+  }
+}
 
+export async function pickPrompt() {
+  try {
+    const assets = await pickFileJson();
+    if (!assets || !assets.assets || !assets.assets[0]?.uri) return;
+    const json = await decodeJson(assets.assets[0].uri);
+    if (!json) return;
+    const convertedJson = await convertPrompt(json);
+    if (!convertedJson) return;
+    const prompt = {
+      name: assets.assets[0].name,
+      content: convertedJson
+    };
+    return prompt;
   } catch (error) {
     console.log(error);
   }

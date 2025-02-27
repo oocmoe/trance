@@ -7,12 +7,12 @@ const db = useDB();
 
 /**
  * 创建消息
- * @param room_id 
- * @param type 
- * @param is_Sender 
- * @param content 
- * @param role 
- * @returns 
+ * @param room_id
+ * @param type
+ * @param is_Sender
+ * @param content
+ * @param role
+ * @returns
  */
 export async function createMessage(
   room_id: number,
@@ -23,15 +23,15 @@ export async function createMessage(
 ) {
   try {
     const rows = await db.insert(message).values({
-      global_id:uuidv7(),
-      room_id:room_id,
-      type:type,
-      is_Sender:is_Sender,
-      content:content,
-      role:role
-    })
-    if(!rows) return
-    return rows.lastInsertRowId
+      global_id: uuidv7(),
+      room_id: room_id,
+      type: type,
+      is_Sender: is_Sender,
+      content: content,
+      role: role
+    });
+    if (!rows) return;
+    return rows.lastInsertRowId;
   } catch (error) {
     console.log(error);
   }

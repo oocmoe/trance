@@ -2,6 +2,7 @@ import { room } from '@/db/schema/room';
 import { eq } from 'drizzle-orm';
 import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
 import { useDB } from './db';
+
 // 初始化数据库
 const db = useDB();
 
@@ -15,12 +16,12 @@ export function useRoom() {
 
 /**
  * 根据 ID 实时查询房间
- * @param id 
- * @returns 
+ * @param id
+ * @returns
  */
-export function useRoomById(id:number){
-  const { data, error, updatedAt } = useLiveQuery(db.select().from(room).where(eq(room.id,id)));
-  return data[0]
+export function useRoomById(id: number) {
+  const { data, error, updatedAt } = useLiveQuery(db.select().from(room).where(eq(room.id, id)));
+  return data[0];
 }
 
 /**
@@ -39,4 +40,3 @@ export function useRoomList() {
       .from(room)
   );
 }
-
