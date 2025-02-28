@@ -21,7 +21,7 @@ import { toast } from 'sonner-native';
 
 export default function GeminiScreen() {
   return (
-    <Box className="m-4">
+    <Box className="m-3">
       <Key />
     </Box>
   );

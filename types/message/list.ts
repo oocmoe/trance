@@ -7,7 +7,7 @@ type RenderRoomList = Array<{
 }>;
 
 type RenderPromptList = Array<{
-  id:number;
-  global_id:string,
-  name:string
-}>
+  id: number;
+  global_id: string;
+  name: string;
+}>;

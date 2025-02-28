@@ -1,4 +1,4 @@
-import { character, InsertCharacter } from '@/db/schema/character';
+import { Character, character, InsertCharacter } from '@/db/schema/character';
 import { useDB } from '@/hook/db';
 import { eq } from 'drizzle-orm';
 import 'react-native-get-random-values';
@@ -36,6 +36,26 @@ export async function readCharacterById(id: number) {
     const rows = await db.select().from(character).where(eq(character.id, id));
     if (!rows) return;
     return rows[0];
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+/**
+ * 根据Id 读取角色卡字段
+ * @param id
+ * @param field
+ */
+export async function readCharacterFieldById(id: number, field: keyof Character) {
+  try {
+    const rows = await db
+      .select({
+        [field]: character[field]
+      })
+      .from(character)
+      .where(eq(character.id, id));
+    if (!rows) return;
+    return rows[0][field];
   } catch (error) {
     console.log(error);
   }

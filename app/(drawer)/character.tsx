@@ -23,7 +23,7 @@ import { modalAtom } from '@/store/core';
 import { ConvertCharacterResult } from '@/types/result';
 import { createCharacter, createImportCharacter } from '@/utils/db/character';
 import { pickCharacterCover, pickCharacterPng } from '@/utils/file/picker';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Pressable, ScrollView } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import { Stack, router } from 'expo-router';
@@ -65,7 +65,7 @@ function SearchCharacter() {
   const [isPress, setIsPress] = React.useState<boolean>(false);
   const [inputValue, setInputValue] = React.useState<string>('');
   const [, setRenderCharacterList] = useAtom(renderCharacterListAtom);
-  useEffect(() => {
+  React.useEffect(() => {
     if (inputValue.length > 0) {
       const renderList = list.data.filter((item) =>
         item.name.toLowerCase().includes(inputValue.toLowerCase())

@@ -9,7 +9,7 @@ import { SvgUri } from 'react-native-svg';
 
 export default function ModelScreen() {
   return (
-    <Box className="m-4">
+    <Box className="m-3">
       <ModelList />
     </Box>
   );

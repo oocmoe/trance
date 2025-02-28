@@ -1,8 +1,9 @@
 import { Box } from '@/components/ui/box';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Fab, FabIcon } from '@/components/ui/fab';
 import { Heading } from '@/components/ui/heading';
-import { AddIcon, Icon } from '@/components/ui/icon';
+import { AddIcon, Icon, SearchIcon } from '@/components/ui/icon';
 import { Input, InputField } from '@/components/ui/input';
 import { Menu, MenuItem, MenuItemLabel } from '@/components/ui/menu';
 import {
@@ -13,21 +14,33 @@ import {
   ModalFooter,
   ModalHeader
 } from '@/components/ui/modal';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
+import { usePromptList } from '@/hook/prompt';
 import { modalAtom } from '@/store/core';
 import { ConverPromptResult } from '@/types/result';
 import { createImportPrompt } from '@/utils/db/promot';
 import { pickPrompt } from '@/utils/file/picker';
 import React from 'react';
-import { ScrollView } from 'react-native';
-import { useAtom } from 'jotai';
-import { FileUpIcon, ImportIcon } from 'lucide-react-native';
+import { Pressable, ScrollView } from 'react-native';
+import { router, Stack } from 'expo-router';
+import { atom, useAtom } from 'jotai';
+import { FileUpIcon, ImportIcon, ScanSearchIcon } from 'lucide-react-native';
 import { toast } from 'sonner-native';
+
+const renderPromptListAtom = atom<RenderPromptList>();
 
 export default function PromptScreen() {
   return (
     <>
+      <Stack.Screen
+        options={{
+          headerRight: () => {
+            return <HeaderRight />;
+          }
+        }}
+      />
       <PromptList />
       <PromptFab />
       <ImportPromptModal />
@@ -35,8 +48,70 @@ export default function PromptScreen() {
   );
 }
 
+function HeaderRight() {
+  return <SearchPrompt />;
+}
+
+function SearchPrompt() {
+  const list = usePromptList();
+  const [isPress, setIsPress] = React.useState<boolean>(false);
+  const [inputValue, setInputValue] = React.useState<string>('');
+  const [, setRenderPromptList] = useAtom(renderPromptListAtom);
+  React.useEffect(() => {
+    if (inputValue.length > 0) {
+      const renderList = list.data.filter((item) =>
+        item.name.toLowerCase().includes(inputValue.toLowerCase())
+      );
+      setRenderPromptList(renderList);
+    } else {
+      setRenderPromptList(list.data);
+    }
+  }, [list.data, inputValue]);
+
+  return (
+    <>
+      {isPress ? (
+        <Input variant="underlined" className="w-[90%] mx-2">
+          <InputField
+            value={inputValue}
+            onBlur={() => setIsPress(false)}
+            onChangeText={setInputValue}
+            placeholder="搜索"
+          />
+        </Input>
+      ) : (
+        <Pressable className="mx-4" onPress={() => setIsPress(true)}>
+          {inputValue.length === 0 ? <Icon as={SearchIcon} /> : <Icon as={ScanSearchIcon} />}
+        </Pressable>
+      )}
+    </>
+  );
+}
+
 function PromptList() {
-  return <ScrollView></ScrollView>;
+  const [list] = useAtom(renderPromptListAtom);
+  return (
+    <ScrollView>
+      {list && typeof list != undefined ? (
+        <VStack className="m-3">
+          {list.map((item) => (
+            <Pressable
+              key={item.id}
+              onPress={() => router.push(`/prompt/${item.id}`)}
+              className="h-20 overflow-hidden">
+              <Card>
+                <Text bold>{item.name}</Text>
+              </Card>
+            </Pressable>
+          ))}
+        </VStack>
+      ) : (
+        <Box className="w-full p-3">
+          <Skeleton className="w-full h-14 " />
+        </Box>
+      )}
+    </ScrollView>
+  );
 }
 
 function PromptFab() {

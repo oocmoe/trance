@@ -36,7 +36,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { MessageCirclePlusIcon, Trash2Icon } from 'lucide-react-native';
 import { toast } from 'sonner-native';
 
-export default function DetailsScreen() {
+export default function CharacterByIdScreen() {
   return (
     <>
       <IDCard />
@@ -54,7 +54,7 @@ function IDCard() {
   return (
     <>
       {character && (
-        <Card className="m-4">
+        <Card className="m-3">
           <HStack space="md">
             <Box>
               <Image
@@ -84,7 +84,7 @@ function IDCard() {
  */
 function Action() {
   return (
-    <Box className="m-4">
+    <Box className="m-3">
       <VStack space="sm">
         <Text>选项</Text>
         <Card>

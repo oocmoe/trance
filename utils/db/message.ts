@@ -1,5 +1,6 @@
 import { message } from '@/db/schema/message';
 import { useDB } from '@/hook/db';
+import { eq } from 'drizzle-orm';
 import 'react-native-get-random-values';
 import { v7 as uuidv7 } from 'uuid';
 
@@ -33,6 +34,24 @@ export async function createMessage(
     if (!rows) return;
     return rows.lastInsertRowId;
   } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function readHistroyMessage(roomId: number) {
+  try {
+    const rows = await db
+      .select({
+        id: message.id,
+        role: message.role,
+        content: message.content
+      })
+      .from(message)
+      .where(eq(message.room_id, roomId));
+    if (!rows) return;
+    return rows;
+  } catch (error) {
+    ('');
     console.log(error);
   }
 }

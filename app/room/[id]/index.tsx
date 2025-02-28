@@ -4,13 +4,14 @@ import { HStack } from '@/components/ui/hstack';
 import { Input, InputField } from '@/components/ui/input';
 import { VStack } from '@/components/ui/vstack';
 import { useMessageById } from '@/hook/message';
-import { tranceHiGemini } from '@/utils/message/gemini';
+import { useRoomById } from '@/hook/room';
+import { tranceHi } from '@/utils/message/middleware';
 import React from 'react';
 import { ScrollView } from 'react-native';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { EllipsisIcon, SendIcon } from 'lucide-react-native';
 
-export default function RoomScreen() {
+export default function RoomByIdScreen() {
   return (
     <Box className="h-full">
       <Stack.Screen
@@ -49,13 +50,12 @@ function HeaderRight() {
 }
 
 function ActionBar() {
+  const { id } = useLocalSearchParams();
+  const room = useRoomById(Number(id));
   const [userInput, setUserInput] = React.useState<string>('');
-  const handleHi = () => {
-    const tranceHi = async () => {
-      console.log('hhh');
-      await tranceHiGemini({ model: 'gemini-2.0-flash-lite' });
-    };
-    tranceHi();
+
+  const handleHi = async () => {
+    await tranceHi(userInput, 'text', room);
   };
   return (
     <Box className="m-3">
