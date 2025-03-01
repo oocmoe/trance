@@ -25,11 +25,13 @@ import {
 } from '@/components/ui/select';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
-import { readRoomById, updateRoomFieldById } from '@/utils/db/room';
+import { usePromptList } from '@/hook/prompt';
+import { readPromptFieldById } from '@/utils/db/prompt';
+import { readRoomById, readRoomFieldById, updateRoomFieldById } from '@/utils/db/room';
+import { useLocalSearchParams } from 'expo-router';
+import { BotIcon, HammerIcon } from 'lucide-react-native';
 import React from 'react';
 import { Pressable } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
-import { BotIcon } from 'lucide-react-native';
 import { toast } from 'sonner-native';
 
 export default function RoomDetailScreen() {
@@ -42,7 +44,10 @@ const Options = () => {
       <VStack space="sm">
         <Text>房间选项</Text>
         <Card>
-          <ModelSelect />
+          <VStack space="4xl">
+            <ModelSelect />
+            <PromptSelect />
+          </VStack>
         </Card>
       </VStack>
     </Box>
@@ -199,6 +204,90 @@ const ModelSelect = () => {
               <ButtonText>取消</ButtonText>
             </Button>
             <Button onPress={handleSaveModel}>
+              <ButtonText>保存</ButtonText>
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+};
+
+const PromptSelect = () => {
+  const { id } = useLocalSearchParams();
+  const [isOpen, setIsOpen] = React.useState<boolean>(false);
+  const [promptId,setPromptId] = React.useState<number>()
+  const [placeholder,setPlaceholder] = React.useState<string>('')
+  const prompt = usePromptList();
+  const handleSavePrompt = async () => {
+    const result = await updateRoomFieldById(Number(id), 'prompt', Number(promptId));
+    if (!result) {
+      toast.error('保存失败');
+      return;
+    }
+    setIsOpen(false);
+    toast.success('保存成功');
+  };
+    React.useEffect(()=>{
+    const initPrompt = async () =>{
+      const result = await readRoomFieldById(Number(id), 'prompt');
+      const placeholder = await readPromptFieldById(Number(result), 'name')
+      setPlaceholder(placeholder as string)
+      setPromptId(Number(result))
+    }
+    initPrompt()
+  },[isOpen])
+  return (
+    <>
+      <Box>
+        <Pressable onPress={() => setIsOpen(true)}>
+          <HStack className="items-center" space="sm">
+            <Icon as={HammerIcon} />
+            <Text>选择提示词</Text>
+          </HStack>
+        </Pressable>
+      </Box>
+      <Modal
+        isOpen={isOpen}
+        onClose={() => {
+          setIsOpen(false);
+        }}
+        size="md">
+        <ModalBackdrop />
+        <ModalContent>
+          <ModalHeader>
+            <Heading size="md" className="text-typography-950">
+              选择提示词
+            </Heading>
+          </ModalHeader>
+          <ModalBody>
+            <Select onValueChange={(value)=>setPromptId(Number(value))}>
+              <SelectTrigger>
+                <SelectInput placeholder={placeholder} />
+              </SelectTrigger>
+              <SelectPortal>
+                <SelectBackdrop />
+                <SelectContent>
+                  <SelectDragIndicatorWrapper>
+                    <SelectDragIndicator />
+                  </SelectDragIndicatorWrapper>
+                  {prompt.map((item) => (
+                    <SelectItem key={item.id} value={String(item.id)} label={item.name} />
+                  ))}
+                </SelectContent>
+              </SelectPortal>
+            </Select>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              variant="outline"
+              action="secondary"
+              onPress={() => {
+                setIsOpen(false);
+              }}>
+              <ButtonText>取消</ButtonText>
+            </Button>
+            <Button onPress={handleSavePrompt}>
               <ButtonText>保存</ButtonText>
             </Button>
           </ModalFooter>

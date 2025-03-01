@@ -46,7 +46,7 @@ export const room = sqliteTable('room', {
   type: text('type').$type<'dialog' | 'group'>().notNull(),
 
   // 房间人员
-  personnel: text('personnel').$type<string[]>().default([]).notNull()
+  personnel: text('personnel', { mode: 'json' }).$type<Array<string>>().default([]).notNull()
 });
 
 export type Room = InferSelectModel<typeof room>;

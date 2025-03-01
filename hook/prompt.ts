@@ -11,7 +11,7 @@ const db = useDB();
  * @returns
  */
 export function usePromptList() {
-  return useLiveQuery(
+  const { data, error, updatedAt } = useLiveQuery(
     db
       .select({
         id: prompt.id,
@@ -20,6 +20,7 @@ export function usePromptList() {
       })
       .from(prompt)
   );
+  return data
 }
 
 /**

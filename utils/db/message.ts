@@ -51,7 +51,6 @@ export async function readHistroyMessage(roomId: number) {
     if (!rows) return;
     return rows;
   } catch (error) {
-    ('');
     console.log(error);
   }
 }

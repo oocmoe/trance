@@ -1,5 +1,5 @@
 // db/schema/prompt.ts
-import { sql } from 'drizzle-orm';
+import { InferInsertModel, InferSelectModel, sql } from 'drizzle-orm';
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
 export const prompt = sqliteTable('prompt', {
@@ -47,3 +47,7 @@ export type PromptContent = Array<{
   role: 'system' | 'user' | 'assistant';
   isEnabled: boolean;
 }>;
+
+
+export type Prompt = InferSelectModel<typeof prompt>;
+export type InsertPrompt = InferInsertModel<typeof prompt>;

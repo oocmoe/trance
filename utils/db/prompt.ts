@@ -1,4 +1,4 @@
-import { prompt } from '@/db/schema/prompt';
+import { Prompt, prompt } from '@/db/schema/prompt';
 import { useDB } from '@/hook/db';
 import { ConverPromptResult } from '@/types/result';
 import { eq } from 'drizzle-orm';
@@ -17,6 +17,18 @@ export async function createImportPrompt(request: ConverPromptResult) {
     return rows.lastInsertRowId;
   } catch (error) {
     console.log(error);
+  }
+}
+
+export async function readPromptFieldById( id: number,field:keyof Prompt) {
+  try{
+    const rows = await db.select({
+          [field]: prompt[field]
+        }).from(prompt).where(eq(prompt.id, id));
+        if(!rows) return;
+        return rows[0][field]
+  }catch(error){
+    console.log(error)
   }
 }
 
