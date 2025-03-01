@@ -4,14 +4,18 @@ import { Box } from '@/components/ui/box';
 import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
 import { Icon, MessageCircleIcon } from '@/components/ui/icon';
+import { Image } from '@/components/ui/image';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
-import { colorModeAtom } from '@/store/core';
-import { Pressable } from 'react-native';
+import { colorModeAtom, USER_avtarAtom, USER_nameAtom } from '@/store/core';
 import { router } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
+import { Storage } from 'expo-sqlite/kv-store';
 import { useAtom } from 'jotai';
 import { BookUserIcon, BotIcon, CogIcon, HammerIcon, Info } from 'lucide-react-native';
+import React from 'react';
+import { Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function DrawerLayout() {
@@ -117,6 +121,21 @@ const drawerNavList = [
 
 // 自定义侧边栏
 const CustomDrawerContent = () => {
+  const [avatar, setAvatar] = useAtom(USER_avtarAtom);
+  const [name, setName] = useAtom(USER_nameAtom);
+  React.useEffect(() => {
+    const initAvatar = async () => {
+      const avatar = await Storage.getItem('TRANCE_USER_AVATAR');
+      const name = await Storage.getItem('TRANCE_USER_NAME');
+      if (avatar) {
+        setAvatar(avatar);
+      }
+      if (name) {
+        setName(name);
+      }
+    };
+    initAvatar();
+  }, []);
   return (
     <Box className="flex-1 dark:bg-slate-900">
       <SafeAreaView>
@@ -124,8 +143,16 @@ const CustomDrawerContent = () => {
           <Box className="h-32 p-3">
             <HStack className="justify-between">
               <VStack space="sm">
-                <Box className="w-16 h-16 rounded-full bg-gray-600" />
-                <Text>User Name</Text>
+                {avatar ? (
+                  <Pressable onPress={() => router.push('/(drawer)/my')}>
+                    <Image source={avatar} className="h-16 w-16 rounded-full" />
+                  </Pressable>
+                ) : (
+                  <Pressable onPress={() => router.push('/(drawer)/my')}>
+                    <Skeleton className="w-16 h-16 rounded-full" />
+                  </Pressable>
+                )}
+                {name && <Text bold>{name}</Text>}
               </VStack>
               <ThemeSwitch />
             </HStack>

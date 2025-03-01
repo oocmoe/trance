@@ -118,36 +118,31 @@ async function covertCharacterTavernCardV2(characterJson: TavernCardV2, cover: s
 async function convertPromptSillyTavern(promptJson: SillyTavermPrompt) {
   try {
     const order = promptJson.prompt_order.at(-1);
-    if (!order) return;
-    const prompt = promptJson.prompts.map((item) => {
-      return {
-        name: item.name,
-        role: item.role || 'system',
-        content: item.content,
-        identifier: item.identifier,
-        isEnabled: item.enabled || false
-      };
-    });
-    if (!prompt) return;
+    if (!order?.order?.length) return [];
     const orderMap = new Map<string, number>();
     const isEnabledMap = new Map<string, boolean>();
-    const promptOrder = order.order;
-
-    promptOrder.forEach((item, index) => {
+    order.order.forEach((item, index) => {
       orderMap.set(item.identifier, index);
       isEnabledMap.set(item.identifier, item.enabled);
     });
-    let idCounter = 1;
-    const sortedPrompt = prompt.map((item) => ({
-      id: idCounter++,
-      identifier: item.identifier,
+    const processedPrompts = promptJson.prompts.map((item) => ({
       name: item.name,
+      role: item.role || 'system',
       content: item.content,
-      role: item.role,
+      identifier: item.identifier,
       isEnabled: isEnabledMap.get(item.identifier) ?? false
     }));
-    return sortedPrompt;
+    const sortedPrompts = processedPrompts.sort((a, b) => {
+      const aOrder = orderMap.get(a.identifier) ?? Infinity;
+      const bOrder = orderMap.get(b.identifier) ?? Infinity;
+      return aOrder - bOrder;
+    });
+    return sortedPrompts.map((item, index) => ({
+      id: index + 1,
+      ...item
+    }));
   } catch (error) {
     console.log(error);
+    return [];
   }
 }

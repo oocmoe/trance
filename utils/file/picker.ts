@@ -41,6 +41,27 @@ export async function pickFilePng() {
  * 选择角色卡封面
  * @returns 图片地址
  */
+export async function pickUserAvatar() {
+  try {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1
+    });
+    console.log(result);
+    if (!result.canceled) {
+      return result.assets[0];
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+/**
+ * 选择角色卡封面
+ * @returns 图片地址
+ */
 export async function pickCharacterCover() {
   try {
     const result = await ImagePicker.launchImageLibraryAsync({

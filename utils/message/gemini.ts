@@ -14,7 +14,7 @@ type GeminiOptions = {
 };
 
 export async function tranceHiGemini(options: GeminiOptions) {
-  const key = await SecureStore.getItem('TRANCE_GEMINI_API_KEY');
+  const key = await SecureStore.getItem('TRANCE_MODEL_GEMINI_KEY');
   if (!key) return;
   const genAI = new GoogleGenerativeAI(key);
   const model = genAI.getGenerativeModel({ model: options.model_version });

@@ -6,9 +6,9 @@ import { useDB } from './db';
 // 初始化数据库
 const db = useDB();
 
-export function useMessageById(roomId: number) {
+export function useMessageByRoomId(roomId: number) {
   const { data, error, updatedAt } = useLiveQuery(
     db.select().from(message).where(eq(message.room_id, roomId))
   );
-  return data[0];
+  return data;
 }
