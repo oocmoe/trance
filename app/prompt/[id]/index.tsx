@@ -5,12 +5,12 @@ import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
 import { Input, InputField } from '@/components/ui/input';
 import {
-    Modal,
-    ModalBackdrop,
-    ModalBody,
-    ModalContent,
-    ModalFooter,
-    ModalHeader
+  Modal,
+  ModalBackdrop,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader
 } from '@/components/ui/modal';
 import { Switch } from '@/components/ui/switch';
 import { Text } from '@/components/ui/text';
@@ -19,9 +19,9 @@ import { VStack } from '@/components/ui/vstack';
 import { usePromptById } from '@/hook/prompt';
 import { modalAtom } from '@/store/core';
 import { readPromptContentById, updatePromptContentField } from '@/utils/db/prompt';
+import React from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { atom, useAtom } from 'jotai';
-import React from 'react';
 import { Pressable, ScrollView } from 'react-native-gesture-handler';
 import { toast } from 'sonner-native';
 

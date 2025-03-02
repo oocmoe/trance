@@ -2,12 +2,12 @@
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import '@/global.css';
 import { colorModeAtom } from '@/store/core';
+import React from 'react';
+import { StatusBar } from 'react-native';
 import { useDrizzleStudio } from 'expo-drizzle-studio-plugin';
 import { Stack } from 'expo-router';
 import * as SQLite from 'expo-sqlite';
 import { useAtom } from 'jotai';
-import React from 'react';
-import { StatusBar } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Toaster } from 'sonner-native';
 

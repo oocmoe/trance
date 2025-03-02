@@ -15,7 +15,7 @@ const renderRoomListAtom = atom<RenderRoomList>();
 export default function MessageScreen() {
   renderRoomList();
   return (
-    <Box className="h-full pt-2">
+    <Box className="h-full pt-2 bg-white dark:bg-slate-950">
       <RoomList />
     </Box>
   );

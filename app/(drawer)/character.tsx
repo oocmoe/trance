@@ -44,7 +44,7 @@ export default function CharacterScreen() {
           }
         }}
       />
-      <Box className="h-full p-2 bg-white dark:bg-slate-900">
+      <Box className="h-full p-2 bg-white dark:bg-slate-950">
         <CharacterList />
       </Box>
       <CharacterFab />

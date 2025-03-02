@@ -22,18 +22,18 @@ import { modalAtom } from '@/store/core';
 import { ConverPromptResult } from '@/types/result';
 import { createImportPrompt } from '@/utils/db/prompt';
 import { pickPrompt } from '@/utils/file/picker';
+import React from 'react';
+import { Pressable, ScrollView } from 'react-native';
 import { router, Stack } from 'expo-router';
 import { atom, useAtom } from 'jotai';
 import { FileUpIcon, ImportIcon, ScanSearchIcon } from 'lucide-react-native';
-import React from 'react';
-import { Pressable, ScrollView } from 'react-native';
 import { toast } from 'sonner-native';
 
 const renderPromptListAtom = atom<RenderPromptList>();
 
 export default function PromptScreen() {
   return (
-    <>
+    <Box className="h-full bg-white dark:bg-slate-950">
       <Stack.Screen
         options={{
           headerRight: () => {
@@ -44,7 +44,7 @@ export default function PromptScreen() {
       <PromptList />
       <PromptFab />
       <ImportPromptModal />
-    </>
+    </Box>
   );
 }
 

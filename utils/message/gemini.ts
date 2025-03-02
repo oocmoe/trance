@@ -6,8 +6,8 @@ import { readPromptContent } from '../db/prompt';
 
 type GeminiOptions = {
   roomId: number;
-  promptId: number
-  content:string,
+  promptId: number;
+  content: string;
   model: 'Gemini';
   model_version: GeminiModels;
   personnel: Array<string>;
@@ -19,8 +19,8 @@ export async function tranceHiGemini(options: GeminiOptions) {
   if (!key) return;
   const genAI = new GoogleGenerativeAI(key);
   const model = genAI.getGenerativeModel({ model: options.model_version });
-  const prompt = await readGeminiPrompt(options.promptId,options.personnel,options.roomId)
-  if(!prompt) return
+  const prompt = await readGeminiPrompt(options.promptId, options.personnel, options.roomId);
+  if (!prompt) return;
   const chat = model.startChat({
     history: [
       {
@@ -29,25 +29,29 @@ export async function tranceHiGemini(options: GeminiOptions) {
       }
     ]
   });
-  try{
+  try {
     const insertUserInput = await createMessage(options.roomId, 'text', 1, options.content, 'user');
-    if(!insertUserInput) return
+    if (!insertUserInput) return;
     const result = await chat.sendMessage(options.content);
-    const rows = await createMessage(options.roomId, 'text', 0, result.response.text(), 'assistant');
+    const rows = await createMessage(
+      options.roomId,
+      'text',
+      0,
+      result.response.text(),
+      'assistant'
+    );
     return rows;
-  }catch(error){
-    console.log(error)
-    return
+  } catch (error) {
+    console.log(error);
+    return;
   }
-
-
 }
 
 async function readGeminiHistroyMessage(roomId: number) {
   try {
     const result = await readHistroyMessage(roomId);
-    if (!result) return
-    if(result.length === 0) return "\n"
+    if (!result) return;
+    if (result.length === 0) return '\n';
     const history = result.map((item) => item.content).join('\n');
     if (!history) return;
     return history;
@@ -63,8 +67,8 @@ async function readGeminiPrompt(promptId: number, personnel: Array<string>, room
     if (!history) return;
     const promptContent = await readPromptContent(promptId);
     if (!promptContent) return;
-    console.log(personnel)
-    console.log(personnel[0])
+    console.log(personnel);
+    console.log(personnel[0]);
     const character = await readCharacterById(Number(personnel[0]));
     if (!character) return;
     // 根据提示词排序替换

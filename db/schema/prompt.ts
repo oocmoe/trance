@@ -48,6 +48,5 @@ export type PromptContent = Array<{
   isEnabled: boolean;
 }>;
 
-
 export type Prompt = InferSelectModel<typeof prompt>;
 export type InsertPrompt = InferInsertModel<typeof prompt>;

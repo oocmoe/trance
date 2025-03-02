@@ -13,11 +13,11 @@ import { modalAtom } from '@/store/core';
 import { deleteMessageById } from '@/utils/db/message';
 import { readRoomFieldById } from '@/utils/db/room';
 import { tranceHi } from '@/utils/message/middleware';
+import React from 'react';
+import { Pressable, ScrollView } from 'react-native';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { atom, useAtom } from 'jotai';
 import { EllipsisIcon, SendIcon } from 'lucide-react-native';
-import React from 'react';
-import { Pressable, ScrollView } from 'react-native';
 import { toast } from 'sonner-native';
 
 const messageIdAtom = atom<number>();
@@ -107,20 +107,20 @@ function HeaderRight() {
 function MessageModal() {
   const [isOpen, setIsOpen] = useAtom(modalAtom('messageOptions'));
   const [messageId] = useAtom(messageIdAtom);
-  const handleDelete =  async () =>{
-    if(!messageId) {
-      toast.error("缺少消息id")
-      setIsOpen(false)
-      return
+  const handleDelete = async () => {
+    if (!messageId) {
+      toast.error('缺少消息id');
+      setIsOpen(false);
+      return;
     }
-    const result = await deleteMessageById(messageId)
-    if(!result){
-      toast.error("删除失败")
-      return
+    const result = await deleteMessageById(messageId);
+    if (!result) {
+      toast.error('删除失败');
+      return;
     }
-    setIsOpen(false)
-    toast.success("删除成功")
-  }
+    setIsOpen(false);
+    toast.success('删除成功');
+  };
   return (
     <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
       <ModalBackdrop />
@@ -142,7 +142,7 @@ function ActionBar() {
   const handleHi = async () => {
     setIsLoading(true);
     const result = await tranceHi(userInput, 'text', room);
-    setUserInput('')
+    setUserInput('');
     if (!result) {
       toast.error('发送失败');
     }

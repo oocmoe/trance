@@ -20,7 +20,7 @@ export function usePromptList() {
       })
       .from(prompt)
   );
-  return data
+  return data;
 }
 
 /**

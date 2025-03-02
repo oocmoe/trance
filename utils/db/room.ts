@@ -19,8 +19,8 @@ export async function createDialogRoom(id: number, name: string, prologueIndex?:
   const character = await readCharacterById(id);
   if (!character) return;
   try {
-    const personnel = []
-    personnel.push(String(id))
+    const personnel = [];
+    personnel.push(String(id));
     const roomRows = await db.insert(room).values({
       global_id: uuidv7(),
       cover: character.cover,
@@ -31,7 +31,13 @@ export async function createDialogRoom(id: number, name: string, prologueIndex?:
     if (!roomRows) return;
     if (prologueIndex) {
       const content = character.prologue[prologueIndex].content;
-      const messageRows = await createMessage(roomRows.lastInsertRowId, 'text', 0, content, 'assistant');
+      const messageRows = await createMessage(
+        roomRows.lastInsertRowId,
+        'text',
+        0,
+        content,
+        'assistant'
+      );
     }
     return roomRows.lastInsertRowId;
   } catch (error) {
@@ -50,25 +56,27 @@ export async function readRoomById(id: number) {
   return rows[0];
 }
 
-export async function readRoomFieldById(id:number, field: keyof Room) {
-  try{
-    const rows = await db.select({
-      [field]: room[field]
-    }).from(room).where(eq(room.id, id));
-    if(!rows) return;
-    return rows[0][field]
-  }catch(error){
-    console.log(error)
+export async function readRoomFieldById(id: number, field: keyof Room) {
+  try {
+    const rows = await db
+      .select({
+        [field]: room[field]
+      })
+      .from(room)
+      .where(eq(room.id, id));
+    if (!rows) return;
+    return rows[0][field];
+  } catch (error) {
+    console.log(error);
   }
 }
 
-
 /**
  * 根据id 更新房间字段
- * @param id 
- * @param field 
- * @param value 
- * @returns 
+ * @param id
+ * @param field
+ * @param value
+ * @returns
  */
 export async function updateRoomFieldById(id: number, field: string, value: any) {
   const rows = await db

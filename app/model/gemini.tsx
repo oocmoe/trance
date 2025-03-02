@@ -13,15 +13,15 @@ import {
   ModalFooter,
   ModalHeader
 } from '@/components/ui/modal';
-import * as SecureStore from 'expo-secure-store';
-import { BoltIcon, KeyIcon } from 'lucide-react-native';
 import React, { useEffect } from 'react';
 import { Pressable } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
+import { BoltIcon, KeyIcon } from 'lucide-react-native';
 import { toast } from 'sonner-native';
 
 export default function GeminiScreen() {
   return (
-    <Box className="m-3">
+    <Box className="h-full bg-white dark:bg-slate-950 p-3">
       <Key />
     </Box>
   );

@@ -9,13 +9,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { colorModeAtom, USER_avtarAtom, USER_nameAtom } from '@/store/core';
+import React from 'react';
+import { Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
 import { Storage } from 'expo-sqlite/kv-store';
 import { useAtom } from 'jotai';
-import { BookUserIcon, BotIcon, CogIcon, HammerIcon, Info } from 'lucide-react-native';
-import React from 'react';
-import { Pressable } from 'react-native';
+import { BookUserIcon, BotIcon, CogIcon, HammerIcon, Info, RegexIcon } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function DrawerLayout() {
@@ -101,18 +101,24 @@ const drawerNavList = [
   },
   {
     sortId: 4,
-    name: '模型',
+    name: 'AI 模型',
     path: '(drawer)/model',
     icon: BotIcon
   },
   {
     sortId: 5,
+    name: '正则脚本',
+    path: '(drawer)/regex',
+    icon: RegexIcon
+  },
+  {
+    sortId: 6,
     name: '设置',
     path: '(drawer)/setting',
     icon: CogIcon
   },
   {
-    sortId: 6,
+    sortId: 7,
     name: '关于',
     path: '(drawer)/about',
     icon: Info
@@ -145,7 +151,7 @@ const CustomDrawerContent = () => {
               <VStack space="sm">
                 {avatar ? (
                   <Pressable onPress={() => router.push('/(drawer)/my')}>
-                    <Image source={avatar} className="h-16 w-16 rounded-full" alt='userAvatar' />
+                    <Image source={avatar} className="h-16 w-16 rounded-full" alt="userAvatar" />
                   </Pressable>
                 ) : (
                   <Pressable onPress={() => router.push('/(drawer)/my')}>

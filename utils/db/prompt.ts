@@ -20,15 +20,18 @@ export async function createImportPrompt(request: ConverPromptResult) {
   }
 }
 
-export async function readPromptFieldById( id: number,field:keyof Prompt) {
-  try{
-    const rows = await db.select({
-          [field]: prompt[field]
-        }).from(prompt).where(eq(prompt.id, id));
-        if(!rows) return;
-        return rows[0][field]
-  }catch(error){
-    console.log(error)
+export async function readPromptFieldById(id: number, field: keyof Prompt) {
+  try {
+    const rows = await db
+      .select({
+        [field]: prompt[field]
+      })
+      .from(prompt)
+      .where(eq(prompt.id, id));
+    if (!rows) return;
+    return rows[0][field];
+  } catch (error) {
+    console.log(error);
   }
 }
 

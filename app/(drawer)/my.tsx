@@ -17,16 +17,16 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import { USER_avtarAtom, USER_nameAtom } from '@/store/core';
 import { pickUserAvatar } from '@/utils/file/picker';
+import React from 'react';
+import { Pressable } from 'react-native';
 import { Storage } from 'expo-sqlite/kv-store';
 import { useAtom } from 'jotai';
 import { CircleUserRoundIcon, UserPenIcon } from 'lucide-react-native';
-import React from 'react';
-import { Pressable } from 'react-native';
 import { toast } from 'sonner-native';
 
 export default function MyScreen() {
   return (
-    <Box>
+    <Box className="h-full bg-white dark:bg-slate-950">
       <UserDetail />
       <Box className="my-4" />
       <UserName />
@@ -40,7 +40,7 @@ const UserDetail = () => {
   const [name, setName] = useAtom(USER_nameAtom);
   return (
     <Card className="h-32">
-      <HStack space='md'>
+      <HStack space="md">
         {avatar ? (
           <Image source={avatar} className="h-16 w-16 rounded-full" />
         ) : (
@@ -54,56 +54,58 @@ const UserDetail = () => {
 
 const UserName = () => {
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
-  const [name, setName] = React.useState<string>()
+  const [name, setName] = React.useState<string>();
   const [, setUserName] = useAtom(USER_nameAtom);
-  React.useEffect(()=>{
+  React.useEffect(() => {
     const initName = async () => {
       const result = await Storage.getItem('TRANCE_USER_NAME');
-      if(result){
+      if (result) {
         setName(result);
       }
-    }
-    initName()
-  },[])
-  const handleChangeName = async () =>{
-    if(!name) return;
+    };
+    initName();
+  }, []);
+  const handleChangeName = async () => {
+    if (!name) return;
     Storage.setItem('TRANCE_USER_NAME', name);
-    setUserName(name)
-    setIsOpen(false) 
-    toast.success("保存成功")
-  }
+    setUserName(name);
+    setIsOpen(false);
+    toast.success('保存成功');
+  };
   return (
     <>
       <Pressable onPress={() => setIsOpen(true)}>
-        <Card>
+        <Box className="bg-slate-900 p-3">
           <HStack className="items-center" space="md">
             <Icon as={UserPenIcon} />
             <Text>更改用户名</Text>
           </HStack>
-        </Card>
+        </Box>
       </Pressable>
       <Modal isOpen={isOpen}>
         <ModalBackdrop />
         <ModalContent>
-          <ModalHeader><Text>更改用户名</Text></ModalHeader>
+          <ModalHeader>
+            <Text>更改用户名</Text>
+          </ModalHeader>
           <ModalBody>
             <Input>
               <InputField value={name} onChangeText={setName} />
             </Input>
           </ModalBody>
           <ModalFooter>
-          <Button
-            variant="outline"
-            action="secondary"
-            onPress={() => {
-              setIsOpen(false);
-            }}>
-            <ButtonText>取消</ButtonText>
-          </Button>
-          <Button onPress={handleChangeName} isDisabled={name?.length === 0}>
-            <ButtonText>保存</ButtonText>
-          </Button>
-        </ModalFooter>
+            <Button
+              variant="outline"
+              action="secondary"
+              onPress={() => {
+                setIsOpen(false);
+              }}>
+              <ButtonText>取消</ButtonText>
+            </Button>
+            <Button onPress={handleChangeName} isDisabled={name?.length === 0}>
+              <ButtonText>保存</ButtonText>
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>
@@ -122,12 +124,12 @@ const UserAvatar = () => {
   return (
     <>
       <Pressable onPress={handleChangeAvatar}>
-        <Card>
+        <Box className="bg-slate-900 p-3">
           <HStack className="items-center" space="md">
             <Icon as={CircleUserRoundIcon} />
             <Text>更换头像</Text>
           </HStack>
-        </Card>
+        </Box>
       </Pressable>
     </>
   );

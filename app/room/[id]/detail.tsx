@@ -28,10 +28,10 @@ import { VStack } from '@/components/ui/vstack';
 import { usePromptList } from '@/hook/prompt';
 import { readPromptFieldById } from '@/utils/db/prompt';
 import { readRoomById, readRoomFieldById, updateRoomFieldById } from '@/utils/db/room';
-import { useLocalSearchParams } from 'expo-router';
-import { BotIcon, HammerIcon } from 'lucide-react-native';
 import React from 'react';
 import { Pressable } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import { BotIcon, HammerIcon } from 'lucide-react-native';
 import { toast } from 'sonner-native';
 
 export default function RoomDetailScreen() {
@@ -216,8 +216,8 @@ const ModelSelect = () => {
 const PromptSelect = () => {
   const { id } = useLocalSearchParams();
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
-  const [promptId,setPromptId] = React.useState<number>()
-  const [placeholder,setPlaceholder] = React.useState<string>('')
+  const [promptId, setPromptId] = React.useState<number>();
+  const [placeholder, setPlaceholder] = React.useState<string>('');
   const prompt = usePromptList();
   const handleSavePrompt = async () => {
     const result = await updateRoomFieldById(Number(id), 'prompt', Number(promptId));
@@ -228,15 +228,15 @@ const PromptSelect = () => {
     setIsOpen(false);
     toast.success('保存成功');
   };
-    React.useEffect(()=>{
-    const initPrompt = async () =>{
+  React.useEffect(() => {
+    const initPrompt = async () => {
       const result = await readRoomFieldById(Number(id), 'prompt');
-      const placeholder = await readPromptFieldById(Number(result), 'name')
-      setPlaceholder(placeholder as string)
-      setPromptId(Number(result))
-    }
-    initPrompt()
-  },[isOpen])
+      const placeholder = await readPromptFieldById(Number(result), 'name');
+      setPlaceholder(placeholder as string);
+      setPromptId(Number(result));
+    };
+    initPrompt();
+  }, [isOpen]);
   return (
     <>
       <Box>
@@ -261,7 +261,7 @@ const PromptSelect = () => {
             </Heading>
           </ModalHeader>
           <ModalBody>
-            <Select onValueChange={(value)=>setPromptId(Number(value))}>
+            <Select onValueChange={(value) => setPromptId(Number(value))}>
               <SelectTrigger>
                 <SelectInput placeholder={placeholder} />
               </SelectTrigger>

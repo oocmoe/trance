@@ -14,7 +14,7 @@ export const colorModeAtom = atom<'light' | 'dark'>('light');
 export const modalAtom = atomFamily((id: string) => atom(false));
 
 // 用户全局头像
-export const USER_avtarAtom = atom<string>()
+export const USER_avtarAtom = atom<string>();
 
 // 用户全局名称
-export const USER_nameAtom = atom<string>()
+export const USER_nameAtom = atom<string>();

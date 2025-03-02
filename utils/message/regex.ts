@@ -18,10 +18,9 @@ export async function regexUserName(str: string) {
   }
 }
 
-export async function regexPrompt(str: string) {
-  try{
-
-  }catch(error){
-    console.log(error)
+export async function regexPrompt(str: string, regexId: string[]) {
+  try {
+  } catch (error) {
+    console.log(error);
   }
 }
