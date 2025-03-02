@@ -54,3 +54,13 @@ export async function readHistroyMessage(roomId: number) {
     console.log(error);
   }
 }
+
+export async function deleteMessageById(id: number) {
+  try {
+    const rows = await db.delete(message).where(eq(message.id, id));
+    if (!rows) return;
+    return rows.changes;
+  } catch (error) {
+    console.log(error);
+  }
+}

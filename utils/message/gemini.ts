@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import * as SecureStore from 'expo-secure-store';
 import { readCharacterById } from '../db/character';
-import { readHistroyMessage } from '../db/message';
+import { createMessage, readHistroyMessage } from '../db/message';
 import { readPromptContent } from '../db/prompt';
 
 type GeminiOptions = {
@@ -15,6 +15,7 @@ type GeminiOptions = {
 
 export async function tranceHiGemini(options: GeminiOptions) {
   const key = await SecureStore.getItem('TRANCE_MODEL_GEMINI_KEY');
+
   if (!key) return;
   const genAI = new GoogleGenerativeAI(key);
   const model = genAI.getGenerativeModel({ model: options.model_version });
@@ -28,18 +29,15 @@ export async function tranceHiGemini(options: GeminiOptions) {
       }
     ]
   });
-  console.log(666)
   try{
-    console.log(options.content)
-    console.log(chat.sendMessage)
+    const insertUserInput = await createMessage(options.roomId, 'text', 1, options.content, 'user');
+    if(!insertUserInput) return
     const result = await chat.sendMessage(options.content);
-    console.log(result)
-    console.log(result.response.text())
-    return result.response.text();
+    const rows = await createMessage(options.roomId, 'text', 0, result.response.text(), 'assistant');
+    return rows;
   }catch(error){
     console.log(error)
     return
-    
   }
 
 

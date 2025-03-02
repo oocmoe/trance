@@ -145,7 +145,7 @@ const CustomDrawerContent = () => {
               <VStack space="sm">
                 {avatar ? (
                   <Pressable onPress={() => router.push('/(drawer)/my')}>
-                    <Image source={avatar} className="h-16 w-16 rounded-full" />
+                    <Image source={avatar} className="h-16 w-16 rounded-full" alt='userAvatar' />
                   </Pressable>
                 ) : (
                   <Pressable onPress={() => router.push('/(drawer)/my')}>

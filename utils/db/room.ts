@@ -56,7 +56,6 @@ export async function readRoomFieldById(id:number, field: keyof Room) {
       [field]: room[field]
     }).from(room).where(eq(room.id, id));
     if(!rows) return;
-    console.log( rows[0][field])
     return rows[0][field]
   }catch(error){
     console.log(error)
