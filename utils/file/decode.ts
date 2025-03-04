@@ -26,6 +26,11 @@ export async function decodeCharacter(uri: string) {
   }
 }
 
+/**
+ * 解码JSON，返回json内容
+ * @param uri
+ * @returns
+ */
 export async function decodeJson(uri: string) {
   try {
     const fileBase64 = await FileSystem.readAsStringAsync(uri, {

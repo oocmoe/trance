@@ -22,3 +22,13 @@ export type ConverPromptResult = {
   name: string;
   content: PromptContent;
 };
+
+export type ConvertRgexResult = {
+  name: string;
+  replace: string;
+  placement: string;
+  is_Enabled: boolean;
+  is_Global: boolean;
+  is_Send: boolean;
+  is_Render: boolean;
+};

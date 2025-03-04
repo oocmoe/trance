@@ -9,15 +9,17 @@ import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { useMessageByRoomId } from '@/hook/message';
 import { useRoomById } from '@/hook/room';
-import { modalAtom } from '@/store/core';
+import { colorModeAtom, modalAtom } from '@/store/core';
+import { RenderMessages } from '@/types/render';
 import { deleteMessageById } from '@/utils/db/message';
 import { readRoomFieldById } from '@/utils/db/room';
-import { tranceHi } from '@/utils/message/middleware';
+import { convertRenderMessages, tranceHi } from '@/utils/message/middleware';
 import React from 'react';
-import { Pressable, ScrollView } from 'react-native';
+import { Pressable, ScrollView, useWindowDimensions } from 'react-native';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { atom, useAtom } from 'jotai';
 import { EllipsisIcon, SendIcon } from 'lucide-react-native';
+import RenderHtml from 'react-native-render-html';
 import { toast } from 'sonner-native';
 
 const messageIdAtom = atom<number>();
@@ -45,34 +47,50 @@ export default function RoomByIdScreen() {
       <ScrollView>
         <RenderMessage />
       </ScrollView>
-      <MessageModal />
       <ActionBar />
+      <MessageModal />
     </Box>
   );
 }
 
 function RenderMessage() {
   const { id } = useLocalSearchParams();
+  const { width } = useWindowDimensions();
   const messages = useMessageByRoomId(Number(id));
+  const [corlorMode] = useAtom(colorModeAtom);
+  const [renderMessages, setRenderMessages] = React.useState<RenderMessages>();
   const [messageOptionsModal, setMessageOptionsModal] = useAtom(modalAtom('messageOptions'));
   const [messageId, setMesaageId] = useAtom(messageIdAtom);
   const [characterCover, setCharacterCover] = React.useState<string>();
+  React.useEffect(() => {
+    const renderMessage = async () => {
+      const result = await convertRenderMessages(corlorMode, messages);
+      if (!result) return;
+      setRenderMessages(result);
+    };
+    renderMessage();
+  }, [messages]);
   const handleLongPress = (value: number) => {
     setMesaageId(value);
     setMessageOptionsModal(true);
   };
+
   return (
     <VStack>
-      {messages &&
-        messages.map((item) => {
+      {renderMessages &&
+        renderMessages.map((item) => {
           if (item.is_Sender === 0) {
             return (
               <Pressable onLongPress={() => handleLongPress(item.id)} key={item.id} className="m-3">
                 <HStack space="md">
                   {characterCover ? <Image /> : <Skeleton className="w-12 h-12 rounded-full" />}
-
-                  <Box className="flex-1 bg-amber-50 p-4 rounded-xl rounded-tl-none border border-amber-200  mr-12">
-                    <Text>{item.content}</Text>
+                  <Box className="flex-1  bg-amber-50 dark:bg-stone-900 dark:border-stone-950  p-4 rounded-xl rounded-tl-none border border-amber-200  mr-12">
+                    <RenderHtml
+                      contentWidth={width}
+                      baseStyle={{ color: corlorMode === 'light' ? 'black' : 'white' }}
+                      source={{ html: item.content }}
+                    />
+                    {/* <Text>{item.content}</Text> */}
                   </Box>
                 </HStack>
               </Pressable>
@@ -82,7 +100,7 @@ function RenderMessage() {
             return (
               <Pressable onLongPress={() => handleLongPress(item.id)} key={item.id} className="m-3">
                 <HStack className="justify-end">
-                  <Box className="flex-1 bg-white p-4 rounded-xl rounded-br-none border border-slate-50 ml-14">
+                  <Box className="flex-1 bg-white dark:bg-slate-900 dark:border-slate-950 p-4 rounded-xl rounded-br-none border border-slate-50 ml-14">
                     <Text>{item.content}</Text>
                   </Box>
                 </HStack>

@@ -1,6 +1,6 @@
 // app/index.tsx
 import migrations from '@/drizzle/migrations';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Text, View } from 'react-native';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
@@ -22,7 +22,7 @@ export default function HomeScreen() {
     'loading'
   );
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (error) {
       setMigrationStatus('error');
     } else if (success) {

@@ -1,5 +1,5 @@
 // db/schema/message.ts
-import { sql } from 'drizzle-orm';
+import { InferSelectModel, sql } from 'drizzle-orm';
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
 export const message = sqliteTable('message', {
@@ -49,3 +49,5 @@ export const message = sqliteTable('message', {
    */
   role: text('role').$type<'assistant' | 'user' | 'system'>().notNull()
 });
+
+export type Messages = InferSelectModel<typeof message>;

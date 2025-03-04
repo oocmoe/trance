@@ -33,14 +33,14 @@ export const regex = sqliteTable('regex', {
   placement: text('placement').$type<string>().notNull().default(''),
 
   // 是否启用
-  isEnabled: integer({ mode: 'boolean' }).notNull().default(false),
+  is_Enabled: integer({ mode: 'boolean' }).notNull().default(false),
 
   // 是否全局
-  isGlobal: integer({ mode: 'boolean' }).notNull().default(false),
+  is_Global: integer({ mode: 'boolean' }).notNull().default(false),
 
   // 发送时触发
-  isSend: integer({ mode: 'boolean' }).notNull().default(false),
+  is_Send: integer({ mode: 'boolean' }).notNull().default(false),
 
   // 显示时触发
-  isRender: integer({ mode: 'boolean' }).notNull().default(false)
+  is_Render: integer({ mode: 'boolean' }).notNull().default(false)
 });

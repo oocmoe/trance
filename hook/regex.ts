@@ -1,4 +1,5 @@
 import { regex } from '@/db/schema/regex';
+import { eq } from 'drizzle-orm';
 import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
 import { useDB } from './db';
 
@@ -16,9 +17,14 @@ export function useRegexList() {
         id: regex.id,
         global_id: regex.global_id,
         name: regex.name,
-        isEnabled: regex.isEnabled
+        is_Enabled: regex.is_Enabled
       })
       .from(regex)
   );
   return data;
+}
+
+export function useRegexById(id: number) {
+  const { data, error, updatedAt } = useLiveQuery(db.select().from(regex).where(eq(regex.id, id)));
+  return data[0];
 }

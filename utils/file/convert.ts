@@ -44,6 +44,19 @@ export async function convertPrompt(promptJson: any) {
   try {
     if (promptJson.prompt_order && promptJson.prompts) {
       const result = await convertPromptSillyTavern(promptJson as SillyTavermPrompt);
+      if (!result) return;
+      return result;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function convertRegex(promptJson: any) {
+  try {
+    if (promptJson.scriptName && promptJson.findRegex && promptJson.replaceString) {
+      const result = await convertRegexSillyTavern(promptJson);
+      if (!result) return;
       return result;
     }
   } catch (error) {
@@ -144,5 +157,23 @@ async function convertPromptSillyTavern(promptJson: SillyTavermPrompt) {
   } catch (error) {
     console.log(error);
     return [];
+  }
+}
+
+async function convertRegexSillyTavern(promptJson: SillyTavermRegex) {
+  try {
+    const regexScript = {
+      name: promptJson.scriptName,
+      replace: promptJson.findRegex,
+      placement: promptJson.replaceString,
+      is_Enabled: !promptJson.disabled,
+      is_Global: false,
+      is_Send: promptJson.placement.includes(2) || false,
+      is_Render: promptJson.placement.includes(1) || false
+    };
+    if (!regexScript) return;
+    return regexScript;
+  } catch (error) {
+    console.log(error);
   }
 }

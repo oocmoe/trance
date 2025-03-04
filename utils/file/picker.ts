@@ -1,6 +1,6 @@
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
-import { convertCharacter, convertCover, convertPrompt } from './convert';
+import { convertCharacter, convertCover, convertPrompt, convertRegex } from './convert';
 import { decodeCharacter, decodeJson } from './decode';
 
 /**
@@ -111,6 +111,20 @@ export async function pickPrompt() {
       content: convertedJson
     };
     return prompt;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function pickRegex() {
+  try {
+    const assets = await pickFileJson();
+    if (!assets || !assets.assets || !assets.assets[0]?.uri) return;
+    const json = await decodeJson(assets.assets[0].uri);
+    if (!json) return;
+    const convertedJson = await convertRegex(json);
+    if (!convertedJson) return;
+    return convertedJson;
   } catch (error) {
     console.log(error);
   }

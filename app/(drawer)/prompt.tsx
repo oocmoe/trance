@@ -19,6 +19,7 @@ import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { usePromptList } from '@/hook/prompt';
 import { modalAtom } from '@/store/core';
+import { RenderPromptList } from '@/types/render';
 import { ConverPromptResult } from '@/types/result';
 import { createImportPrompt } from '@/utils/db/prompt';
 import { pickPrompt } from '@/utils/file/picker';
@@ -154,8 +155,8 @@ const ImportPromptModal = () => {
     setPreviewData(result);
   };
   const handleImportPrompt = async () => {
-    if (!previewData) return;
-    const result = await createImportPrompt(previewData);
+    if (!previewData || !name) return;
+    const result = await createImportPrompt(name, previewData);
     if (!result) {
       toast.error('导入失败');
       return;
@@ -183,7 +184,7 @@ const ImportPromptModal = () => {
               <VStack space="sm">
                 <Text>提示词名称</Text>
                 <Input>
-                  <InputField value={name} />
+                  <InputField value={name} onChangeText={setName} />
                 </Input>
                 <Text>提示词条目</Text>
                 <ScrollView>

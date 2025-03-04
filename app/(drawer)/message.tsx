@@ -5,6 +5,7 @@ import { Skeleton, SkeletonText } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { useRoomList } from '@/hook/room';
+import { RenderRoomList } from '@/types/render';
 import { useEffect } from 'react';
 import { Pressable, ScrollView } from 'react-native';
 import { router } from 'expo-router';

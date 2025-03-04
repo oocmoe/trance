@@ -6,11 +6,11 @@ import 'react-native-get-random-values';
 import { v7 as uuidv7 } from 'uuid';
 
 const db = useDB();
-export async function createImportPrompt(request: ConverPromptResult) {
+export async function createImportPrompt(name: string, request: ConverPromptResult) {
   try {
     const rows = await db.insert(prompt).values({
       global_id: uuidv7(),
-      name: request.name,
+      name: name,
       content: request.content
     });
     if (!rows) return;

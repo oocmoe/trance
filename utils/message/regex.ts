@@ -24,3 +24,10 @@ export async function regexPrompt(str: string, regexId: string[]) {
     console.log(error);
   }
 }
+
+export async function regexHtmlTag(str: string) {
+  try {
+  } catch (error) {
+    console.log(error);
+  }
+}
