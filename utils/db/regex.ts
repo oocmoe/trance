@@ -1,7 +1,7 @@
-import { regex } from '@/db/schema/regex';
+import { Regex, regex } from '@/db/schema/regex';
 import { useDB } from '@/hook/db';
 import { ConvertRgexResult } from '@/types/result';
-import { eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import 'react-native-get-random-values';
 import { v7 as uuidv7 } from 'uuid';
 
@@ -42,6 +42,44 @@ export async function readRegexByIdGroup(id: number[]) {
     const rows = await db.select().from(regex).where(inArray(regex.id, id));
     if (!rows) return;
     return rows;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function readEnabledGlobalRenderRegex() {
+  try {
+    const rows = await db
+      .select()
+      .from(regex)
+      .where(and(eq(regex.is_Enabled, true), eq(regex.is_Global, true), eq(regex.is_Render, true)));
+    if (!rows) return;
+    return rows;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function updateRegexFieldById(id: number, field: keyof Regex, value: any) {
+  try {
+    const rows = await db
+      .update(regex)
+      .set({
+        [field]: value
+      })
+      .where(eq(regex.id, id));
+    if (!rows) return;
+    return rows;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function deleteRegexById(id: number) {
+  try {
+    const rows = await db.delete(regex).where(eq(regex.id, id));
+    if (!rows) return;
+    return rows.changes;
   } catch (error) {
     console.log(error);
   }

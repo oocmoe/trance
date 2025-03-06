@@ -40,5 +40,5 @@ export type RenderMessages = Array<{
   type: 'text';
   is_Sender: number;
   content: string;
-  role: 'system' | 'user' | 'assistant';
+  role: 'assistant' | 'user' | 'system';
 }>;

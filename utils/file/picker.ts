@@ -124,6 +124,7 @@ export async function pickRegex() {
     if (!json) return;
     const convertedJson = await convertRegex(json);
     if (!convertedJson) return;
+
     return convertedJson;
   } catch (error) {
     console.log(error);

@@ -13,14 +13,26 @@ import { colorModeAtom, modalAtom } from '@/store/core';
 import { RenderMessages } from '@/types/render';
 import { deleteMessageById } from '@/utils/db/message';
 import { readRoomFieldById } from '@/utils/db/room';
-import { convertRenderMessages, tranceHi } from '@/utils/message/middleware';
+import { tranceHi, tranceRenderMessages } from '@/utils/message/middleware';
 import React from 'react';
-import { Pressable, ScrollView, useWindowDimensions } from 'react-native';
+import { LogBox, Pressable, ScrollView, useWindowDimensions } from 'react-native';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { atom, useAtom } from 'jotai';
 import { EllipsisIcon, SendIcon } from 'lucide-react-native';
 import RenderHtml from 'react-native-render-html';
 import { toast } from 'sonner-native';
+
+// Remove @meliorence/react-native-render-html error
+if (__DEV__) {
+  const ignoreErrors = ['Support for defaultProps will be removed'];
+
+  const error = console.error;
+  console.error = (...arg) => {
+    for (const error of ignoreErrors) if (arg[0].includes(error)) return;
+    error(...arg);
+  };
+  LogBox.ignoreLogs(ignoreErrors);
+}
 
 const messageIdAtom = atom<number>();
 
@@ -64,12 +76,22 @@ function RenderMessage() {
   const [characterCover, setCharacterCover] = React.useState<string>();
   React.useEffect(() => {
     const renderMessage = async () => {
-      const result = await convertRenderMessages(corlorMode, messages);
+      const result = await tranceRenderMessages(corlorMode, messages);
       if (!result) return;
       setRenderMessages(result);
     };
     renderMessage();
   }, [messages]);
+  React.useEffect(() => {
+    const initCover = async () => {
+      const personnel = (await readRoomFieldById(Number(id), 'personnel')) as string[];
+      if (!personnel) return;
+      const cover = await readRoomFieldById(Number(personnel[0]), 'cover');
+      if (!cover) return;
+      setCharacterCover(cover as string);
+    };
+    initCover();
+  }, []);
   const handleLongPress = (value: number) => {
     setMesaageId(value);
     setMessageOptionsModal(true);
@@ -83,7 +105,15 @@ function RenderMessage() {
             return (
               <Pressable onLongPress={() => handleLongPress(item.id)} key={item.id} className="m-3">
                 <HStack space="md">
-                  {characterCover ? <Image /> : <Skeleton className="w-12 h-12 rounded-full" />}
+                  {characterCover ? (
+                    <Image
+                      className="w-12 h-12 rounded-full"
+                      alt="cover"
+                      source={{ uri: characterCover }}
+                    />
+                  ) : (
+                    <Skeleton className="w-12 h-12 rounded-full" />
+                  )}
                   <Box className="flex-1  bg-amber-50 dark:bg-stone-900 dark:border-stone-950  p-4 rounded-xl rounded-tl-none border border-amber-200  mr-12">
                     <RenderHtml
                       contentWidth={width}
@@ -159,9 +189,11 @@ function ActionBar() {
 
   const handleHi = async () => {
     setIsLoading(true);
-    const result = await tranceHi(userInput, 'text', room);
+    const content = userInput;
     setUserInput('');
+    const result = await tranceHi(content, 'text', room);
     if (!result) {
+      setUserInput(content);
       toast.error('发送失败');
     }
     setIsLoading(false);
@@ -173,7 +205,7 @@ function ActionBar() {
           <InputField value={userInput} onChangeText={setUserInput} />
         </Input>
         {isLoading ? (
-          <Button onPress={handleHi}>
+          <Button className="dark:bg-slate-800">
             <ButtonSpinner className="text-white" />
           </Button>
         ) : (

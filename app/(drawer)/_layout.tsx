@@ -15,7 +15,7 @@ import { router } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
 import { Storage } from 'expo-sqlite/kv-store';
 import { useAtom } from 'jotai';
-import { BookUserIcon, BotIcon, CogIcon, HammerIcon, Info, RegexIcon } from 'lucide-react-native';
+import { BookUserIcon, BotIcon, HammerIcon, Info, RegexIcon } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function DrawerLayout() {
@@ -57,12 +57,12 @@ export default function DrawerLayout() {
           title: '模型'
         }}
       />
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="setting"
         options={{
           title: '设置'
         }}
-      />
+      /> */}
       <Drawer.Screen
         name="about"
         options={{
@@ -111,14 +111,14 @@ const drawerNavList = [
     path: '(drawer)/regex',
     icon: RegexIcon
   },
+  // {
+  //   sortId: 6,
+  //   name: '设置',
+  //   path: '(drawer)/setting',
+  //   icon: CogIcon
+  // },
   {
     sortId: 6,
-    name: '设置',
-    path: '(drawer)/setting',
-    icon: CogIcon
-  },
-  {
-    sortId: 7,
     name: '关于',
     path: '(drawer)/about',
     icon: Info

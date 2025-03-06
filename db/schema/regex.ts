@@ -1,5 +1,5 @@
 // db/schema/regex.ts
-import { sql } from 'drizzle-orm';
+import { InferSelectModel, sql } from 'drizzle-orm';
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
 export const regex = sqliteTable('regex', {
@@ -44,3 +44,5 @@ export const regex = sqliteTable('regex', {
   // 显示时触发
   is_Render: integer({ mode: 'boolean' }).notNull().default(false)
 });
+
+export type Regex = InferSelectModel<typeof regex>;

@@ -61,7 +61,7 @@ function Key() {
     <>
       {/* 卡片部分 */}
       <Pressable onPress={() => setShowModal(true)} className="h-24">
-        <Card>
+        <Card variant="filled">
           <HStack className="justify-between items-center">
             <HStack space="md" className="items-center">
               <Icon as={KeyIcon} />

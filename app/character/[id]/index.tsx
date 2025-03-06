@@ -54,7 +54,7 @@ function IDCard() {
   return (
     <>
       {character && (
-        <Card className="m-3">
+        <Card variant="filled" className="m-3">
           <HStack space="md">
             <Box>
               <Image
@@ -87,7 +87,7 @@ function Action() {
     <Box className="m-3">
       <VStack space="sm">
         <Text>选项</Text>
-        <Card>
+        <Card variant="filled">
           <ScrollView>
             <VStack space="4xl">
               <CreateRoom />

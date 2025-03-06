@@ -101,7 +101,7 @@ function RgexList() {
               key={item.id}
               onPress={() => router.push(`/regex/${item.id}`)}
               className="h-20 overflow-hidden">
-              <Card>
+              <Card variant="filled">
                 <Text bold>{item.name}</Text>
               </Card>
             </Pressable>

@@ -26,7 +26,7 @@ import { toast } from 'sonner-native';
 
 export default function MyScreen() {
   return (
-    <Box className="h-full bg-white dark:bg-slate-950">
+    <Box className="h-full dark:bg-slate-950">
       <UserDetail />
       <Box className="my-4" />
       <UserName />
@@ -39,7 +39,7 @@ const UserDetail = () => {
   const [avatar, setAvatar] = useAtom(USER_avtarAtom);
   const [name, setName] = useAtom(USER_nameAtom);
   return (
-    <Card className="h-32">
+    <Card className="bg-white h-32">
       <HStack space="md">
         {avatar ? (
           <Image source={avatar} className="h-16 w-16 rounded-full" />
@@ -75,7 +75,7 @@ const UserName = () => {
   return (
     <>
       <Pressable onPress={() => setIsOpen(true)}>
-        <Box className="bg-slate-900 p-3">
+        <Box className="bg-white dark:bg-slate-900 p-3">
           <HStack className="items-center" space="md">
             <Icon as={UserPenIcon} />
             <Text>更改用户名</Text>
@@ -124,7 +124,7 @@ const UserAvatar = () => {
   return (
     <>
       <Pressable onPress={handleChangeAvatar}>
-        <Box className="bg-slate-900 p-3">
+        <Box className="bg-white dark:bg-slate-900 p-3">
           <HStack className="items-center" space="md">
             <Icon as={CircleUserRoundIcon} />
             <Text>更换头像</Text>

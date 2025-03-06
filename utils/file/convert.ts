@@ -54,7 +54,7 @@ export async function convertPrompt(promptJson: any) {
 
 export async function convertRegex(promptJson: any) {
   try {
-    if (promptJson.scriptName && promptJson.findRegex && promptJson.replaceString) {
+    if (promptJson.scriptName && promptJson.findRegex) {
       const result = await convertRegexSillyTavern(promptJson);
       if (!result) return;
       return result;

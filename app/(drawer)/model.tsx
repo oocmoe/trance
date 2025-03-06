@@ -49,7 +49,7 @@ function ModelList() {
     <ScrollView>
       {modelLists.map((item, index) => (
         <Pressable onPress={() => router.push(item.path as any)} key={index} className="h-24">
-          <Card>
+          <Card variant="filled">
             <HStack className="justify-between items-center">
               <HStack space="md" className="items-center">
                 <SvgUri uri={item.icon} height={24} width={24} color="black" />
