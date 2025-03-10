@@ -39,7 +39,7 @@ const UserDetail = () => {
   const [avatar, setAvatar] = useAtom(USER_avtarAtom);
   const [name, setName] = useAtom(USER_nameAtom);
   return (
-    <Card className="bg-white h-32">
+    <Card className="bg-white dark:bg-slate-900 h-32">
       <HStack space="md">
         {avatar ? (
           <Image source={avatar} className="h-16 w-16 rounded-full" />

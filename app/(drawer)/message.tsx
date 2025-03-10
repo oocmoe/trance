@@ -1,5 +1,4 @@
 import { Box } from '@/components/ui/box';
-import { Card } from '@/components/ui/card';
 import { HStack } from '@/components/ui/hstack';
 import { Image } from '@/components/ui/image';
 import { Skeleton, SkeletonText } from '@/components/ui/skeleton';
@@ -44,15 +43,13 @@ function RoomList() {
               key={item.id}
               onPress={() => router.push(`/room/${item.id}`)}
               className="h-20 overflow-hidden">
-              <Card>
-                <HStack className="flex-1 mx-2" space="md">
-                  <Image source={item.cover} alt={item.name} className="h-16 w-16 rounded-full" />
-                  <VStack className="flex-1 mx-2">
-                    <Text bold>{item.name}</Text>
-                    <Text>{item.type}</Text>
-                  </VStack>
-                </HStack>
-              </Card>
+              <HStack className="flex-1 mx-2" space="md">
+                <Image source={item.cover} alt={item.name} className="h-16 w-16 rounded-full" />
+                <VStack className="flex-1 mx-2">
+                  <Text bold>{item.name}</Text>
+                  <Text>{item.type}</Text>
+                </VStack>
+              </HStack>
             </Pressable>
           ))}
         </VStack>

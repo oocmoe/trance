@@ -5,7 +5,6 @@ import { Image } from '@/components/ui/image';
 import { Input, InputField } from '@/components/ui/input';
 import { Modal, ModalBackdrop, ModalContent } from '@/components/ui/modal';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { useMessageByRoomId } from '@/hook/message';
 import { useRoomById } from '@/hook/room';
@@ -131,7 +130,12 @@ function RenderMessage() {
               <Pressable onLongPress={() => handleLongPress(item.id)} key={item.id} className="m-3">
                 <HStack className="justify-end">
                   <Box className="flex-1 bg-white dark:bg-slate-900 dark:border-slate-950 p-4 rounded-xl rounded-br-none border border-slate-50 ml-14">
-                    <Text>{item.content}</Text>
+                    <RenderHtml
+                      contentWidth={width}
+                      baseStyle={{ color: corlorMode === 'light' ? 'black' : 'white' }}
+                      source={{ html: item.content }}
+                    />
+                    {/* <Text>{item.content}</Text> */}
                   </Box>
                 </HStack>
               </Pressable>

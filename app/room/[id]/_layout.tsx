@@ -11,8 +11,8 @@ export default function RoomLayout() {
         headerStyle: { backgroundColor: colorMode === 'light' ? '#FFF' : '#020617' },
         contentStyle: { backgroundColor: colorMode === 'light' ? '#FFF' : '#020617' }
       }}>
-      <Stack.Screen name="index" />
-      <Stack.Screen name="detail" />
+      <Stack.Screen name="index" options={{ title: '对话' }} />
+      <Stack.Screen name="detail" options={{ title: '聊天信息' }} />
     </Stack>
   );
 }

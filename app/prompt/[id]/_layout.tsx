@@ -11,7 +11,7 @@ export default function PromptLayout() {
         headerStyle: { backgroundColor: colorMode === 'light' ? '#FFF' : '#020617' },
         contentStyle: { backgroundColor: colorMode === 'light' ? '#FFF' : '#020617' }
       }}>
-      <Stack.Screen name="index" />
+      <Stack.Screen name="index" options={{ title: '提示词信息' }} />
     </Stack>
   );
 }

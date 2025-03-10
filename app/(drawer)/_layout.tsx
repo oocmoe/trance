@@ -57,6 +57,18 @@ export default function DrawerLayout() {
           title: '模型'
         }}
       />
+      <Drawer.Screen
+        name="prompt"
+        options={{
+          title: '提示词'
+        }}
+      />
+      <Drawer.Screen
+        name="regex"
+        options={{
+          title: '正则脚本'
+        }}
+      />
       {/* <Drawer.Screen
         name="setting"
         options={{
@@ -119,7 +131,7 @@ const drawerNavList = [
   // },
   {
     sortId: 6,
-    name: '关于',
+    name: '关于喘息预览版',
     path: '(drawer)/about',
     icon: Info
   }

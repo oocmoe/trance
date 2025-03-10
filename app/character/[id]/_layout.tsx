@@ -11,7 +11,7 @@ export default function CharacterLayout() {
         headerStyle: { backgroundColor: colorMode === 'light' ? '#FFF' : '#020617' },
         contentStyle: { backgroundColor: colorMode === 'light' ? '#FFF' : '#020617' }
       }}>
-      <Stack.Screen name="index" />
+      <Stack.Screen name="index" options={{ title: '角色卡信息' }} />
     </Stack>
   );
 }

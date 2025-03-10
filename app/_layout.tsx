@@ -15,6 +15,7 @@ const db = SQLite.openDatabaseSync('trance.db');
 
 export default function RootLayout() {
   const [colorMode] = useAtom(colorModeAtom);
+
   useDrizzleStudio(db);
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

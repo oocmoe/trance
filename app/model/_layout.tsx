@@ -11,7 +11,7 @@ export default function ModelLayout() {
         headerTintColor: colorMode === 'light' ? '#000' : '#fff',
         headerBackground: () => <CustomGeminiHeaderBackground />
       }}>
-      <Stack.Screen name="gemini" />
+      <Stack.Screen name="gemini" options={{ title: 'Gemini配置' }} />
     </Stack>
   );
 }

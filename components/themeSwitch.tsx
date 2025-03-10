@@ -1,6 +1,7 @@
 // components/themeSwitch.tsx
 import { colorModeAtom } from '@/store/core';
 import React from 'react';
+import { useColorScheme } from 'react-native';
 import { Storage } from 'expo-sqlite/kv-store';
 import { useAtom } from 'jotai';
 import { Button, ButtonIcon } from './ui/button';
@@ -20,7 +21,11 @@ const ThemeSwitch = () => {
   };
   React.useEffect(() => {
     const fetchColorMode = async () => {
+      const defaultColorScheme = useColorScheme();
       const result = await Storage.getItem('colorMode');
+      if (!result) {
+        setColorMode(defaultColorScheme as 'light' | 'dark');
+      }
       setColorMode(result as 'light' | 'dark');
     };
     fetchColorMode();
