@@ -4,7 +4,7 @@ import { Text } from '@/components/ui/text';
 
 export default function AboutScreen() {
   return (
-    <Box className="h-full bg-white dark:bg-slate-950 p-3">
+    <Box className="h-full  dark:bg-slate-950 p-3">
       <Heading>喘息(trance) By OoC 萌</Heading>
       <Text>存储库: github.com/oocmoe/trance</Text>
       <Text>联络: contact@ooc.moe</Text>

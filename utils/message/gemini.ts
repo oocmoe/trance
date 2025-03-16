@@ -39,9 +39,9 @@ const GEMINI_SAFETY = [
 
 export async function tranceHiGemini(options: GeminiOptions) {
   const key = await SecureStore.getItem('TRANCE_MODEL_GEMINI_KEY');
-  if (!key) return;
+  if (!key) throw new Error('Gemini 密钥未设置');
   const prompt = await readGeminiPrompt(options.promptId, options.personnel, options.roomId);
-  if (!prompt) return;
+  if (!prompt) throw new Error('未找到房间所匹配的提示词');
   const genAI = new GoogleGenerativeAI(key);
   const model = genAI.getGenerativeModel({ model: options.model_version });
   let safetySettings = GEMINI_SAFETY;

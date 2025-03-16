@@ -24,6 +24,9 @@ export default function DrawerLayout() {
     <Drawer
       drawerContent={() => <CustomDrawerContent />}
       screenOptions={{
+        sceneStyle: {
+          backgroundColor: colorMode === 'light' ? '#fff' : '#000'
+        },
         swipeEdgeWidth: 768,
         drawerStyle: {
           width: 300,
@@ -69,12 +72,6 @@ export default function DrawerLayout() {
           title: '正则脚本'
         }}
       />
-      {/* <Drawer.Screen
-        name="setting"
-        options={{
-          title: '设置'
-        }}
-      /> */}
       <Drawer.Screen
         name="about"
         options={{

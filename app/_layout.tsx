@@ -23,7 +23,8 @@ export default function RootLayout() {
         <StatusBar translucent backgroundColor="transparent" />
         <Stack
           screenOptions={{
-            headerShown: false
+            headerShown: false,
+            presentation: 'transparentModal'
           }}>
           <Stack.Screen name="index" />
           <Stack.Screen name="+not-found" />

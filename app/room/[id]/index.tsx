@@ -1,10 +1,21 @@
 import { Box } from '@/components/ui/box';
 import { Button, ButtonIcon, ButtonSpinner, ButtonText } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
+import { Icon, TrashIcon } from '@/components/ui/icon';
 import { Image } from '@/components/ui/image';
 import { Input, InputField } from '@/components/ui/input';
-import { Modal, ModalBackdrop, ModalContent } from '@/components/ui/modal';
+import { Menu, MenuItem, MenuItemLabel } from '@/components/ui/menu';
+import {
+  Modal,
+  ModalBackdrop,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader
+} from '@/components/ui/modal';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { useMessageByRoomId } from '@/hook/message';
 import { useRoomById } from '@/hook/room';
@@ -59,7 +70,7 @@ export default function RoomByIdScreen() {
         <RenderMessage />
       </ScrollView>
       <ActionBar />
-      <MessageModal />
+      <DeleteMessageModal />
     </Box>
   );
 }
@@ -70,7 +81,7 @@ function RenderMessage() {
   const messages = useMessageByRoomId(Number(id));
   const [corlorMode] = useAtom(colorModeAtom);
   const [renderMessages, setRenderMessages] = React.useState<RenderMessages>();
-  const [messageOptionsModal, setMessageOptionsModal] = useAtom(modalAtom('messageOptions'));
+  const [deleteMessageModal, setDeleteMessageModal] = useAtom(modalAtom('deleteMessage'));
   const [messageId, setMesaageId] = useAtom(messageIdAtom);
   const [characterCover, setCharacterCover] = React.useState<string>();
   React.useEffect(() => {
@@ -93,7 +104,7 @@ function RenderMessage() {
   }, []);
   const handleLongPress = (value: number) => {
     setMesaageId(value);
-    setMessageOptionsModal(true);
+    setDeleteMessageModal(true);
   };
 
   return (
@@ -102,43 +113,71 @@ function RenderMessage() {
         renderMessages.map((item) => {
           if (item.is_Sender === 0) {
             return (
-              <Pressable onLongPress={() => handleLongPress(item.id)} key={item.id} className="m-3">
-                <HStack space="md">
-                  {characterCover ? (
-                    <Image
-                      className="w-12 h-12 rounded-full"
-                      alt="cover"
-                      source={{ uri: characterCover }}
-                    />
-                  ) : (
-                    <Skeleton className="w-12 h-12 rounded-full" />
-                  )}
-                  <Box className="flex-1  bg-amber-50 dark:bg-stone-900 dark:border-stone-950  p-4 rounded-xl rounded-tl-none border border-amber-200  mr-12">
-                    <RenderHtml
-                      contentWidth={width}
-                      baseStyle={{ color: corlorMode === 'light' ? 'black' : 'white' }}
-                      source={{ html: item.content }}
-                    />
-                    {/* <Text>{item.content}</Text> */}
-                  </Box>
-                </HStack>
-              </Pressable>
+              <Menu
+                placement="top"
+                offset={-20}
+                trigger={({ ...triggerProps }) => {
+                  return (
+                    <Pressable {...triggerProps} key={item.id} className="m-3">
+                      <HStack space="md">
+                        {characterCover ? (
+                          <Image
+                            className="w-12 h-12 rounded-full"
+                            alt="cover"
+                            source={{ uri: characterCover }}
+                          />
+                        ) : (
+                          <Skeleton className="w-12 h-12 rounded-full" />
+                        )}
+                        <Box className="flex-1  bg-amber-50 dark:bg-stone-900 dark:border-stone-950  p-4 rounded-xl rounded-tl-none border border-amber-200  mr-12">
+                          <RenderHtml
+                            contentWidth={width}
+                            baseStyle={{ color: corlorMode === 'light' ? 'black' : 'white' }}
+                            source={{ html: item.content }}
+                          />
+                        </Box>
+                      </HStack>
+                    </Pressable>
+                  );
+                }}>
+                <MenuItem
+                  onPress={() => handleLongPress(item.id)}
+                  key="delete"
+                  className="px-2 gap-x-2">
+                  <Icon as={TrashIcon} size="sm" className="text-red-500" />
+                  <MenuItemLabel>删除</MenuItemLabel>
+                </MenuItem>
+              </Menu>
             );
           }
           if (item.is_Sender === 1) {
             return (
-              <Pressable onLongPress={() => handleLongPress(item.id)} key={item.id} className="m-3">
-                <HStack className="justify-end">
-                  <Box className="flex-1 bg-white dark:bg-slate-900 dark:border-slate-950 p-4 rounded-xl rounded-br-none border border-slate-50 ml-14">
-                    <RenderHtml
-                      contentWidth={width}
-                      baseStyle={{ color: corlorMode === 'light' ? 'black' : 'white' }}
-                      source={{ html: item.content }}
-                    />
-                    {/* <Text>{item.content}</Text> */}
-                  </Box>
-                </HStack>
-              </Pressable>
+              <Menu
+                placement="top"
+                offset={-20}
+                trigger={({ ...triggerProps }) => {
+                  return (
+                    <Pressable {...triggerProps} key={item.id} className="m-3">
+                      <HStack className="justify-end">
+                        <Box className="flex-1 bg-white dark:bg-slate-900 dark:border-slate-950 p-4 rounded-xl rounded-br-none border border-slate-50 ml-14">
+                          <RenderHtml
+                            contentWidth={width}
+                            baseStyle={{ color: corlorMode === 'light' ? 'black' : 'white' }}
+                            source={{ html: item.content }}
+                          />
+                        </Box>
+                      </HStack>
+                    </Pressable>
+                  );
+                }}>
+                <MenuItem
+                  onPress={() => handleLongPress(item.id)}
+                  key="delete"
+                  className="px-2 gap-x-2">
+                  <Icon as={TrashIcon} size="sm" className="text-red-500" />
+                  <MenuItemLabel>删除</MenuItemLabel>
+                </MenuItem>
+              </Menu>
             );
           }
           return null;
@@ -156,8 +195,8 @@ function HeaderRight() {
   );
 }
 
-function MessageModal() {
-  const [isOpen, setIsOpen] = useAtom(modalAtom('messageOptions'));
+function DeleteMessageModal() {
+  const [isOpen, setIsOpen] = useAtom(modalAtom('deleteMessage'));
   const [messageId] = useAtom(messageIdAtom);
   const handleDelete = async () => {
     if (!messageId) {
@@ -174,12 +213,41 @@ function MessageModal() {
     toast.success('删除成功');
   };
   return (
-    <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+    <Modal
+      isOpen={isOpen}
+      onClose={() => {
+        setIsOpen(false);
+      }}
+      size="md">
       <ModalBackdrop />
       <ModalContent>
-        <Button onPress={handleDelete} variant="link">
-          <ButtonText className="text-red-400">删除</ButtonText>
-        </Button>
+        <ModalHeader>
+          <Heading size="md" className="text-typography-950">
+            删除消息
+          </Heading>
+        </ModalHeader>
+        <ModalBody>
+          <Text size="sm" className="text-typography-500">
+            确定删除吗?它将永远离你而去
+          </Text>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            variant="outline"
+            action="secondary"
+            onPress={() => {
+              setIsOpen(false);
+            }}>
+            <ButtonText>算了</ButtonText>
+          </Button>
+          <Button
+            action="negative"
+            onPress={() => {
+              handleDelete();
+            }}>
+            <ButtonText>永别了</ButtonText>
+          </Button>
+        </ModalFooter>
       </ModalContent>
     </Modal>
   );
@@ -192,15 +260,22 @@ function ActionBar() {
   const [userInput, setUserInput] = React.useState<string>('');
 
   const handleHi = async () => {
-    setIsLoading(true);
     const content = userInput;
     setUserInput('');
-    const result = await tranceHi(content, 'text', room);
-    if (!result) {
+    try {
+      setIsLoading(true);
+      const result = await tranceHi(content, 'text', room);
+      if (!result) throw new Error('发送失败');
+    } catch (error) {
       setUserInput(content);
-      toast.error('发送失败');
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('未知错误');
+      }
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
   return (
     <Box className="m-3">
@@ -213,7 +288,7 @@ function ActionBar() {
             <ButtonSpinner className="text-white" />
           </Button>
         ) : (
-          <Button onPress={handleHi}>
+          <Button isDisabled={userInput.length === 0} onPress={handleHi}>
             <ButtonIcon as={SendIcon} />
           </Button>
         )}

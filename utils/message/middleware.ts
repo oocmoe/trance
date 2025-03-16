@@ -25,7 +25,8 @@ import { tranceHiGemini } from './gemini';
  */
 
 export async function tranceHi(content: string, type: string, room: Room) {
-  if (!room.model || room.personnel.length === 0 || !room.prompt) return;
+  if (!room.model || room.personnel.length === 0 || !room.prompt)
+    throw new Error('房间未设置模型或者提示词');
   const options = {
     roomId: room.id,
     content: content,
