@@ -15,7 +15,14 @@ import { router } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
 import { Storage } from 'expo-sqlite/kv-store';
 import { useAtom } from 'jotai';
-import { BookUserIcon, BotIcon, HammerIcon, Info, RegexIcon } from 'lucide-react-native';
+import {
+  BookUserIcon,
+  BotIcon,
+  HammerIcon,
+  Info,
+  LibraryIcon,
+  RegexIcon
+} from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function DrawerLayout() {
@@ -25,7 +32,7 @@ export default function DrawerLayout() {
       drawerContent={() => <CustomDrawerContent />}
       screenOptions={{
         sceneStyle: {
-          backgroundColor: colorMode === 'light' ? '#fff' : '#000'
+          backgroundColor: colorMode === 'light' ? '#fff' : '#020617'
         },
         swipeEdgeWidth: 768,
         drawerStyle: {
@@ -58,6 +65,12 @@ export default function DrawerLayout() {
         name="model"
         options={{
           title: '模型'
+        }}
+      />
+      <Drawer.Screen
+        name="knowledgeBase"
+        options={{
+          title: '知识库'
         }}
       />
       <Drawer.Screen
@@ -116,6 +129,12 @@ const drawerNavList = [
   },
   {
     sortId: 5,
+    name: '知识库',
+    path: '(drawer)/knowledgeBase',
+    icon: LibraryIcon
+  },
+  {
+    sortId: 6,
     name: '正则脚本',
     path: '(drawer)/regex',
     icon: RegexIcon
@@ -127,8 +146,8 @@ const drawerNavList = [
   //   icon: CogIcon
   // },
   {
-    sortId: 6,
-    name: '关于喘息预览版',
+    sortId: 7,
+    name: '关于喘息',
     path: '(drawer)/about',
     icon: Info
   }
@@ -142,6 +161,10 @@ const CustomDrawerContent = () => {
     const initAvatar = async () => {
       const avatar = await Storage.getItem('TRANCE_USER_AVATAR');
       const name = await Storage.getItem('TRANCE_USER_NAME');
+      if (name?.length === 0) {
+        await Storage.setItem('TRANCE_USER_NAME', 'User');
+        const name = await Storage.getItem('TRANCE_USER_NAME');
+      }
       if (avatar) {
         setAvatar(avatar);
       }

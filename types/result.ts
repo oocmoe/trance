@@ -1,3 +1,4 @@
+import { KnowledgeBaseEntry } from '@/db/schema/knowledgeBase';
 import { PromptContent } from '@/db/schema/prompt';
 
 export type ConvertCharacterResult = {
@@ -31,4 +32,14 @@ export type ConvertRgexResult = {
   is_Global: boolean;
   is_Send: boolean;
   is_Render: boolean;
+};
+
+export type ConvertKnowledgeBaseResult = {
+  name: string;
+  ceator?: string;
+  version?: string;
+  handbook?: string;
+  entries: KnowledgeBaseEntry[];
+  is_Enable?: boolean;
+  firstArchived: string;
 };

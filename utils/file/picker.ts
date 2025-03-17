@@ -1,6 +1,12 @@
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
-import { convertCharacter, convertCover, convertPrompt, convertRegex } from './convert';
+import {
+  convertCharacter,
+  convertCover,
+  convertKnowledgeBase,
+  convertPrompt,
+  convertRegex
+} from './convert';
 import { decodeCharacter, decodeJson } from './decode';
 
 /**
@@ -126,6 +132,23 @@ export async function pickRegex() {
     if (!convertedJson) return;
 
     return convertedJson;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function pickKnowledgeBase() {
+  try {
+    const assets = await pickFileJson();
+    if (!assets || !assets.assets || !assets.assets[0]?.uri) {
+      throw new Error('未选择文件');
+    }
+    const json = await decodeJson(assets.assets[0].uri);
+    if (!json) {
+      throw new Error('json文件解析失败');
+    }
+    const result = convertKnowledgeBase(json);
+    return result;
   } catch (error) {
     console.log(error);
   }

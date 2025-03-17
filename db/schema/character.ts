@@ -66,7 +66,10 @@ export const character = sqliteTable('character', {
   system_prompt: text('system_prompt').$type<string>(),
 
   // 后期历史说明 @TavernCardV2:[data.post_history_instructions]
-  post_history_instructions: text('post_history_instructions').$type<string>()
+  post_history_instructions: text('post_history_instructions').$type<string>(),
+
+  // 首次存档内容
+  firstArchived: text('firstArchived', { mode: 'json' }).$type<string>()
 });
 
 export type Character = InferSelectModel<typeof character>;

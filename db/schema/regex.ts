@@ -42,7 +42,10 @@ export const regex = sqliteTable('regex', {
   is_Send: integer({ mode: 'boolean' }).notNull().default(false),
 
   // 显示时触发
-  is_Render: integer({ mode: 'boolean' }).notNull().default(false)
+  is_Render: integer({ mode: 'boolean' }).notNull().default(false),
+
+  // 首次存档内容
+  firstArchived: text('firstArchived', { mode: 'json' }).$type<string>()
 });
 
 export type Regex = InferSelectModel<typeof regex>;

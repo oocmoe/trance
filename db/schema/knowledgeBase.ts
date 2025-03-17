@@ -1,5 +1,5 @@
 // db/schema/kb.ts
-import { sql } from 'drizzle-orm';
+import { InferInsertModel, InferSelectModel, sql } from 'drizzle-orm';
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
 export const knowledgeBase = sqliteTable('knowledgeBase', {
@@ -36,6 +36,23 @@ export const knowledgeBase = sqliteTable('knowledgeBase', {
   // 知识库使用说明
   handbook: text('handbook').$type<string>(),
 
-  // 知识库内容
-  content: text('content', { mode: 'json' }).$type()
+  // 知识库条目
+  entries: text('entries', { mode: 'json' }).$type<KnowledgeBaseEntry[]>(),
+
+  // 是否启用
+  is_Enabled: integer({ mode: 'boolean' }).notNull().default(false),
+
+  // 首次存档内容
+  firstArchived: text('firstArchived', { mode: 'json' }).$type<string>()
 });
+
+export type KnowledgeBaseEntry = {
+  id: number;
+  name: string;
+  keywords: string[];
+  content: string;
+  is_Enable: boolean;
+};
+
+export type KnowledgeBase = InferSelectModel<typeof knowledgeBase>;
+export type InsertKnowledgeBase = InferInsertModel<typeof knowledgeBase>;

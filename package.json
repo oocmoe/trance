@@ -85,6 +85,7 @@
     "jotai": "^2.12.1",
     "lucide-react-native": "^0.475.0",
     "nativewind": "^4.1.23",
+    "openai-gpt-token-counter": "^1.1.1",
     "png-chunk-text": "^1.0.0",
     "png-chunks-encode": "^1.0.0",
     "png-chunks-extract": "^1.0.0",

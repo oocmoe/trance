@@ -40,10 +40,10 @@ export async function convertCharacter(characterJson: any, cover: string) {
  * 转换提示词为 trance格式，这里只做转换检测
  * @param promptJson
  */
-export async function convertPrompt(promptJson: any) {
+export async function convertPrompt(requsetJson: any) {
   try {
-    if (promptJson.prompt_order && promptJson.prompts) {
-      const result = await convertPromptSillyTavern(promptJson as SillyTavermPrompt);
+    if (requsetJson.prompt_order && requsetJson.prompts) {
+      const result = await convertPromptSillyTavern(requsetJson as SillyTavermPrompt);
       if (!result) return;
       return result;
     }
@@ -52,16 +52,29 @@ export async function convertPrompt(promptJson: any) {
   }
 }
 
-export async function convertRegex(promptJson: any) {
+/**
+ * 转换正则为 trance格式
+ * @param promptJson
+ * @returns
+ */
+export async function convertRegex(requsetJson: any) {
   try {
-    if (promptJson.scriptName && promptJson.findRegex) {
-      const result = await convertRegexSillyTavern(promptJson);
+    if (requsetJson.scriptName && requsetJson.findRegex) {
+      const result = await convertRegexSillyTavern(requsetJson);
       if (!result) return;
       return result;
     }
   } catch (error) {
     console.log(error);
   }
+}
+
+export function convertKnowledgeBase(requsetJson: any) {
+  if (requsetJson.entries && requsetJson.originalData) {
+    const result = convertKnowledgeBaseSillyTavern(requsetJson as SillyTavernWorldBook);
+    return result;
+  }
+  throw new Error('错误的知识库格式');
 }
 
 /**
@@ -176,4 +189,22 @@ async function convertRegexSillyTavern(promptJson: SillyTavermRegex) {
   } catch (error) {
     console.log(error);
   }
+}
+
+function convertKnowledgeBaseSillyTavern(requsetJson: SillyTavernWorldBook) {
+  const knowledgeBaseEntries = Object.entries(requsetJson.entries).map(([key, item]) => {
+    return {
+      id: Number(key),
+      name: item.comment,
+      keywords: [...item.key, ...item.keysecondary],
+      content: item.content,
+      is_Enable: !item.disable
+    };
+  });
+  const knowledgeBase = {
+    name: requsetJson.originalData.name,
+    entries: knowledgeBaseEntries,
+    firstArchived: JSON.stringify(requsetJson)
+  };
+  return knowledgeBase;
 }
