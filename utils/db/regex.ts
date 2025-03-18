@@ -18,7 +18,8 @@ export async function createImportRegex(name: string, request: ConvertRgexResult
       is_Enabled: request.is_Enabled,
       is_Global: request.is_Global,
       is_Send: request.is_Send,
-      is_Render: request.is_Render
+      is_Render: request.is_Render,
+      firstArchived: request.firstArchived
     });
     if (!rows) return;
     return rows.lastInsertRowId;

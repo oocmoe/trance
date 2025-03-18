@@ -1,3 +1,4 @@
+import { KnowledgeBaseEntry } from '@/db/schema/knowledgeBase';
 import * as FileSystem from 'expo-file-system';
 import 'react-native-get-random-values';
 import { v7 as uuidv7 } from 'uuid';
@@ -191,20 +192,24 @@ async function convertRegexSillyTavern(promptJson: SillyTavermRegex) {
   }
 }
 
-function convertKnowledgeBaseSillyTavern(requsetJson: SillyTavernWorldBook) {
-  const knowledgeBaseEntries = Object.entries(requsetJson.entries).map(([key, item]) => {
-    return {
-      id: Number(key),
-      name: item.comment,
-      keywords: [...item.key, ...item.keysecondary],
-      content: item.content,
-      is_Enable: !item.disable
-    };
-  });
+async function convertKnowledgeBaseSillyTavern(requsetJson: SillyTavernWorldBook) {
+  const knowledgeBaseEntries: KnowledgeBaseEntry[] = Object.entries(requsetJson.entries).map(
+    ([key, item]) => {
+      return {
+        id: Number(key),
+        name: item.comment,
+        trigger: item.constant ? 'always' : 'key',
+        keywords: [...item.key, ...item.keysecondary],
+        content: item.content,
+        is_Enable: !item.disable
+      };
+    }
+  );
   const knowledgeBase = {
     name: requsetJson.originalData.name,
     entries: knowledgeBaseEntries,
     firstArchived: JSON.stringify(requsetJson)
   };
+
   return knowledgeBase;
 }

@@ -39,7 +39,7 @@ export const prompt = sqliteTable('prompt', {
   content: text('content', { mode: 'json' }).$type<PromptContent>(),
 
   // 首次存档内容
-  firstArchived: text('firstArchived', { mode: 'json' }).$type<string>()
+  firstArchived: text('firstArchived', { mode: 'json' }).$type<string>().notNull()
 });
 
 export type PromptContent = Array<{

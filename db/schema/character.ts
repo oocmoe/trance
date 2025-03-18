@@ -69,7 +69,7 @@ export const character = sqliteTable('character', {
   post_history_instructions: text('post_history_instructions').$type<string>(),
 
   // 首次存档内容
-  firstArchived: text('firstArchived', { mode: 'json' }).$type<string>()
+  firstArchived: text('firstArchived', { mode: 'json' }).$type<string>().notNull()
 });
 
 export type Character = InferSelectModel<typeof character>;

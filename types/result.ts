@@ -17,11 +17,13 @@ export type ConvertCharacterResult = {
     system_prompt: string;
     post_history_instructions: string;
   };
+  firstArchived: string;
 };
 
 export type ConverPromptResult = {
   name: string;
   content: PromptContent;
+  firstArchived: string;
 };
 
 export type ConvertRgexResult = {
@@ -32,6 +34,7 @@ export type ConvertRgexResult = {
   is_Global: boolean;
   is_Send: boolean;
   is_Render: boolean;
+  firstArchived?: string;
 };
 
 export type ConvertKnowledgeBaseResult = {

@@ -42,3 +42,9 @@ export type RenderMessages = Array<{
   content: string;
   role: 'assistant' | 'user' | 'system';
 }>;
+
+export type RenderKnowledgeBaseList = {
+  id: number;
+  global_id: string;
+  name: string;
+};

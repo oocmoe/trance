@@ -37,18 +37,19 @@ export const knowledgeBase = sqliteTable('knowledgeBase', {
   handbook: text('handbook').$type<string>(),
 
   // 知识库条目
-  entries: text('entries', { mode: 'json' }).$type<KnowledgeBaseEntry[]>(),
+  entries: text('entries', { mode: 'json' }).$type<KnowledgeBaseEntry[]>().notNull(),
 
   // 是否启用
   is_Enabled: integer({ mode: 'boolean' }).notNull().default(false),
 
   // 首次存档内容
-  firstArchived: text('firstArchived', { mode: 'json' }).$type<string>()
+  firstArchived: text('firstArchived', { mode: 'json' }).$type<string>().notNull()
 });
 
 export type KnowledgeBaseEntry = {
   id: number;
   name: string;
+  trigger: 'key' | 'always';
   keywords: string[];
   content: string;
   is_Enable: boolean;

@@ -114,7 +114,8 @@ export async function pickPrompt() {
     if (!convertedJson) return;
     const prompt = {
       name: assets.assets[0].name,
-      content: convertedJson
+      content: convertedJson,
+      firstArchived: JSON.stringify(json)
     };
     return prompt;
   } catch (error) {
@@ -128,9 +129,12 @@ export async function pickRegex() {
     if (!assets || !assets.assets || !assets.assets[0]?.uri) return;
     const json = await decodeJson(assets.assets[0].uri);
     if (!json) return;
-    const convertedJson = await convertRegex(json);
-    if (!convertedJson) return;
-
+    const result = await convertRegex(json);
+    if (!result) return;
+    const convertedJson = {
+      firstArchived: JSON.stringify(json),
+      ...result
+    };
     return convertedJson;
   } catch (error) {
     console.log(error);
