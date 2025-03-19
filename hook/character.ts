@@ -1,8 +1,8 @@
-import { character } from '@/db/schema/character';
-import { eq } from 'drizzle-orm';
-import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
-import { useLocalSearchParams } from 'expo-router';
-import { useDB } from './db';
+import { character } from "@/db/schema/character";
+import { eq } from "drizzle-orm";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { useLocalSearchParams } from "expo-router";
+import { useDB } from "./db";
 
 // 初始化数据库
 const db = useDB();
@@ -11,26 +11,26 @@ const db = useDB();
  * 实时查询全部角色卡
  */
 export function useCharacter() {
-  const { data, error, updatedAt } = useLiveQuery(db.select().from(character));
-  return data;
+	const { data, error, updatedAt } = useLiveQuery(db.select().from(character));
+	return data;
 }
 
 /**
  * 实时查询角色卡列表
  */
 export function useCharacterList() {
-  return useLiveQuery(
-    db
-      .select({
-        id: character.id,
-        global_id: character.global_id,
-        cover: character.cover,
-        name: character.name,
-        creator: character.creator,
-        version: character.version
-      })
-      .from(character)
-  );
+	return useLiveQuery(
+		db
+			.select({
+				id: character.id,
+				global_id: character.global_id,
+				cover: character.cover,
+				name: character.name,
+				creator: character.creator,
+				version: character.version,
+			})
+			.from(character),
+	);
 }
 
 /**
@@ -39,10 +39,10 @@ export function useCharacterList() {
  * @returns
  */
 export function useCharacterById(id: number) {
-  const { data, error, updatedAt } = useLiveQuery(
-    db.select().from(character).where(eq(character.id, id))
-  );
-  return data[0];
+	const { data, error, updatedAt } = useLiveQuery(
+		db.select().from(character).where(eq(character.id, id)),
+	);
+	return data[0];
 }
 
 /**
@@ -50,7 +50,7 @@ export function useCharacterById(id: number) {
  * @returns
  */
 export function useCharacterDetailsById() {
-  const { id } = useLocalSearchParams();
-  const data = useCharacterById(Number(id));
-  return data;
+	const { id } = useLocalSearchParams();
+	const data = useCharacterById(Number(id));
+	return data;
 }

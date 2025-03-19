@@ -1,9 +1,9 @@
-import { Stack } from 'expo-router/stack';
+import { Stack } from "expo-router/stack";
 
 export default function SettingLayout() {
-  return (
-    <Stack>
-      <Stack.Screen name="index" />
-    </Stack>
-  );
+	return (
+		<Stack>
+			<Stack.Screen name="index" />
+		</Stack>
+	);
 }

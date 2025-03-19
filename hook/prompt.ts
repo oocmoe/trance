@@ -1,7 +1,7 @@
-import { prompt } from '@/db/schema/prompt';
-import { eq } from 'drizzle-orm';
-import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
-import { useDB } from './db';
+import { prompt } from "@/db/schema/prompt";
+import { eq } from "drizzle-orm";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { useDB } from "./db";
 
 // 初始化数据库
 const db = useDB();
@@ -11,16 +11,16 @@ const db = useDB();
  * @returns
  */
 export function usePromptList() {
-  const { data, error, updatedAt } = useLiveQuery(
-    db
-      .select({
-        id: prompt.id,
-        global_id: prompt.global_id,
-        name: prompt.name
-      })
-      .from(prompt)
-  );
-  return data;
+	const { data, error, updatedAt } = useLiveQuery(
+		db
+			.select({
+				id: prompt.id,
+				global_id: prompt.global_id,
+				name: prompt.name,
+			})
+			.from(prompt),
+	);
+	return data;
 }
 
 /**
@@ -29,8 +29,8 @@ export function usePromptList() {
  * @returns
  */
 export function usePromptById(id: number) {
-  const { data, error, updatedAt } = useLiveQuery(
-    db.select().from(prompt).where(eq(prompt.id, id))
-  );
-  return data[0];
+	const { data, error, updatedAt } = useLiveQuery(
+		db.select().from(prompt).where(eq(prompt.id, id)),
+	);
+	return data[0];
 }

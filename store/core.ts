@@ -1,11 +1,11 @@
 // store/core.ts
-import { atom } from 'jotai';
-import { atomFamily } from 'jotai/utils';
+import { atom } from "jotai";
+import { atomFamily } from "jotai/utils";
 
 /**
  * 全局主题状态
  */
-export const colorModeAtom = atom<'light' | 'dark'>('dark');
+export const colorModeAtom = atom<"light" | "dark">("dark");
 
 /**
  * 模态框状态

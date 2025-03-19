@@ -1,54 +1,56 @@
 // db/schema/prompt.ts
-import { InferInsertModel, InferSelectModel, sql } from 'drizzle-orm';
-import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { InferInsertModel, InferSelectModel, sql } from "drizzle-orm";
+import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-export const prompt = sqliteTable('prompt', {
-  /**
-   * trance 核心字段 不做对外兼容
-   */
+export const prompt = sqliteTable("prompt", {
+	/**
+	 * trance 核心字段 不做对外兼容
+	 */
 
-  // 提示词 ID (主键，自增)
-  id: integer('id').primaryKey({ autoIncrement: true }),
+	// 提示词 ID (主键，自增)
+	id: integer("id").primaryKey({ autoIncrement: true }),
 
-  // 提示词全局唯一标识 uuidv7
-  global_id: text('global_id').$type<string>().unique().notNull(),
+	// 提示词全局唯一标识 uuidv7
+	global_id: text("global_id").$type<string>().unique().notNull(),
 
-  // 创建时间（毫秒级）— 使用整数类型存储时间戳
-  created_at: integer('created_at')
-    .default(sql`(unixepoch() * 1000)`)
-    .notNull(),
+	// 创建时间（毫秒级）— 使用整数类型存储时间戳
+	created_at: integer("created_at")
+		.default(sql`(unixepoch() * 1000)`)
+		.notNull(),
 
-  // 更新时间（毫秒级）— 使用整数类型存储时间戳
-  updated_at: integer('updated_at')
-    .default(sql`(unixepoch() * 1000)`)
-    .notNull(),
+	// 更新时间（毫秒级）— 使用整数类型存储时间戳
+	updated_at: integer("updated_at")
+		.default(sql`(unixepoch() * 1000)`)
+		.notNull(),
 
-  // 提示词名称
-  name: text('name').$type<string>().notNull(),
+	// 提示词名称
+	name: text("name").$type<string>().notNull(),
 
-  // 提示词作者
-  ceator: text('creator').$type<string>(),
+	// 提示词作者
+	ceator: text("creator").$type<string>(),
 
-  // 提示词版本
-  version: text('version').$type<string>(),
+	// 提示词版本
+	version: text("version").$type<string>(),
 
-  // 提示词使用说明
-  handbook: text('handbook').$type<string>(),
+	// 提示词使用说明
+	handbook: text("handbook").$type<string>(),
 
-  // 提示词内容
-  content: text('content', { mode: 'json' }).$type<PromptContent>(),
+	// 提示词内容
+	content: text("content", { mode: "json" }).$type<PromptContent>(),
 
-  // 首次存档内容
-  firstArchived: text('firstArchived', { mode: 'json' }).$type<string>().notNull()
+	// 首次存档内容
+	firstArchived: text("firstArchived", { mode: "json" })
+		.$type<string>()
+		.notNull(),
 });
 
 export type PromptContent = Array<{
-  id: number;
-  identifier: string;
-  name: string;
-  content: string;
-  role: 'system' | 'user' | 'assistant';
-  isEnabled: boolean;
+	id: number;
+	identifier: string;
+	name: string;
+	content: string;
+	role: "system" | "user" | "assistant";
+	isEnabled: boolean;
 }>;
 
 export type Prompt = InferSelectModel<typeof prompt>;
