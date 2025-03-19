@@ -1,6 +1,6 @@
-import { Regex, regex } from "@/db/schema/regex";
+import { type Regex, regex } from "@/db/schema/regex";
 import { useDB } from "@/hook/db";
-import { ConvertRgexResult } from "@/types/result";
+import type { ConvertRgexResult } from "@/types/result";
 import { and, eq, inArray } from "drizzle-orm";
 import "react-native-get-random-values";
 import { v7 as uuidv7 } from "uuid";
@@ -22,7 +22,7 @@ export async function createImportRegex(
 			is_Global: request.is_Global,
 			is_Send: request.is_Send,
 			is_Render: request.is_Render,
-			firstArchived: request.firstArchived,
+			firstArchived: request.firstArchived || ""
 		});
 		if (!rows) return;
 		return rows.lastInsertRowId;

@@ -118,14 +118,14 @@ async function readGeminiPrompt(
 		const character = await readCharacterById(Number(personnel[0]));
 		if (!character) return;
 		// 根据提示词排序替换
-		promptContent.forEach((item) => {
+		for (const item of promptContent) {
 			if (item.identifier === "chatHistory") {
 				item.content = history;
 			}
 			if (item.identifier === "charDescription") {
 				item.content = character.description || "";
 			}
-		});
+		}
 		const activePrompt = promptContent.filter(
 			(item) => item.isEnabled === true,
 		);

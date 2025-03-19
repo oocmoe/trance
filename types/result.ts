@@ -1,5 +1,5 @@
-import { KnowledgeBaseEntry } from "@/db/schema/knowledgeBase";
-import { PromptContent } from "@/db/schema/prompt";
+import type { KnowledgeBaseEntry } from "@/db/schema/knowledgeBase";
+import type { PromptContent } from "@/db/schema/prompt";
 
 export type ConvertCharacterResult = {
 	character: {
@@ -17,6 +17,7 @@ export type ConvertCharacterResult = {
 		system_prompt: string;
 		post_history_instructions: string;
 	};
+	knowledgeBase?: KnowledgeBaseEntry[]
 	firstArchived: string;
 };
 

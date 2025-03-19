@@ -1,11 +1,11 @@
 // app/index.tsx
 import migrations from "@/drizzle/migrations";
-import React from "react";
-import { Text, View } from "react-native";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
-import { Redirect, useRouter } from "expo-router";
+import { Redirect } from "expo-router";
 import { openDatabaseSync } from "expo-sqlite";
+import React from "react";
+import { Text, View } from "react-native";
 
 /**
  * trance 入口
@@ -17,7 +17,6 @@ const db = drizzle(expo);
 
 export default function HomeScreen() {
 	const { success, error } = useMigrations(db, migrations);
-	const router = useRouter();
 	const [migrationStatus, setMigrationStatus] = React.useState<
 		"loading" | "error" | "success"
 	>("loading");
@@ -28,7 +27,7 @@ export default function HomeScreen() {
 		} else if (success) {
 			setMigrationStatus("success");
 		}
-	}, [success, error, router]);
+	}, [success, error]);
 
 	if (migrationStatus === "loading") {
 		return (

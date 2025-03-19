@@ -1,4 +1,4 @@
-import { Room, room } from "@/db/schema/room";
+import { type Room, room } from "@/db/schema/room";
 import { useDB } from "@/hook/db";
 import { eq } from "drizzle-orm";
 import "react-native-get-random-values";

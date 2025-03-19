@@ -31,5 +31,5 @@ export function useKnowledgeBaseEntryById(id: number, entryId: number) {
 			.from(knowledgeBase)
 			.where(eq(knowledgeBase.id, id)),
 	);
-	return data?.[0]?.entries?.[entryId] ?? undefined;
+	return data[0]?.entries?.find(item => item.id === entryId);
 }

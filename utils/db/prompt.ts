@@ -1,6 +1,6 @@
-import { Prompt, prompt } from "@/db/schema/prompt";
+import { type Prompt, prompt } from "@/db/schema/prompt";
 import { useDB } from "@/hook/db";
-import { ConverPromptResult } from "@/types/result";
+import type { ConverPromptResult } from "@/types/result";
 import { eq } from "drizzle-orm";
 import "react-native-get-random-values";
 import { v7 as uuidv7 } from "uuid";

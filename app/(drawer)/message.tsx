@@ -6,10 +6,10 @@ import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { useRoomList } from "@/hook/room";
 import type { RenderRoomList } from "@/types/render";
-import { useEffect } from "react";
-import { Pressable, ScrollView } from "react-native";
 import { router } from "expo-router";
 import { atom, useAtom } from "jotai";
+import React from "react";
+import { Pressable, ScrollView } from "react-native";
 
 // 房间列表状态
 const renderRoomListAtom = atom<RenderRoomList>();
@@ -26,9 +26,9 @@ export default function MessageScreen() {
 function renderRoomList() {
 	const list = useRoomList();
 	const [, setRenderRoomList] = useAtom(renderRoomListAtom);
-	useEffect(() => {
+	React.useEffect(() => {
 		setRenderRoomList(list.data);
-	}, [list.data]);
+	}, [list.data, setRenderRoomList]);
 }
 
 // 渲染角色卡列表
@@ -36,7 +36,7 @@ function RoomList() {
 	const [list] = useAtom(renderRoomListAtom);
 	return (
 		<ScrollView>
-			{list && typeof list != undefined ? (
+			{list && typeof list !== "undefined" ? (
 				<VStack>
 					{list.map((item) => (
 						<Pressable

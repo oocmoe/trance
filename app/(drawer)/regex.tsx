@@ -24,11 +24,11 @@ import type { RenderRegexList } from "@/types/render";
 import type { ConvertRgexResult } from "@/types/result";
 import { createImportRegex } from "@/utils/db/regex";
 import { pickRegex } from "@/utils/file/picker";
-import React from "react";
-import { Pressable, ScrollView } from "react-native";
-import { router, Stack } from "expo-router";
+import { Stack, router } from "expo-router";
 import { atom, useAtom } from "jotai";
 import { FileUpIcon, ImportIcon, ScanSearchIcon } from "lucide-react-native";
+import React from "react";
+import { Pressable, ScrollView } from "react-native";
 import { toast } from "sonner-native";
 
 const renderRegexListAtom = atom<RenderRegexList>();
@@ -68,7 +68,7 @@ function SearchRegex() {
 		} else {
 			setRenderRegexList(list);
 		}
-	}, [list, inputValue]);
+	}, [list, inputValue, setRenderRegexList]);
 
 	return (
 		<>
@@ -98,7 +98,7 @@ function RgexList() {
 	const [list] = useAtom(renderRegexListAtom);
 	return (
 		<ScrollView>
-			{list && typeof list != undefined ? (
+			{list && typeof list !== "undefined" ? (
 				<VStack className="m-3">
 					{list.map((item) => (
 						<Pressable

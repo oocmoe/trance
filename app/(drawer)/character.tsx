@@ -24,17 +24,18 @@ import type { RenderCharacterList } from "@/types/render";
 import type { ConvertCharacterResult } from "@/types/result";
 import { createCharacter, createImportCharacter } from "@/utils/db/character";
 import { pickCharacterCover, pickCharacterPng } from "@/utils/file/picker";
-import React from "react";
-import { Pressable, ScrollView } from "react-native";
 import * as FileSystem from "expo-file-system";
 import { Stack, router } from "expo-router";
 import { atom, useAtom } from "jotai";
 import {
 	CircleCheckBigIcon,
+	CircleXIcon,
 	FileUpIcon,
 	ImportIcon,
 	UserSearchIcon,
 } from "lucide-react-native";
+import React from "react";
+import { Pressable, ScrollView } from "react-native";
 import { toast } from "sonner-native";
 
 // 角色卡列表状态
@@ -80,7 +81,7 @@ function SearchCharacter() {
 		} else {
 			setRenderCharacterList(list.data);
 		}
-	}, [list.data, inputValue]);
+	}, [list.data, inputValue, setRenderCharacterList]);
 
 	return (
 		<>
@@ -111,7 +112,7 @@ function CharacterList() {
 	const [list] = useAtom(renderCharacterListAtom);
 	return (
 		<ScrollView>
-			{list && typeof list != undefined ? (
+			{list && typeof list !== "undefined" ? (
 				<VStack space="sm">
 					{list.map((item) => (
 						<Pressable
@@ -208,7 +209,7 @@ function NewCharacterModal() {
 			setName(undefined);
 			setCover(undefined);
 			setIsOpen(false);
-			toast.success("新建角色卡成功: " + name);
+			toast.success(`新建角色卡成功: ${name}`);
 		}
 	};
 	return (
@@ -284,21 +285,28 @@ function ImportCharacterModal() {
 	};
 	const handleImport = async () => {
 		if (!previewData) return;
-		const result = await createImportCharacter(previewData.character);
-		if (!result) {
-			toast.error("导入角色卡失败");
-			setPreviewData(undefined);
-			return;
+		try {
+			const result = await createImportCharacter(previewData);
+			if (result) {
+				setIsOpen(false);
+				setPreviewData(undefined);
+				toast.success("导入成功");
+			}
+		} catch (error) {
+			console.log(error);
+			if (error instanceof Error) {
+				toast.error(error.message);
+			} else {
+				toast.error("未知错误");
+			}
 		}
-		toast.success("导入角色卡成功");
-		setPreviewData(undefined);
-		setIsOpen(false);
 	};
 	return (
 		<Modal
 			isOpen={isOpen}
 			onClose={() => {
-				setIsOpen(false), setPreviewData(undefined);
+				setIsOpen(false);
+				setPreviewData(undefined);
 			}}
 		>
 			<ModalBackdrop />
@@ -310,7 +318,7 @@ function ImportCharacterModal() {
 					</Button>
 				</ModalHeader>
 				<ModalBody>
-					{previewData && previewData.character.cover && (
+					{previewData?.character.cover && (
 						<Box>
 							<HStack space="sm">
 								<Image
@@ -320,14 +328,26 @@ function ImportCharacterModal() {
 								/>
 								<VStack space="sm">
 									<Heading>{previewData.character.name}</Heading>
-									<Box>
-										{previewData.character && (
-											<HStack space="sm" className="items-center">
-												<Icon color="green" as={CircleCheckBigIcon} />
-												<Text>角色卡数据</Text>
-											</HStack>
-										)}
-									</Box>
+									{previewData && (
+										<Box>
+											{previewData.character && (
+												<HStack space="sm" className="items-center">
+													<Icon color="green" as={CircleCheckBigIcon} />
+													<Text>角色卡数据</Text>
+												</HStack>
+											)}
+											{previewData && (
+												<HStack space="sm" className="items-center">
+													{previewData.knowledgeBase ? (
+														<Icon color="green" as={CircleCheckBigIcon} />
+													) : (
+														<Icon color="red" as={CircleXIcon} />
+													)}
+													<Text>知识库数据</Text>
+												</HStack>
+											)}
+										</Box>
+									)}
 								</VStack>
 							</HStack>
 						</Box>

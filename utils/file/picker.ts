@@ -98,7 +98,10 @@ export async function pickCharacterPng() {
 		if (!decodeResult || !cover) return;
 		const result = await convertCharacter(decodeResult, cover);
 		if (!result) return;
-		return result;
+		return {
+			firstArchived: JSON.stringify(decodeResult),
+			...result,
+		}
 	} catch (error) {
 		console.log(error);
 	}

@@ -1,5 +1,5 @@
-import { Messages } from "@/db/schema/message";
-import { Room } from "@/db/schema/room";
+import type { Messages } from "@/db/schema/message";
+import type { Room } from "@/db/schema/room";
 import { readEnabledGlobalRenderRegex } from "../db/regex";
 import { tranceHiGemini } from "./gemini";
 
@@ -24,6 +24,13 @@ import { tranceHiGemini } from "./gemini";
  *
  */
 
+/**
+ * 消息中间件
+ * @param content 
+ * @param type 
+ * @param room 
+ * @returns 
+ */
 export async function tranceHi(content: string, type: string, room: Room) {
 	if (!room.model || room.personnel.length === 0 || !room.prompt)
 		throw new Error("房间未设置模型或者提示词");
@@ -44,9 +51,12 @@ export async function tranceHi(content: string, type: string, room: Room) {
 		}
 	}
 }
-
+/**
+ * 渲染消息
+ * @param messages 
+ * @returns 
+ */
 export async function tranceRenderMessages(
-	corlorMode: string,
 	messages: Messages[],
 ) {
 	try {
@@ -69,19 +79,25 @@ export async function tranceRenderMessages(
 	}
 }
 
+/**
+ * 转换html消息
+ * @param content 
+ * @returns 
+ */
 export async function tranceConvertMessage(content: string) {
 	try {
 		const promptRegex = await readEnabledGlobalRenderRegex();
+		let message = content;
 		if (promptRegex) {
 			const regexRules = promptRegex.map((item) => ({
 				replace: new RegExp(item.replace),
 				placeholder: item.placement,
 			}));
-			regexRules.forEach(({ replace, placeholder }) => {
-				content = content.replace(replace, placeholder);
-			});
+			for (const { replace, placeholder } of regexRules) {
+				message = content.replace(replace, placeholder);
 		}
-		content = removeSpareHtmlTag(content);
+		}
+		message = removeSpareHtmlTag(content);
 		const highlightedChat = content.replace(
 			/["“](.*?)["”]/g,
 			'<span style="color: orange;">"$1"</span>',
@@ -92,6 +108,11 @@ export async function tranceConvertMessage(content: string) {
 	}
 }
 
+/**
+ * 删除多余html标签
+ * @param content 
+ * @returns 
+ */
 function removeSpareHtmlTag(content: string) {
 	const tagGroup = [
 		"h1",
@@ -131,6 +152,6 @@ function removeSpareHtmlTag(content: string) {
 	];
 	const tagRule = tagGroup.map((tag) => `${tag}\\b`).join("|");
 	const regexTag = new RegExp(`<(?!(?:${tagRule})>)[^>]+>`, "g");
-	content = content.replace(regexTag, "");
-	return content;
+	const response = content.replace(regexTag, "");
+	return response;
 }

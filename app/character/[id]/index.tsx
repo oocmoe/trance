@@ -30,10 +30,10 @@ import { VStack } from "@/components/ui/vstack";
 import { useCharacterDetailsById } from "@/hook/character";
 import { deleteCharacter } from "@/utils/db/character";
 import { createDialogRoom } from "@/utils/db/room";
-import React from "react";
-import { Pressable, ScrollView } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { MessageCirclePlusIcon, Trash2Icon } from "lucide-react-native";
+import React from "react";
+import { Pressable, ScrollView } from "react-native";
 import { toast } from "sonner-native";
 
 export default function CharacterByIdScreen() {
@@ -168,7 +168,7 @@ function CreateRoom() {
 												</SelectDragIndicatorWrapper>
 												{character.prologue.map((item, index) => (
 													<SelectItem
-														key={index}
+														key={item.name}
 														value={String(index)}
 														label={item.name}
 													/>

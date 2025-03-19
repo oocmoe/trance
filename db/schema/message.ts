@@ -1,5 +1,5 @@
 // db/schema/message.ts
-import { InferSelectModel, sql } from "drizzle-orm";
+import { type InferSelectModel, sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const message = sqliteTable("message", {

@@ -1,5 +1,7 @@
-import { Character, character, InsertCharacter } from "@/db/schema/character";
+import { type Character, character } from "@/db/schema/character";
+import { knowledgeBase } from "@/db/schema/knowledgeBase";
 import { useDB } from "@/hook/db";
+import type { ConvertCharacterResult } from "@/types/result";
 import { eq } from "drizzle-orm";
 import "react-native-get-random-values";
 import { v7 as uuidv7 } from "uuid";
@@ -18,6 +20,7 @@ export async function createCharacter(name: string, cover: string) {
 			global_id: uuidv7(),
 			name: name,
 			cover: cover,
+			firstArchived:""
 		});
 		if (!rows) return;
 		return rows.lastInsertRowId;
@@ -68,13 +71,24 @@ export async function readCharacterFieldById(
  * 插入角色卡数
  * @param data
  */
-export async function createImportCharacter(data: InsertCharacter) {
+export async function createImportCharacter(data:ConvertCharacterResult) {
 	try {
-		const rows = await db.insert(character).values({
-			...data,
+		const characterRows = await db.insert(character).values({
+			...data.character,
+			firstArchived: data.firstArchived
 		});
-		if (!rows) return;
-		return rows.lastInsertRowId;
+		if (!characterRows) throw new Error("导入角色卡失败")
+		if(data.knowledgeBase){
+			console.log(1)
+			const knowledgeBaseRows = await db.insert(knowledgeBase).values({
+				global_id: uuidv7(),
+				name: data.character.name,
+				entries:data.knowledgeBase,
+				firstArchived:data.firstArchived
+			})
+			if(!knowledgeBaseRows) throw new Error("导入知识库失败")
+		}
+		return characterRows
 	} catch (error) {
 		console.log(error);
 	}

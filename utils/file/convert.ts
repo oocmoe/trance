@@ -1,4 +1,4 @@
-import { KnowledgeBaseEntry } from "@/db/schema/knowledgeBase";
+import type { KnowledgeBaseEntry } from "@/db/schema/knowledgeBase";
 import * as FileSystem from "expo-file-system";
 import "react-native-get-random-values";
 import { v7 as uuidv7 } from "uuid";
@@ -29,11 +29,11 @@ export async function convertCharacter(characterJson: any, cover: string) {
 			return result;
 		}
 		// Spec V1
-		if (characterJson.name) {
-			const result = await convertCharacterTavernCardV1(
-				characterJson as TavernCardV1,
-			);
-		}
+		// if (characterJson.name) {
+		// 	const result = await convertCharacterTavernCardV1(
+		// 		characterJson as TavernCardV1,
+		// 	);
+		// }
 	} catch (error) {
 		console.log(error);
 	}
@@ -88,12 +88,12 @@ export function convertKnowledgeBase(requsetJson: any) {
  * 转换 TavernCardV1
  * @param characterJson
  */
-async function convertCharacterTavernCardV1(characterJson: TavernCardV1) {
-	try {
-	} catch (error) {
-		console.log(error);
-	}
-}
+// async function convertCharacterTavernCardV1(characterJson: TavernCardV1) {
+// 	try {
+// 	} catch (error) {
+// 		console.log(error);
+// 	}
+// }
 
 /**
  * 转换 TavernCardV2
@@ -104,6 +104,7 @@ async function covertCharacterTavernCardV2(
 	cover: string,
 ) {
 	try {
+		// 处理角色卡数据
 		const prologue = () => {
 			const first_mes = {
 				name: characterJson.data.first_mes.slice(0, 20),
@@ -122,7 +123,6 @@ async function covertCharacterTavernCardV2(
 			}
 			return Array(first_mes);
 		};
-
 		const character = {
 			global_id: uuidv7(),
 			cover: cover,
@@ -138,8 +138,29 @@ async function covertCharacterTavernCardV2(
 			system_prompt: characterJson.data.system_prompt,
 			post_history_instructions: characterJson.data.post_history_instructions,
 		};
+
+		//处理知识库数据
+		let knowledgeBase: KnowledgeBaseEntry[] | undefined
+		if(characterJson.data.character_book){
+			let idCounter = 0
+			knowledgeBase = characterJson.data.character_book.entries.map((item)=>{
+				return{
+					id: idCounter++,
+					name: item.comment || "",
+					content: item.content,
+					trigger: item.constant ? "always" : "key",
+					keywords: [...item.keys, ...item.secondary_keys || []],
+					is_Enable: item.enabled,
+				}
+			})
+		}
+
+
+
+		// 整合
 		const converData = {
 			character: character,
+			knowledgeBase:knowledgeBase
 		};
 
 		return converData;
@@ -171,8 +192,8 @@ async function convertPromptSillyTavern(promptJson: SillyTavermPrompt) {
 			isEnabled: isEnabledMap.get(item.identifier) ?? false,
 		}));
 		const sortedPrompts = processedPrompts.sort((a, b) => {
-			const aOrder = orderMap.get(a.identifier) ?? Infinity;
-			const bOrder = orderMap.get(b.identifier) ?? Infinity;
+			const aOrder = orderMap.get(a.identifier) ?? Number.POSITIVE_INFINITY;
+			const bOrder = orderMap.get(b.identifier) ?? Number.POSITIVE_INFINITY;
 			return aOrder - bOrder;
 		});
 		return sortedPrompts.map((item, index) => ({
@@ -209,6 +230,7 @@ async function convertKnowledgeBaseSillyTavern(
 	const knowledgeBaseEntries: KnowledgeBaseEntry[] = Object.entries(
 		requsetJson.entries,
 	).map(([key, item]) => {
+		console.log(requsetJson.entries)
 		return {
 			id: Number(key),
 			name: item.comment,

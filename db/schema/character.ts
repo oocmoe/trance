@@ -1,5 +1,5 @@
 // db/schema/character.ts
-import { InferInsertModel, InferSelectModel, sql } from "drizzle-orm";
+import { type InferInsertModel, type InferSelectModel, sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const character = sqliteTable("character", {

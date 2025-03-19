@@ -1,10 +1,10 @@
 import {
-	KnowledgeBase,
+	type KnowledgeBase,
+	type KnowledgeBaseEntry,
 	knowledgeBase,
-	KnowledgeBaseEntry,
 } from "@/db/schema/knowledgeBase";
 import { useDB } from "@/hook/db";
-import { ConvertKnowledgeBaseResult } from "@/types/result";
+import type { ConvertKnowledgeBaseResult } from "@/types/result";
 import { eq } from "drizzle-orm";
 import "react-native-get-random-values";
 import { v7 as uuidv7 } from "uuid";
