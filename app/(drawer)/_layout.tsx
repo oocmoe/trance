@@ -16,8 +16,8 @@ import { useAtom } from "jotai";
 import {
 	BookUserIcon,
 	BotIcon,
+	CogIcon,
 	HammerIcon,
-	Info,
 	LibraryIcon,
 	RegexIcon,
 } from "lucide-react-native";
@@ -87,9 +87,9 @@ export default function DrawerLayout() {
 				}}
 			/>
 			<Drawer.Screen
-				name="about"
+				name="setting"
 				options={{
-					title: "关于 trance",
+					title: "设置",
 				}}
 			/>
 		</Drawer>
@@ -140,17 +140,11 @@ const drawerNavList = [
 		path: "(drawer)/regex",
 		icon: RegexIcon,
 	},
-	// {
-	//   sortId: 6,
-	//   name: '设置',
-	//   path: '(drawer)/setting',
-	//   icon: CogIcon
-	// },
 	{
 		sortId: 7,
-		name: "关于喘息",
-		path: "(drawer)/about",
-		icon: Info,
+		name: "设置",
+		path: "(drawer)/setting",
+		icon: CogIcon,
 	},
 ];
 

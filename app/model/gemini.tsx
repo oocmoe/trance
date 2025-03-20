@@ -13,10 +13,10 @@ import {
 	ModalFooter,
 	ModalHeader,
 } from "@/components/ui/modal";
-import React, { useEffect } from "react";
-import { Pressable } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { BoltIcon, KeyIcon } from "lucide-react-native";
+import React from "react";
+import { Pressable } from "react-native";
 import { toast } from "sonner-native";
 
 export default function GeminiScreen() {
@@ -44,7 +44,7 @@ function Key() {
 	};
 
 	// 初始化key
-	useEffect(() => {
+	React.useEffect(() => {
 		const fetchKey = async () => {
 			try {
 				const result = await SecureStore.getItem("TRANCE_MODEL_GEMINI_KEY");
@@ -55,7 +55,7 @@ function Key() {
 			}
 		};
 		fetchKey();
-	}, [showModal]);
+	}, []);
 
 	return (
 		<>

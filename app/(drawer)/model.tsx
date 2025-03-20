@@ -3,8 +3,8 @@ import { Card } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { ArrowRightIcon, Icon } from "@/components/ui/icon";
+import { type Href, router } from "expo-router";
 import { Pressable, ScrollView } from "react-native";
-import { router } from "expo-router";
 import { SvgUri } from "react-native-svg";
 
 export default function ModelScreen() {
@@ -17,40 +17,21 @@ export default function ModelScreen() {
 
 // 模型列表
 const modelLists = [
-	// {
-	//   name: 'Deepseek',
-	//   path: '/(model)/gemini/',
-	//   icon: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/deepseek-color.svg',
-	// },
-	// {
-	//   name: 'OpenAI(ChatGPT)',
-	//   path: '/(model)/gemini/',
-	//   icon: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/openai.svg',
-	// },
 	{
+		id: 1,
 		name: "Gemini",
-		path: "/model/gemini/",
+		path: "/model/gemini",
 		icon: "https://unpkg.com/@lobehub/icons-static-svg@latest/icons/gemini-color.svg",
 	},
-	// {
-	//   name: 'Claude',
-	//   path: '/(model)/gemini/',
-	//   icon: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/claude-color.svg',
-	// },
-	// {
-	//   name: 'Grok',
-	//   path: '/(model)/gemini/',
-	//   icon: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/grok.svg',
-	// },
 ];
 
 function ModelList() {
 	return (
 		<ScrollView>
-			{modelLists.map((item, index) => (
+			{modelLists.map((item) => (
 				<Pressable
-					onPress={() => router.push(item.path as any)}
-					key={index}
+					onPress={() => router.push(item.path as Href)}
+					key={item.id}
 					className="h-24"
 				>
 					<Card variant="filled">

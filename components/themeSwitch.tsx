@@ -1,13 +1,13 @@
 // components/themeSwitch.tsx
 import { colorModeAtom } from "@/store/core";
-import React from "react";
-import { useColorScheme } from "react-native";
 import { Storage } from "expo-sqlite/kv-store";
 import { useAtom } from "jotai";
+import React from "react";
+import { useColorScheme } from "react-native";
 import { Button, ButtonIcon } from "./ui/button";
 import { MoonIcon, SunIcon } from "./ui/icon";
 
-const ThemeSwitch = () => {
+export const ThemeSwitch = () => {
 	const [colorMode, setColorMode] = useAtom(colorModeAtom);
 	const handleChangeColorMode = async () => {
 		const result = await Storage.getItem("colorMode");
@@ -29,7 +29,7 @@ const ThemeSwitch = () => {
 			setColorMode(result as "light" | "dark");
 		};
 		fetchColorMode();
-	}, []);
+	}, [setColorMode]);
 
 	return (
 		<Button
@@ -46,5 +46,3 @@ const ThemeSwitch = () => {
 		</Button>
 	);
 };
-
-export { ThemeSwitch };
