@@ -9,7 +9,7 @@ import { SvgUri } from "react-native-svg";
 
 export default function ModelScreen() {
 	return (
-		<Box className="h-full bg-white dark:bg-slate-950 p-3">
+		<Box className="h-full p-3">
 			<ModelList />
 		</Box>
 	);
@@ -24,7 +24,6 @@ const modelLists = [
 		icon: "https://unpkg.com/@lobehub/icons-static-svg@latest/icons/gemini-color.svg",
 	},
 ];
-
 function ModelList() {
 	return (
 		<ScrollView>
@@ -34,7 +33,7 @@ function ModelList() {
 					key={item.id}
 					className="h-24"
 				>
-					<Card variant="filled">
+					<Card>
 						<HStack className="justify-between items-center">
 							<HStack space="md" className="items-center">
 								<SvgUri uri={item.icon} height={24} width={24} color="black" />

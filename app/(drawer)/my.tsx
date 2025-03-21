@@ -15,22 +15,24 @@ import {
 } from "@/components/ui/modal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
+import { VStack } from "@/components/ui/vstack";
 import { USER_avtarAtom, USER_nameAtom } from "@/store/core";
 import { pickUserAvatar } from "@/utils/file/picker";
-import React from "react";
-import { Pressable } from "react-native";
 import { Storage } from "expo-sqlite/kv-store";
 import { useAtom } from "jotai";
 import { CircleUserRoundIcon, UserPenIcon } from "lucide-react-native";
+import React from "react";
+import { Pressable } from "react-native";
 import { toast } from "sonner-native";
 
 export default function MyScreen() {
 	return (
-		<Box className="h-full dark:bg-slate-950">
-			<UserDetail />
-			<Box className="my-4" />
-			<UserName />
-			<UserAvatar />
+		<Box className="h-full p-3">
+			<VStack space="3xl">
+				<UserDetail />
+				<UserName />
+				<UserAvatar />
+			</VStack>
 		</Box>
 	);
 }
@@ -39,16 +41,18 @@ const UserDetail = () => {
 	const [avatar, setAvatar] = useAtom(USER_avtarAtom);
 	const [name, setName] = useAtom(USER_nameAtom);
 	return (
-		<Card className="bg-white dark:bg-slate-900 h-32">
-			<HStack space="md">
-				{avatar ? (
-					<Image source={avatar} className="h-16 w-16 rounded-full" />
-				) : (
-					<Skeleton className="h-16 w-16 rounded-full" />
-				)}
-				<Text bold>{name}</Text>
-			</HStack>
-		</Card>
+		<Box>
+			<Card className="h-32">
+				<HStack space="md">
+					{avatar ? (
+						<Image source={avatar} className="h-16 w-16 rounded-full" />
+					) : (
+						<Skeleton className="h-16 w-16 rounded-full" />
+					)}
+					<Text bold>{name}</Text>
+				</HStack>
+			</Card>
+		</Box>
 	);
 };
 
@@ -73,9 +77,9 @@ const UserName = () => {
 		toast.success("保存成功");
 	};
 	return (
-		<>
+		<Box>
 			<Pressable onPress={() => setIsOpen(true)}>
-				<Box className="bg-white dark:bg-slate-900 p-3">
+				<Box>
 					<HStack className="items-center" space="md">
 						<Icon as={UserPenIcon} />
 						<Text>更改用户名</Text>
@@ -109,7 +113,7 @@ const UserName = () => {
 					</ModalFooter>
 				</ModalContent>
 			</Modal>
-		</>
+		</Box>
 	);
 };
 
@@ -123,15 +127,15 @@ const UserAvatar = () => {
 		toast.success("更换成功");
 	};
 	return (
-		<>
+		<Box>
 			<Pressable onPress={handleChangeAvatar}>
-				<Box className="bg-white dark:bg-slate-900 p-3">
+				<Box>
 					<HStack className="items-center" space="md">
 						<Icon as={CircleUserRoundIcon} />
 						<Text>更换头像</Text>
 					</HStack>
 				</Box>
 			</Pressable>
-		</>
+		</Box>
 	);
 };

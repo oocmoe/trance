@@ -8,7 +8,8 @@ import { Image } from "@/components/ui/image";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { USER_avtarAtom, USER_nameAtom, colorModeAtom } from "@/store/core";
+import { USER_avtarAtom, USER_nameAtom } from "@/store/core";
+import { colorModeAtom } from "@/store/theme";
 import { router } from "expo-router";
 import { Drawer } from "expo-router/drawer";
 import { Storage } from "expo-sqlite/kv-store";
@@ -32,13 +33,14 @@ export default function DrawerLayout() {
 			drawerContent={() => <CustomDrawerContent />}
 			screenOptions={{
 				sceneStyle: {
-					backgroundColor: colorMode === "light" ? "#fff" : "#020617",
+					backgroundColor: colorMode === "light" ? "#fff" : "#000000",
 				},
 				swipeEdgeWidth: 768,
 				drawerStyle: {
 					width: 300,
 					borderTopEndRadius: 0,
 					borderBottomEndRadius: 0,
+					backgroundColor: colorMode === "light" ? "#fff" : "#000000",
 				},
 				headerTintColor: colorMode === "light" ? "#000" : "#fff",
 				headerBackground: () => <CustomDrawerHeaderBackground />,
@@ -98,7 +100,7 @@ export default function DrawerLayout() {
 
 // 自定义Header颜色，限/(drawer)下路由
 const CustomDrawerHeaderBackground = () => {
-	return <Box className="flex-1 dark:bg-slate-800" />;
+	return <Box className="flex-1" />;
 };
 
 // 导航列表
@@ -171,7 +173,7 @@ const CustomDrawerContent = () => {
 		initAvatar();
 	}, [setAvatar, setName]);
 	return (
-		<Box className="flex-1 dark:bg-slate-900">
+		<Box className="flex-1">
 			<SafeAreaView>
 				<VStack>
 					<Box className="h-32 p-3">

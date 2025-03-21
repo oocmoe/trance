@@ -25,7 +25,12 @@ import { createImportPrompt } from "@/utils/db/prompt";
 import { pickPrompt } from "@/utils/file/picker";
 import { Stack, router } from "expo-router";
 import { atom, useAtom } from "jotai";
-import { FileUpIcon, ImportIcon, ScanSearchIcon } from "lucide-react-native";
+import {
+	FileUpIcon,
+	HammerIcon,
+	ImportIcon,
+	ScanSearchIcon,
+} from "lucide-react-native";
 import React from "react";
 import { Pressable, ScrollView } from "react-native";
 import { toast } from "sonner-native";
@@ -34,7 +39,7 @@ const renderPromptListAtom = atom<RenderPromptList>();
 
 export default function PromptScreen() {
 	return (
-		<Box className="h-full bg-white dark:bg-slate-950">
+		<Box className="h-full p-3">
 			<Stack.Screen
 				options={{
 					headerRight: () => {
@@ -95,27 +100,37 @@ function SearchPrompt() {
 
 function PromptList() {
 	const [list] = useAtom(renderPromptListAtom);
+	if (list === undefined)
+		return (
+			<Box className="w-full p-3">
+				<Skeleton className="w-full h-14 " />
+			</Box>
+		);
+
+	if (list.length === 0)
+		return (
+			<Box className="h-full justify-center items-center">
+				<Box className="flex flex-col items-center gap-y-4">
+					<Icon size="xl" as={HammerIcon} />
+					<Text>还没有创建任何提示词</Text>
+				</Box>
+			</Box>
+		);
 	return (
 		<ScrollView>
-			{list && typeof list !== "undefined" ? (
-				<VStack className="m-3">
-					{list.map((item) => (
-						<Pressable
-							key={item.id}
-							onPress={() => router.push(`/prompt/${item.id}`)}
-							className="h-20 overflow-hidden"
-						>
-							<Card variant="filled">
-								<Text bold>{item.name}</Text>
-							</Card>
-						</Pressable>
-					))}
-				</VStack>
-			) : (
-				<Box className="w-full p-3">
-					<Skeleton className="w-full h-14 " />
-				</Box>
-			)}
+			<VStack>
+				{list.map((item) => (
+					<Pressable
+						key={item.id}
+						onPress={() => router.push(`/prompt/${item.id}`)}
+						className="h-20 overflow-hidden"
+					>
+						<Card variant="filled">
+							<Text bold>{item.name}</Text>
+						</Card>
+					</Pressable>
+				))}
+			</VStack>
 		</ScrollView>
 	);
 }

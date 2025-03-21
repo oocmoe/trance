@@ -26,7 +26,12 @@ import { createImportRegex } from "@/utils/db/regex";
 import { pickRegex } from "@/utils/file/picker";
 import { Stack, router } from "expo-router";
 import { atom, useAtom } from "jotai";
-import { FileUpIcon, ImportIcon, ScanSearchIcon } from "lucide-react-native";
+import {
+	FileUpIcon,
+	ImportIcon,
+	RegexIcon,
+	ScanSearchIcon,
+} from "lucide-react-native";
 import React from "react";
 import { Pressable, ScrollView } from "react-native";
 import { toast } from "sonner-native";
@@ -35,7 +40,7 @@ const renderRegexListAtom = atom<RenderRegexList>();
 
 export default function RegexScreen() {
 	return (
-		<Box className="h-full bg-white dark:bg-slate-950">
+		<Box className="h-full">
 			<Stack.Screen
 				options={{
 					headerRight: () => {
@@ -96,27 +101,36 @@ function SearchRegex() {
 
 function RgexList() {
 	const [list] = useAtom(renderRegexListAtom);
+	if (list === undefined)
+		return (
+			<Box className="w-full p-3">
+				<Skeleton className="w-full h-14 " />
+			</Box>
+		);
+	if (list.length === 0)
+		return (
+			<Box className="h-full justify-center items-center">
+				<Box className="flex flex-col items-center gap-y-4">
+					<Icon size="xl" as={RegexIcon} />
+					<Text>还没有创建任何正则脚本</Text>
+				</Box>
+			</Box>
+		);
 	return (
 		<ScrollView>
-			{list && typeof list !== "undefined" ? (
-				<VStack className="m-3">
-					{list.map((item) => (
-						<Pressable
-							key={item.id}
-							onPress={() => router.push(`/regex/${item.id}`)}
-							className="h-20 overflow-hidden"
-						>
-							<Card variant="filled">
-								<Text bold>{item.name}</Text>
-							</Card>
-						</Pressable>
-					))}
-				</VStack>
-			) : (
-				<Box className="w-full p-3">
-					<Skeleton className="w-full h-14 " />
-				</Box>
-			)}
+			<VStack className="m-3">
+				{list.map((item) => (
+					<Pressable
+						key={item.id}
+						onPress={() => router.push(`/regex/${item.id}`)}
+						className="h-20 overflow-hidden"
+					>
+						<Card variant="filled">
+							<Text bold>{item.name}</Text>
+						</Card>
+					</Pressable>
+				))}
+			</VStack>
 		</ScrollView>
 	);
 }

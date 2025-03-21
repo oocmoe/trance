@@ -3,7 +3,13 @@ import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Fab, FabIcon } from "@/components/ui/fab";
 import { Heading } from "@/components/ui/heading";
-import { AddIcon, Icon, SearchIcon } from "@/components/ui/icon";
+import { HStack } from "@/components/ui/hstack";
+import {
+	AddIcon,
+	ArrowRightIcon,
+	Icon,
+	SearchIcon,
+} from "@/components/ui/icon";
 import { Input, InputField } from "@/components/ui/input";
 import { Menu, MenuItem, MenuItemLabel } from "@/components/ui/menu";
 import {
@@ -25,7 +31,12 @@ import { createImportKnowledgeBase } from "@/utils/db/knowledgeBase";
 import { pickKnowledgeBase } from "@/utils/file/picker";
 import { Stack, router } from "expo-router";
 import { atom, useAtom } from "jotai";
-import { FileUpIcon, ImportIcon, ScanSearchIcon } from "lucide-react-native";
+import {
+	FileUpIcon,
+	ImportIcon,
+	LibraryIcon,
+	ScanSearchIcon,
+} from "lucide-react-native";
 import React from "react";
 import { Pressable, ScrollView } from "react-native";
 import { toast } from "sonner-native";
@@ -93,27 +104,39 @@ const SearchKnowledgeBase = () => {
 
 const KnowledgeBaseList = () => {
 	const [list] = useAtom(renderKnowledgeBaseListAtom);
+	if (list === undefined)
+		return (
+			<Box className="w-full p-3">
+				<Skeleton className="w-full h-14 " />
+			</Box>
+		);
+	if (list.length === 0)
+		return (
+			<Box className="h-full justify-center items-center">
+				<Box className="flex flex-col items-center gap-y-4">
+					<Icon size="xl" as={LibraryIcon} />
+					<Text>还没有创建任何知识库</Text>
+				</Box>
+			</Box>
+		);
 	return (
 		<ScrollView>
-			{list && typeof list !== "undefined" ? (
-				<VStack className="m-3">
-					{list.map((item) => (
-						<Pressable
-							key={item.id}
-							onPress={() => router.push(`/knowledgeBase/${item.id}`)}
-							className="h-20 overflow-hidden"
-						>
-							<Card variant="filled">
+			<VStack className="p-3">
+				{list.map((item) => (
+					<Pressable
+						key={item.id}
+						onPress={() => router.push(`/knowledgeBase/${item.id}`)}
+						className="h-20 overflow-hidden"
+					>
+						<Card>
+							<HStack className="justify-between items-center">
 								<Text bold>{item.name}</Text>
-							</Card>
-						</Pressable>
-					))}
-				</VStack>
-			) : (
-				<Box className="w-full p-3">
-					<Skeleton className="w-full h-14 " />
-				</Box>
-			)}
+								<Icon as={ArrowRightIcon} />
+							</HStack>
+						</Card>
+					</Pressable>
+				))}
+			</VStack>
 		</ScrollView>
 	);
 };

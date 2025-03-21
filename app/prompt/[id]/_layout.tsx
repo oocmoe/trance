@@ -9,10 +9,10 @@ export default function PromptLayout() {
 			screenOptions={{
 				headerTintColor: colorMode === "light" ? "#000" : "#fff",
 				headerStyle: {
-					backgroundColor: colorMode === "light" ? "#FFF" : "#020617",
+					backgroundColor: colorMode === "light" ? "#fff" : "#000",
 				},
 				contentStyle: {
-					backgroundColor: colorMode === "light" ? "#FFF" : "#020617",
+					backgroundColor: colorMode === "light" ? "#fff" : "#000",
 				},
 			}}
 		>

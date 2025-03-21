@@ -15,6 +15,7 @@ export async function createImportPrompt(
 			global_id: uuidv7(),
 			name: name,
 			content: request.content,
+			firstArchived: request.firstArchived,
 		});
 		if (!rows) return;
 		return rows.lastInsertRowId;

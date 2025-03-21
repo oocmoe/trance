@@ -3,6 +3,7 @@ import { Button, ButtonText } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
+import { Icon } from "@/components/ui/icon";
 import { Input, InputField } from "@/components/ui/input";
 import {
 	Modal,
@@ -12,6 +13,7 @@ import {
 	ModalFooter,
 	ModalHeader,
 } from "@/components/ui/modal";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
 import { Textarea, TextareaInput } from "@/components/ui/textarea";
@@ -22,9 +24,10 @@ import {
 	readPromptContentById,
 	updatePromptContentField,
 } from "@/utils/db/prompt";
-import React from "react";
 import { useLocalSearchParams } from "expo-router";
 import { atom, useAtom } from "jotai";
+import { TextIcon } from "lucide-react-native";
+import React from "react";
 import { Pressable, ScrollView } from "react-native-gesture-handler";
 import { toast } from "sonner-native";
 
@@ -51,29 +54,39 @@ const PromptContentList = () => {
 		setActionContentId(contentId);
 		setActionPromptContentModal(true);
 	};
+	if (!list.content)
+		return (
+			<Box>
+				<Skeleton className="w-full h-14 " />
+			</Box>
+		);
+	if (list.content.length === 0)
+		<Box className="h-full justify-center items-center">
+			<Box className="flex flex-col items-center gap-y-4">
+				<Icon size="xl" as={TextIcon} />
+				<Text>还没有创建任何提示词条目</Text>
+			</Box>
+		</Box>;
 	return (
-		<Box className="m-3">
-			{list && (
-				<VStack space="sm">
-					{list.content &&
-						list.content.map((item) => (
-							<Card key={item.id}>
-								<HStack className="justify-between items-center">
-									<Pressable onPress={() => handlePress(item.id)}>
-										<Heading>{item.name}</Heading>
-									</Pressable>
-									<Box>
-										<PromptContentSwitch
-											id={Number(id)}
-											contentId={item.id}
-											isEnabled={item.isEnabled}
-										/>
-									</Box>
-								</HStack>
-							</Card>
-						))}
-				</VStack>
-			)}
+		<Box>
+			<VStack space="sm">
+				{list.content?.map((item) => (
+					<Card key={item.id}>
+						<HStack className="justify-between items-center">
+							<Pressable onPress={() => handlePress(item.id)}>
+								<Heading>{item.name}</Heading>
+							</Pressable>
+							<Box>
+								<PromptContentSwitch
+									id={Number(id)}
+									contentId={item.id}
+									isEnabled={item.isEnabled}
+								/>
+							</Box>
+						</HStack>
+					</Card>
+				))}
+			</VStack>
 		</Box>
 	);
 };
@@ -108,7 +121,7 @@ const PromptContetnModal = () => {
 	const [name, setName] = React.useState<string>();
 	const [content, setContent] = React.useState<string>();
 	React.useEffect(() => {
-		if (!actionContentId) return;
+		if (!actionContentId || !id) return;
 		const fetchPromptContent = async () => {
 			const result = await readPromptContentById(Number(id), actionContentId);
 			if (!result) return;
@@ -116,7 +129,7 @@ const PromptContetnModal = () => {
 			setContent(result.content);
 		};
 		fetchPromptContent();
-	}, [actionContentId]);
+	}, [actionContentId, id]);
 
 	const handleSave = async () => {
 		if (!actionContentId || !name || !content) {

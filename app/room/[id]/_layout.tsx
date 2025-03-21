@@ -1,4 +1,4 @@
-import { colorModeAtom } from "@/store/core";
+import { colorModeAtom } from "@/store/theme";
 import { Stack } from "expo-router/stack";
 import { useAtom } from "jotai";
 

@@ -54,7 +54,7 @@ function IDCard() {
 	return (
 		<>
 			{character && (
-				<Card variant="filled" className="m-3">
+				<Card className="m-3">
 					<HStack space="md">
 						<Box>
 							<Image
@@ -87,7 +87,7 @@ function Action() {
 		<Box className="m-3">
 			<VStack space="sm">
 				<Text>选项</Text>
-				<Card variant="filled">
+				<Card>
 					<ScrollView>
 						<VStack space="4xl">
 							<CreateRoom />
@@ -163,16 +163,18 @@ function CreateRoom() {
 										<SelectPortal>
 											<SelectBackdrop />
 											<SelectContent>
-												<SelectDragIndicatorWrapper>
-													<SelectDragIndicator />
-												</SelectDragIndicatorWrapper>
-												{character.prologue.map((item, index) => (
-													<SelectItem
-														key={item.name}
-														value={String(index)}
-														label={item.name}
-													/>
-												))}
+												<ScrollView className="w-full max-h-60">
+													<SelectDragIndicatorWrapper>
+														<SelectDragIndicator />
+													</SelectDragIndicatorWrapper>
+													{character.prologue.map((item, index) => (
+														<SelectItem
+															key={String(index)}
+															value={String(index)}
+															label={item.name}
+														/>
+													))}
+												</ScrollView>
 											</SelectContent>
 										</SelectPortal>
 									</Select>

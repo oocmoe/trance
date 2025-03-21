@@ -21,7 +21,7 @@ import { toast } from "sonner-native";
 
 export default function GeminiScreen() {
 	return (
-		<Box className="h-full bg-white dark:bg-slate-950 p-3">
+		<Box className="h-ful p-3">
 			<Key />
 		</Box>
 	);
@@ -61,7 +61,7 @@ function Key() {
 		<>
 			{/* 卡片部分 */}
 			<Pressable onPress={() => setShowModal(true)} className="h-24">
-				<Card variant="filled">
+				<Card>
 					<HStack className="justify-between items-center">
 						<HStack space="md" className="items-center">
 							<Icon as={KeyIcon} />

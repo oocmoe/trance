@@ -49,3 +49,4 @@ drizzle/
 *.lock
 .vscode/
 package-lock.json
+playground/

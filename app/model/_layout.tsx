@@ -1,4 +1,3 @@
-import { Box } from "@/components/ui/box";
 import { colorModeAtom } from "@/store/core";
 import { Stack } from "expo-router/stack";
 import { useAtom } from "jotai";
@@ -9,14 +8,15 @@ export default function ModelLayout() {
 		<Stack
 			screenOptions={{
 				headerTintColor: colorMode === "light" ? "#000" : "#fff",
-				headerBackground: () => <CustomGeminiHeaderBackground />,
+				headerStyle: {
+					backgroundColor: colorMode === "light" ? "#fff" : "#000",
+				},
+				contentStyle: {
+					backgroundColor: colorMode === "light" ? "#fff" : "#000",
+				},
 			}}
 		>
 			<Stack.Screen name="gemini" options={{ title: "Gemini配置" }} />
 		</Stack>
 	);
 }
-
-const CustomGeminiHeaderBackground = () => {
-	return <Box className="flex-1 dark:bg-slate-800" />;
-};

@@ -29,6 +29,9 @@ import type { RenderMessages } from "@/types/render";
 import { deleteMessageById } from "@/utils/db/message";
 import { readRoomFieldById } from "@/utils/db/room";
 import { tranceHi, tranceRenderMessages } from "@/utils/message/middleware";
+import { Stack, router, useLocalSearchParams } from "expo-router";
+import { atom, useAtom } from "jotai";
+import { EllipsisIcon, SendIcon } from "lucide-react-native";
 import React from "react";
 import {
 	LogBox,
@@ -36,9 +39,6 @@ import {
 	ScrollView,
 	useWindowDimensions,
 } from "react-native";
-import { router, Stack, useLocalSearchParams } from "expo-router";
-import { atom, useAtom } from "jotai";
-import { EllipsisIcon, SendIcon } from "lucide-react-native";
 import RenderHtml from "react-native-render-html";
 import { toast } from "sonner-native";
 
@@ -124,87 +124,86 @@ function RenderMessage() {
 
 	return (
 		<VStack>
-			{renderMessages &&
-				renderMessages.map((item) => {
-					if (item.is_Sender === 0) {
-						return (
-							<Menu
-								placement="top"
-								offset={-20}
-								trigger={({ ...triggerProps }) => {
-									return (
-										<Pressable {...triggerProps} key={item.id} className="m-3">
-											<HStack space="md">
-												{characterCover ? (
-													<Image
-														className="w-12 h-12 rounded-full"
-														alt="cover"
-														source={{ uri: characterCover }}
-													/>
-												) : (
-													<Skeleton className="w-12 h-12 rounded-full" />
-												)}
-												<Box className="flex-1  bg-amber-50 dark:bg-stone-900 dark:border-stone-950  p-4 rounded-xl rounded-tl-none border border-amber-200  mr-12">
-													<RenderHtml
-														contentWidth={width}
-														baseStyle={{
-															color: corlorMode === "light" ? "black" : "white",
-														}}
-														source={{ html: item.content }}
-													/>
-												</Box>
-											</HStack>
-										</Pressable>
-									);
-								}}
+			{renderMessages?.map((item) => {
+				if (item.is_Sender === 0) {
+					return (
+						<Menu
+							placement="top"
+							offset={-20}
+							trigger={({ ...triggerProps }) => {
+								return (
+									<Pressable {...triggerProps} key={item.id} className="m-3">
+										<HStack space="md">
+											{characterCover ? (
+												<Image
+													className="w-12 h-12 rounded-full"
+													alt="cover"
+													source={{ uri: characterCover }}
+												/>
+											) : (
+												<Skeleton className="w-12 h-12 rounded-full" />
+											)}
+											<Box className="flex-1  bg-amber-50 dark:bg-stone-900 dark:border-stone-950  p-4 rounded-xl rounded-tl-none border border-amber-200  mr-12">
+												<RenderHtml
+													contentWidth={width}
+													baseStyle={{
+														color: corlorMode === "light" ? "black" : "white",
+													}}
+													source={{ html: item.content }}
+												/>
+											</Box>
+										</HStack>
+									</Pressable>
+								);
+							}}
+						>
+							<MenuItem
+								onPress={() => handleLongPress(item.id)}
+								key="delete"
+								className="px-2 gap-x-2"
 							>
-								<MenuItem
-									onPress={() => handleLongPress(item.id)}
-									key="delete"
-									className="px-2 gap-x-2"
-								>
-									<Icon as={TrashIcon} size="sm" className="text-red-500" />
-									<MenuItemLabel>删除</MenuItemLabel>
-								</MenuItem>
-							</Menu>
-						);
-					}
-					if (item.is_Sender === 1) {
-						return (
-							<Menu
-								placement="top"
-								offset={-20}
-								trigger={({ ...triggerProps }) => {
-									return (
-										<Pressable {...triggerProps} key={item.id} className="m-3">
-											<HStack className="justify-end">
-												<Box className="flex-1 bg-white dark:bg-slate-900 dark:border-slate-950 p-4 rounded-xl rounded-br-none border border-slate-50 ml-14">
-													<RenderHtml
-														contentWidth={width}
-														baseStyle={{
-															color: corlorMode === "light" ? "black" : "white",
-														}}
-														source={{ html: item.content }}
-													/>
-												</Box>
-											</HStack>
-										</Pressable>
-									);
-								}}
+								<Icon as={TrashIcon} size="sm" className="text-red-500" />
+								<MenuItemLabel>删除</MenuItemLabel>
+							</MenuItem>
+						</Menu>
+					);
+				}
+				if (item.is_Sender === 1) {
+					return (
+						<Menu
+							placement="top"
+							offset={-20}
+							trigger={({ ...triggerProps }) => {
+								return (
+									<Pressable {...triggerProps} key={item.id} className="m-3">
+										<HStack className="justify-end">
+											<Box className="flex-1 bg-white dark:bg-slate-900 dark:border-slate-950 p-4 rounded-xl rounded-br-none border border-slate-50 ml-14">
+												<RenderHtml
+													contentWidth={width}
+													baseStyle={{
+														color: corlorMode === "light" ? "black" : "white",
+													}}
+													source={{ html: item.content }}
+												/>
+											</Box>
+										</HStack>
+									</Pressable>
+								);
+							}}
+						>
+							<MenuItem
+								onPress={() => handleLongPress(item.id)}
+								key="delete"
+								className="px-2 gap-x-2"
 							>
-								<MenuItem
-									onPress={() => handleLongPress(item.id)}
-									key="delete"
-									className="px-2 gap-x-2"
-								>
-									<Icon as={TrashIcon} size="sm" className="text-red-500" />
-									<MenuItemLabel>删除</MenuItemLabel>
-								</MenuItem>
-							</Menu>
-						);
-					}
-					return null;
-				})}
+								<Icon as={TrashIcon} size="sm" className="text-red-500" />
+								<MenuItemLabel>删除</MenuItemLabel>
+							</MenuItem>
+						</Menu>
+					);
+				}
+				return null;
+			})}
 		</VStack>
 	);
 }

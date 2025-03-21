@@ -1,5 +1,6 @@
 import { Box } from "@/components/ui/box";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Fab, FabIcon } from "@/components/ui/fab";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
@@ -32,6 +33,7 @@ import {
 	CircleXIcon,
 	FileUpIcon,
 	ImportIcon,
+	UserRoundSearchIcon,
 	UserSearchIcon,
 } from "lucide-react-native";
 import React from "react";
@@ -44,14 +46,16 @@ const renderCharacterListAtom = atom<RenderCharacterList>();
 export default function CharacterScreen() {
 	return (
 		<>
-			<Stack.Screen
-				options={{
-					headerRight: () => {
-						return <HeaderRight />;
-					},
-				}}
-			/>
-			<Box className="h-full p-2 bg-white dark:bg-slate-950">
+			<Box>
+				<Stack.Screen
+					options={{
+						headerRight: () => {
+							return <HeaderRight />;
+						},
+					}}
+				/>
+			</Box>
+			<Box className="h-full p-3">
 				<CharacterList />
 			</Box>
 			<CharacterFab />
@@ -110,31 +114,9 @@ function SearchCharacter() {
 // 渲染角色卡列表
 function CharacterList() {
 	const [list] = useAtom(renderCharacterListAtom);
-	return (
-		<ScrollView>
-			{list && typeof list !== "undefined" ? (
-				<VStack space="sm">
-					{list.map((item) => (
-						<Pressable
-							key={item.id}
-							onPress={() => router.push(`/character/${item.id}`)}
-							className="h-20 overflow-hidden"
-						>
-							<HStack className="flex-1 mx-2" space="md">
-								<Image
-									source={item.cover}
-									alt={item.name}
-									className="h-16 w-16 rounded-full"
-								/>
-								<VStack className="flex-1 mx-2">
-									<Text bold>{item.name}</Text>
-									<Text>{item.version}</Text>
-								</VStack>
-							</HStack>
-						</Pressable>
-					))}
-				</VStack>
-			) : (
+	if (list === undefined)
+		return (
+			<Box>
 				<HStack className="h-20 m-2" space="md">
 					<Skeleton className="w-16 h-16 rounded-full" />
 					<VStack className="m-2" space="md">
@@ -142,7 +124,41 @@ function CharacterList() {
 						<SkeletonText className="w-16 h-2" />
 					</VStack>
 				</HStack>
-			)}
+			</Box>
+		);
+	if (list.length === 0)
+		return (
+			<Box className="h-full justify-center items-center">
+				<Box className="flex flex-col items-center gap-y-4">
+					<Icon size="xl" as={UserRoundSearchIcon} />
+					<Text>还没有创建任何角色卡</Text>
+				</Box>
+			</Box>
+		);
+	return (
+		<ScrollView>
+			<VStack space="sm">
+				{list.map((item) => (
+					<Pressable
+						key={item.id}
+						onPress={() => router.push(`/character/${item.id}`)}
+					>
+						<Card className="p-0">
+							<HStack space="md">
+								<Image
+									source={item.cover}
+									alt={item.name}
+									className="rounded-md"
+								/>
+								<VStack className="flex-1 mx-2 p-2">
+									<Text bold>{item.name}</Text>
+									<Text>{item.version}</Text>
+								</VStack>
+							</HStack>
+						</Card>
+					</Pressable>
+				))}
+			</VStack>
 		</ScrollView>
 	);
 }
