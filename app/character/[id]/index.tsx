@@ -42,7 +42,7 @@ export default function CharacterByIdScreen() {
 		<Box className="h-full p-3 gap-y-4">
 			<IDCard />
 			<Action />
-			<Text>房间</Text>
+			<Text>聊天</Text>
 			<CharacterRoomLists />
 		</Box>
 	);
@@ -148,11 +148,12 @@ function CreateRoom() {
 						<Heading>创建新聊天</Heading>
 					</ModalHeader>
 					<ModalBody>
+						6
 						<VStack space="md">
 							<Box>
 								<Text>聊天名称</Text>
 								<Input>
-									<InputField value={name} />
+									<InputField onChangeText={setName} value={name} />
 								</Input>
 							</Box>
 							{character?.prologue && character.prologue.length > 0 ? (
@@ -285,19 +286,21 @@ const CharacterRoomLists = () => {
 	if (roomList.data)
 		return (
 			<ScrollView>
-				{roomList.data.map((item) => (
-					<Pressable
-						onPress={() => router.push(`/room/${item.id}`)}
-						key={item.id}
-					>
-						<Card>
-							<HStack className="justify-between items-center">
-								<Text>{item.name}</Text>
-								<Icon as={ArrowRightIcon} />
-							</HStack>
-						</Card>
-					</Pressable>
-				))}
+				<VStack space="sm">
+					{roomList.data.map((item) => (
+						<Pressable
+							onPress={() => router.push(`/room/${item.id}`)}
+							key={item.id}
+						>
+							<Card>
+								<HStack className="justify-between items-center">
+									<Text>{item.name}</Text>
+									<Icon as={ArrowRightIcon} />
+								</HStack>
+							</Card>
+						</Pressable>
+					))}
+				</VStack>
 			</ScrollView>
 		);
 };

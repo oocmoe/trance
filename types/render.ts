@@ -48,3 +48,21 @@ export type RenderKnowledgeBaseList = {
 	global_id: string;
 	name: string;
 };
+
+export type RenderCustomOpenAIModelConfig = {
+	status: number;
+	message: string;
+	data: {
+		msg: string;
+		params_list: {
+			paramName: string;
+			isRequired: number;
+			dataType: string;
+			description: string;
+			dataRange?: {
+				name: string;
+				value: string;
+			}[];
+		}[];
+	}[];
+};

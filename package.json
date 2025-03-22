@@ -45,6 +45,7 @@
     "@gluestack-ui/modal": "^0.1.39",
     "@gluestack-ui/nativewind-utils": "^1.0.26",
     "@gluestack-ui/overlay": "^0.1.16",
+    "@gluestack-ui/radio": "^0.1.40",
     "@gluestack-ui/select": "^0.1.31",
     "@gluestack-ui/switch": "^0.1.27",
     "@gluestack-ui/textarea": "^0.1.24",
@@ -104,6 +105,7 @@
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
     "sonner-native": "^0.17.0",
+    "swr": "^2.3.3",
     "tailwindcss": "^3.4.17",
     "uuid": "^11.1.0",
     "zod": "^3.24.2"

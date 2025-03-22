@@ -13,12 +13,12 @@ import {
 	ModalFooter,
 	ModalHeader,
 } from "@/components/ui/modal";
+import { Text } from "@/components/ui/text";
 import * as SecureStore from "expo-secure-store";
 import { BoltIcon, KeyIcon } from "lucide-react-native";
 import React from "react";
 import { Pressable } from "react-native";
 import { toast } from "sonner-native";
-
 export default function GeminiScreen() {
 	return (
 		<Box className="h-ful p-3">
@@ -28,39 +28,27 @@ export default function GeminiScreen() {
 }
 
 function Key() {
-	const [showModal, setShowModal] = React.useState(false);
-	const [key, setKey] = React.useState("");
+	const [isOpen, setIsOpen] = React.useState(false);
+	const [key, setKey] = React.useState<string>("******************");
 
 	// 保存key
 	const handleSave = async () => {
 		try {
 			await SecureStore.setItem("TRANCE_MODEL_GEMINI_KEY", key);
-			setShowModal(false);
+			setKey("******************");
+			setIsOpen(false);
 			toast.success("保存成功");
 		} catch (error) {
+			setKey("******************");
 			console.log(error);
 			toast.error("保存失败");
 		}
 	};
 
-	// 初始化key
-	React.useEffect(() => {
-		const fetchKey = async () => {
-			try {
-				const result = await SecureStore.getItem("TRANCE_MODEL_GEMINI_KEY");
-				if (!result) return;
-				setKey(result);
-			} catch (e) {
-				console.log(e);
-			}
-		};
-		fetchKey();
-	}, []);
-
 	return (
 		<>
 			{/* 卡片部分 */}
-			<Pressable onPress={() => setShowModal(true)} className="h-24">
+			<Pressable onPress={() => setIsOpen(true)} className="h-24">
 				<Card>
 					<HStack className="justify-between items-center">
 						<HStack space="md" className="items-center">
@@ -74,9 +62,9 @@ function Key() {
 
 			{/* 模态框部分 */}
 			<Modal
-				isOpen={showModal}
+				isOpen={isOpen}
 				onClose={() => {
-					setShowModal(false);
+					setIsOpen(false);
 				}}
 				size="md"
 			>
@@ -91,18 +79,22 @@ function Key() {
 						<Input variant="outline" size="md">
 							<InputField value={key} onChangeText={setKey} type="password" />
 						</Input>
+						<Text className="mt-2">密钥保存后无法查看或重复相同保存</Text>
 					</ModalBody>
 					<ModalFooter>
 						<Button
 							variant="outline"
 							action="secondary"
 							onPress={() => {
-								setShowModal(false);
+								setIsOpen(false);
 							}}
 						>
 							<ButtonText>取消</ButtonText>
 						</Button>
-						<Button onPress={handleSave}>
+						<Button
+							isDisabled={key === "******************"}
+							onPress={handleSave}
+						>
 							<ButtonText>保存</ButtonText>
 						</Button>
 					</ModalFooter>
