@@ -112,7 +112,7 @@ function RgexList() {
 			<Box className="h-full justify-center items-center">
 				<Box className="flex flex-col items-center gap-y-4">
 					<Icon size="xl" as={RegexIcon} />
-					<Text>还没有创建任何正则脚本</Text>
+					<Text>未找到相关正则脚本</Text>
 				</Box>
 			</Box>
 		);

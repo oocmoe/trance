@@ -3,7 +3,7 @@ import { Button, ButtonText } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
-import { Icon } from "@/components/ui/icon";
+import { ArrowRightIcon, Icon } from "@/components/ui/icon";
 import { Image } from "@/components/ui/image";
 import { Input, InputField } from "@/components/ui/input";
 import {
@@ -28,6 +28,7 @@ import {
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { useCharacterDetailsById } from "@/hook/character";
+import { useRoomListById } from "@/hook/room";
 import { deleteCharacter } from "@/utils/db/character";
 import { createDialogRoom } from "@/utils/db/room";
 import { router, useLocalSearchParams } from "expo-router";
@@ -38,23 +39,24 @@ import { toast } from "sonner-native";
 
 export default function CharacterByIdScreen() {
 	return (
-		<>
+		<Box className="h-full p-3 gap-y-4">
 			<IDCard />
 			<Action />
-		</>
+			<Text>房间</Text>
+			<CharacterRoomLists />
+		</Box>
 	);
 }
 
 /**
  * 角色卡基本信息
  * @returns
- */
-function IDCard() {
+ */ function IDCard() {
 	const character = useCharacterDetailsById();
 	return (
 		<>
 			{character && (
-				<Card className="m-3">
+				<Card>
 					<HStack space="md">
 						<Box>
 							<Image
@@ -84,7 +86,7 @@ function IDCard() {
  */
 function Action() {
 	return (
-		<Box className="m-3">
+		<Box>
 			<VStack space="sm">
 				<Text>选项</Text>
 				<Card>
@@ -276,3 +278,26 @@ function DeleteCharacter() {
 		</>
 	);
 }
+
+const CharacterRoomLists = () => {
+	const { id } = useLocalSearchParams();
+	const roomList = useRoomListById(Number(id));
+	if (roomList.data)
+		return (
+			<ScrollView>
+				{roomList.data.map((item) => (
+					<Pressable
+						onPress={() => router.push(`/room/${item.id}`)}
+						key={item.id}
+					>
+						<Card>
+							<HStack className="justify-between items-center">
+								<Text>{item.name}</Text>
+								<Icon as={ArrowRightIcon} />
+							</HStack>
+						</Card>
+					</Pressable>
+				))}
+			</ScrollView>
+		);
+};

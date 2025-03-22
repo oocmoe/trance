@@ -3,7 +3,13 @@ import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Fab, FabIcon } from "@/components/ui/fab";
 import { Heading } from "@/components/ui/heading";
-import { AddIcon, Icon, SearchIcon } from "@/components/ui/icon";
+import { HStack } from "@/components/ui/hstack";
+import {
+	AddIcon,
+	ArrowRightIcon,
+	Icon,
+	SearchIcon,
+} from "@/components/ui/icon";
 import { Input, InputField } from "@/components/ui/input";
 import { Menu, MenuItem, MenuItemLabel } from "@/components/ui/menu";
 import {
@@ -112,7 +118,7 @@ function PromptList() {
 			<Box className="h-full justify-center items-center">
 				<Box className="flex flex-col items-center gap-y-4">
 					<Icon size="xl" as={HammerIcon} />
-					<Text>还没有创建任何提示词</Text>
+					<Text>未找到相关提示词</Text>
 				</Box>
 			</Box>
 		);
@@ -125,8 +131,11 @@ function PromptList() {
 						onPress={() => router.push(`/prompt/${item.id}`)}
 						className="h-20 overflow-hidden"
 					>
-						<Card variant="filled">
-							<Text bold>{item.name}</Text>
+						<Card>
+							<HStack className="justify-between items-center">
+								<Text bold>{item.name}</Text>
+								<Icon as={ArrowRightIcon} />
+							</HStack>
 						</Card>
 					</Pressable>
 				))}

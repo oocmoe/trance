@@ -1,21 +1,10 @@
-import { colorModeAtom } from "@/store/core";
+import { stackScreenOptionsAtom } from "@/store/theme";
 import { Stack } from "expo-router/stack";
-import { useAtom } from "jotai";
+import { useAtomValue } from "jotai";
 
 export default function KnowledgeBaseLayout() {
-	const [colorMode] = useAtom(colorModeAtom);
 	return (
-		<Stack
-			screenOptions={{
-				headerTintColor: colorMode === "light" ? "#000" : "#fff",
-				headerStyle: {
-					backgroundColor: colorMode === "light" ? "#FFF" : "#020617",
-				},
-				contentStyle: {
-					backgroundColor: colorMode === "light" ? "#FFF" : "#020617",
-				},
-			}}
-		>
+		<Stack screenOptions={useAtomValue(stackScreenOptionsAtom)}>
 			<Stack.Screen name="index" options={{ title: "知识库信息" }} />
 			<Stack.Screen name="entry/[entryId]" options={{ title: "知识库条目" }} />
 		</Stack>

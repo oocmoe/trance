@@ -42,3 +42,18 @@ export function useRoomList() {
 			.from(room),
 	);
 }
+
+export function useRoomListById(id: number) {
+	return useLiveQuery(
+		db
+			.select({
+				id: room.id,
+				global_id: room.global_id,
+				cover: room.cover,
+				name: room.name,
+				type: room.type,
+			})
+			.from(room)
+			.where(eq(room.personnel, [String(id)])),
+	);
+}

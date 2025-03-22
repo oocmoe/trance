@@ -26,16 +26,18 @@ import {
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { usePromptList } from "@/hook/prompt";
+import { modalAtom } from "@/store/core";
 import { readPromptFieldById } from "@/utils/db/prompt";
 import {
 	readRoomById,
 	readRoomFieldById,
 	updateRoomFieldById,
 } from "@/utils/db/room";
+import { useLocalSearchParams } from "expo-router";
+import { useAtom } from "jotai";
+import { BotIcon, HammerIcon, Trash2Icon } from "lucide-react-native";
 import React from "react";
 import { Pressable } from "react-native";
-import { useLocalSearchParams } from "expo-router";
-import { BotIcon, HammerIcon } from "lucide-react-native";
 import { toast } from "sonner-native";
 
 export default function RoomDetailScreen() {
@@ -44,15 +46,18 @@ export default function RoomDetailScreen() {
 
 const Options = () => {
 	return (
-		<Box className="m-3">
+		<Box className="h-full p-3">
 			<VStack space="sm">
-				<Text>房间选项</Text>
-				<Card>
-					<VStack space="4xl">
-						<ModelSelect />
-						<PromptSelect />
-					</VStack>
-				</Card>
+				<Box>
+					<Text>房间选项</Text>
+					<Card>
+						<VStack space="4xl">
+							<ModelSelect />
+							<PromptSelect />
+							<DeleteRoomButton />
+						</VStack>
+					</Card>
+				</Box>
 			</VStack>
 		</Box>
 	);
@@ -94,7 +99,7 @@ const ModelSelect = () => {
 			setVersion(room.model.version);
 		};
 		initModel();
-	}, []);
+	}, [id]);
 
 	const modelList = [
 		{
@@ -257,7 +262,7 @@ const PromptSelect = () => {
 			setPromptId(Number(result));
 		};
 		initPrompt();
-	}, [isOpen]);
+	}, [id]);
 	return (
 		<>
 			<Box>
@@ -322,4 +327,21 @@ const PromptSelect = () => {
 			</Modal>
 		</>
 	);
+};
+
+const DeleteRoomButton = () => {
+	const { id } = useLocalSearchParams();
+	const [, setIsOpen] = useAtom(modalAtom("deleteRoom"));
+	return (
+		<Pressable onPress={() => setIsOpen(true)}>
+			<HStack space="sm" className="items-center">
+				<Icon as={Trash2Icon} />
+				<Text>删除房间</Text>
+			</HStack>
+		</Pressable>
+	);
+};
+
+const DeleteRoomModal = () => {
+	const [isOpen, setIsOpen] = useAtom(modalAtom("deleteRoom"));
 };

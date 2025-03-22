@@ -54,21 +54,21 @@ const PromptContentList = () => {
 		setActionContentId(contentId);
 		setActionPromptContentModal(true);
 	};
-	if (!list.content)
+	if (!list?.content)
 		return (
-			<Box>
-				<Skeleton className="w-full h-14 " />
+			<Box className="p-3">
+				<Skeleton className="w-full h-20 rounded-md " />
 			</Box>
 		);
 	if (list.content.length === 0)
 		<Box className="h-full justify-center items-center">
 			<Box className="flex flex-col items-center gap-y-4">
 				<Icon size="xl" as={TextIcon} />
-				<Text>还没有创建任何提示词条目</Text>
+				<Text>未找到相关条目</Text>
 			</Box>
 		</Box>;
 	return (
-		<Box>
+		<Box className="p-3">
 			<VStack space="sm">
 				{list.content?.map((item) => (
 					<Card key={item.id}>

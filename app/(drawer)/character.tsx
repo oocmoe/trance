@@ -131,7 +131,7 @@ function CharacterList() {
 			<Box className="h-full justify-center items-center">
 				<Box className="flex flex-col items-center gap-y-4">
 					<Icon size="xl" as={UserRoundSearchIcon} />
-					<Text>还没有创建任何角色卡</Text>
+					<Text>未找到相关角色卡</Text>
 				</Box>
 			</Box>
 		);

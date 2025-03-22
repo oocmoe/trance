@@ -26,10 +26,10 @@ import { tranceHiGemini } from "./gemini";
 
 /**
  * 消息中间件
- * @param content 
- * @param type 
- * @param room 
- * @returns 
+ * @param content
+ * @param type
+ * @param room
+ * @returns
  */
 export async function tranceHi(content: string, type: string, room: Room) {
 	if (!room.model || room.personnel.length === 0 || !room.prompt)
@@ -53,12 +53,10 @@ export async function tranceHi(content: string, type: string, room: Room) {
 }
 /**
  * 渲染消息
- * @param messages 
- * @returns 
+ * @param messages
+ * @returns
  */
-export async function tranceRenderMessages(
-	messages: Messages[],
-) {
+export async function tranceRenderMessages(messages: Messages[]) {
 	try {
 		const formatedMessages = await Promise.all(
 			messages.map(async (item) => {
@@ -81,8 +79,8 @@ export async function tranceRenderMessages(
 
 /**
  * 转换html消息
- * @param content 
- * @returns 
+ * @param content
+ * @returns
  */
 export async function tranceConvertMessage(content: string) {
 	try {
@@ -95,7 +93,7 @@ export async function tranceConvertMessage(content: string) {
 			}));
 			for (const { replace, placeholder } of regexRules) {
 				message = content.replace(replace, placeholder);
-		}
+			}
 		}
 		message = removeSpareHtmlTag(content);
 		const highlightedChat = content.replace(
@@ -110,10 +108,11 @@ export async function tranceConvertMessage(content: string) {
 
 /**
  * 删除多余html标签
- * @param content 
- * @returns 
+ * @param content
+ * @returns
  */
-function removeSpareHtmlTag(content: string) {
+function removeSpareHtmlTag(str: string) {
+	let content = str;
 	const tagGroup = [
 		"h1",
 		"h2",
@@ -150,8 +149,12 @@ function removeSpareHtmlTag(content: string) {
 		"b",
 		"u",
 	];
-	const tagRule = tagGroup.map((tag) => `${tag}\\b`).join("|");
-	const regexTag = new RegExp(`<(?!(?:${tagRule})>)[^>]+>`, "g");
-	const response = content.replace(regexTag, "");
-	return response;
+	const allowedTags = tagGroup.join("|");
+	const regexPair = new RegExp(
+		`<(?!\\/?(?:${allowedTags})\\b)([a-zA-Z][^\\s/>]*)(?:\\s[^>]*)?>([\\s\\S]*?)<\\/\\1>`,
+		"gi",
+	);
+	content = content.replace(regexPair, "$2");
+	const regexSingle = new RegExp(`<\\/?(?!(${allowedTags})\\b)[^>]+>`, "gi");
+	return content.replace(regexSingle, "");
 }

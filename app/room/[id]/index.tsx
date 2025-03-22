@@ -24,7 +24,8 @@ import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { useMessageByRoomId } from "@/hook/message";
 import { useRoomById } from "@/hook/room";
-import { colorModeAtom, modalAtom } from "@/store/core";
+import { modalAtom } from "@/store/core";
+import { colorModeAtom } from "@/store/theme";
 import type { RenderMessages } from "@/types/render";
 import { deleteMessageById } from "@/utils/db/message";
 import { readRoomFieldById } from "@/utils/db/room";
@@ -90,7 +91,9 @@ function RenderMessage() {
 	const { width } = useWindowDimensions();
 	const messages = useMessageByRoomId(Number(id));
 	const [corlorMode] = useAtom(colorModeAtom);
-	const [renderMessages, setRenderMessages] = React.useState<RenderMessages>();
+	const [renderMessages, setRenderMessages] = React.useState<RenderMessages>(
+		[],
+	);
 	const [deleteMessageModal, setDeleteMessageModal] = useAtom(
 		modalAtom("deleteMessage"),
 	);
@@ -98,7 +101,7 @@ function RenderMessage() {
 	const [characterCover, setCharacterCover] = React.useState<string>();
 	React.useEffect(() => {
 		const renderMessage = async () => {
-			const result = await tranceRenderMessages(corlorMode, messages);
+			const result = await tranceRenderMessages(messages);
 			if (!result) return;
 			setRenderMessages(result);
 		};
@@ -116,23 +119,23 @@ function RenderMessage() {
 			setCharacterCover(cover as string);
 		};
 		initCover();
-	}, []);
+	}, [id]);
 	const handleLongPress = (value: number) => {
 		setMesaageId(value);
 		setDeleteMessageModal(true);
 	};
-
 	return (
 		<VStack>
 			{renderMessages?.map((item) => {
 				if (item.is_Sender === 0) {
 					return (
 						<Menu
+							key={item.id}
 							placement="top"
 							offset={-20}
 							trigger={({ ...triggerProps }) => {
 								return (
-									<Pressable {...triggerProps} key={item.id} className="m-3">
+									<Pressable {...triggerProps} className="m-3">
 										<HStack space="md">
 											{characterCover ? (
 												<Image
@@ -171,13 +174,14 @@ function RenderMessage() {
 				if (item.is_Sender === 1) {
 					return (
 						<Menu
+							key={item.id}
 							placement="top"
 							offset={-20}
 							trigger={({ ...triggerProps }) => {
 								return (
-									<Pressable {...triggerProps} key={item.id} className="m-3">
+									<Pressable {...triggerProps} className="m-3">
 										<HStack className="justify-end">
-											<Box className="flex-1 bg-white dark:bg-slate-900 dark:border-slate-950 p-4 rounded-xl rounded-br-none border border-slate-50 ml-14">
+											<Box className="max-w-[87%] bg-white dark:bg-black dark:border-slate-950 p-4 rounded-xl rounded-br-none border border-slate-50 ">
 												<RenderHtml
 													contentWidth={width}
 													baseStyle={{

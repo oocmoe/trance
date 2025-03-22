@@ -115,7 +115,7 @@ const KnowledgeBaseList = () => {
 			<Box className="h-full justify-center items-center">
 				<Box className="flex flex-col items-center gap-y-4">
 					<Icon size="xl" as={LibraryIcon} />
-					<Text>还没有创建任何知识库</Text>
+					<Text>未找到相关知识库</Text>
 				</Box>
 			</Box>
 		);

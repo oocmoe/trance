@@ -1,5 +1,5 @@
+import { colorModeAtom } from "@/store/theme";
 // components/themeSwitch.tsx
-import { colorModeAtom } from "@/store/core";
 import { Storage } from "expo-sqlite/kv-store";
 import { useAtom } from "jotai";
 import React from "react";
