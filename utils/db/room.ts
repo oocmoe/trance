@@ -96,3 +96,12 @@ export async function updateRoomFieldById(
   if (!rows) return;
   return rows;
 }
+
+export async function deleteRoomById(id: number) {
+  try {
+    const rows = await db.delete(room).where(eq(room.id, id));
+    return rows.changes;
+  } catch (error) {
+    console.log(error);
+  }
+}

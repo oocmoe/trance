@@ -1,6 +1,7 @@
 import {
   colorModeAtom,
   themeDrawerOptionsAtom,
+  themeRoomOptionsAtom,
   themeStackOptionsAtom,
 } from "@/store/theme";
 import { useAtom } from "jotai";
@@ -22,4 +23,11 @@ export function useThemeDrawerOptions() {
   const colorMode = useColorMode();
   if (colorMode === "light") return themeDrawerOptions.light.screenOptions;
   if (colorMode === "dark") return themeDrawerOptions.dark.screenOptions;
+}
+
+export function useThemeRoomOptions() {
+  const [themeRoomOptions] = useAtom(themeRoomOptionsAtom);
+  const colorMode = useColorMode();
+  if (colorMode === "light") return themeRoomOptions.light;
+  if (colorMode === "dark") return themeRoomOptions.dark;
 }

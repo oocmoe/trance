@@ -4,7 +4,11 @@ import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { themeDrawerOptionsAtom, themeStackOptionsAtom } from "@/store/theme";
+import {
+  themeDrawerOptionsAtom,
+  themeRoomOptionsAtom,
+  themeStackOptionsAtom,
+} from "@/store/theme";
 import { themeDefault, themeDefaultGreen } from "@/utils/theme/default";
 import { useAtom } from "jotai";
 import { Pressable, ScrollView } from "react-native";
@@ -25,6 +29,7 @@ export default function ThemeScreen() {
 const DefaultTheme = () => {
   const [, setThemeStackOptions] = useAtom(themeStackOptionsAtom);
   const [, setThemeDrawerOptions] = useAtom(themeDrawerOptionsAtom);
+  const [, setThemeRoomOptions] = useAtom(themeRoomOptionsAtom);
   const theme = themeDefault;
   const handleChangeTheme = () => {
     setThemeStackOptions(async (prev) => {
@@ -39,6 +44,13 @@ const DefaultTheme = () => {
       return {
         ...current,
         ...theme.drawerOptions,
+      };
+    });
+    setThemeRoomOptions(async (prev) => {
+      const current = await prev;
+      return {
+        ...current,
+        ...theme.roomOptions,
       };
     });
   };
@@ -56,6 +68,7 @@ const DefaultTheme = () => {
 const GreenTheme = () => {
   const [, setThemeStackOptions] = useAtom(themeStackOptionsAtom);
   const [, setThemeDrawerOptions] = useAtom(themeDrawerOptionsAtom);
+  const [, setThemeRoomOptions] = useAtom(themeRoomOptionsAtom);
   const theme = themeDefaultGreen;
   const handleChangeTheme = () => {
     setThemeStackOptions(async (prev) => {
@@ -70,6 +83,13 @@ const GreenTheme = () => {
       return {
         ...current,
         ...theme.drawerOptions,
+      };
+    });
+    setThemeRoomOptions(async (prev) => {
+      const current = await prev;
+      return {
+        ...current,
+        ...theme.roomOptions,
       };
     });
   };

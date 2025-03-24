@@ -1,3 +1,11 @@
+import {
+  AlertDialog,
+  AlertDialogBackdrop,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+} from "@/components/ui/alert-dialog";
 import { Box } from "@/components/ui/box";
 import { Button, ButtonText } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -29,11 +37,12 @@ import { usePromptList } from "@/hook/prompt";
 import { modalAtom } from "@/store/core";
 import { readPromptFieldById } from "@/utils/db/prompt";
 import {
+  deleteRoomById,
   readRoomById,
   readRoomFieldById,
   updateRoomFieldById,
 } from "@/utils/db/room";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useAtom } from "jotai";
 import { BotIcon, HammerIcon, Trash2Icon } from "lucide-react-native";
 import React from "react";
@@ -41,10 +50,6 @@ import { Pressable } from "react-native";
 import { toast } from "sonner-native";
 
 export default function RoomDetailScreen() {
-  return <Options />;
-}
-
-const Options = () => {
   return (
     <Box className="h-full p-3">
       <VStack space="sm">
@@ -59,9 +64,10 @@ const Options = () => {
           </Card>
         </Box>
       </VStack>
+      <DeleteRoomModal />
     </Box>
   );
-};
+}
 
 // 房间模型选择
 const ModelSelect = () => {
@@ -344,4 +350,48 @@ const DeleteRoomButton = () => {
 
 const DeleteRoomModal = () => {
   const [isOpen, setIsOpen] = useAtom(modalAtom("deleteRoom"));
+  const { id } = useLocalSearchParams();
+  const handleDeleteRoom = async () => {
+    try {
+      const result = await deleteRoomById(Number(id));
+      if (!result) throw new Error("删除失败");
+      toast.success("删除成功");
+      setIsOpen(false);
+      router.push("/(drawer)/message");
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+        return;
+      }
+      toast.error("未知错误");
+    }
+  };
+  return (
+    <AlertDialog isOpen={isOpen} onClose={() => setIsOpen(false)} size="md">
+      <AlertDialogBackdrop />
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <Heading className="text-typography-950 font-semibold" size="md">
+            你确定吗？
+          </Heading>
+        </AlertDialogHeader>
+        <AlertDialogBody className="mt-3 mb-4">
+          <Text size="sm">它将永远离你而去</Text>
+        </AlertDialogBody>
+        <AlertDialogFooter className="">
+          <Button
+            variant="outline"
+            action="secondary"
+            onPress={() => setIsOpen(false)}
+            size="sm"
+          >
+            <ButtonText>算了</ButtonText>
+          </Button>
+          <Button action="negative" size="sm" onPress={handleDeleteRoom}>
+            <ButtonText className="text-white">永别了</ButtonText>
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
 };

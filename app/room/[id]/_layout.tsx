@@ -13,8 +13,8 @@ export default function RoomLayout() {
   if (!optionsReady) return null;
   return (
     <Stack screenOptions={stackOptions}>
-      <Stack.Screen name="index" options={{ title: "对话" }} />
-      <Stack.Screen name="detail" options={stackOptions} />
+      <Stack.Screen name="index" />
+      <Stack.Screen name="detail" options={{ title: "房间信息" }} />
     </Stack>
   );
 }

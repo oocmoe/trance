@@ -75,6 +75,29 @@ export const themeDefault: ThemeOptions = {
           backgroundColor: "#ededed",
         },
       },
+      componentOptions: {
+        assistantAvatar: {
+          width: 48,
+          height: 48,
+          borderRadius: 100,
+        },
+        assistantChatBubble: {
+          backgroundColor: "#ffffff",
+          padding: 16,
+          borderRadius: 16,
+        },
+        assistantChatBubbleText: {
+          color: "#000000",
+        },
+        userChatBubble: {
+          backgroundColor: "#ffffff",
+          padding: 16,
+          borderRadius: 16,
+        },
+        userChatBubbleText: {
+          color: "#000000",
+        },
+      },
     },
     dark: {
       screenOptions: {
@@ -85,6 +108,28 @@ export const themeDefault: ThemeOptions = {
         },
         contentStyle: {
           backgroundColor: "#ededed",
+        },
+      },
+      componentOptions: {
+        assistantAvatar: {
+          width: 48,
+          height: 48,
+        },
+        assistantChatBubble: {
+          backgroundColor: "#000000",
+          padding: 16,
+          borderRadius: 16,
+        },
+        assistantChatBubbleText: {
+          color: "#ffffff",
+        },
+        userChatBubble: {
+          backgroundColor: "#000000",
+          padding: 16,
+          borderRadius: 16,
+        },
+        userChatBubbleText: {
+          color: "#ffffff",
         },
       },
     },
@@ -124,7 +169,7 @@ export const themeDefaultGreen: ThemeOptions = {
         headerTitleAlign: "center",
         headerTintColor: "#000000",
         headerStyle: {
-          backgroundColor: "#ffffff",
+          backgroundColor: "#ededed",
         },
         sceneStyle: {
           backgroundColor: "#ededed",
@@ -166,16 +211,62 @@ export const themeDefaultGreen: ThemeOptions = {
           backgroundColor: "#ededed",
         },
       },
+      componentOptions: {
+        assistantAvatar: {
+          width: 40,
+          height: 40,
+          borderRadius: 4,
+        },
+        assistantChatBubble: {
+          backgroundColor: "#ffffff",
+          padding: 16,
+          borderRadius: 8,
+        },
+        assistantChatBubbleText: {
+          color: "#000000",
+        },
+        userChatBubble: {
+          backgroundColor: "#95ec69",
+          padding: 16,
+          borderRadius: 8,
+        },
+        userChatBubbleText: {
+          color: "#000000",
+        },
+      },
     },
     dark: {
       screenOptions: {
         headerTitleAlign: "center",
-        headerTintColor: "#000000",
+        headerTintColor: "#cfcfcf",
         headerStyle: {
-          backgroundColor: "#ededed",
+          backgroundColor: "#000000",
         },
         contentStyle: {
-          backgroundColor: "#ededed",
+          backgroundColor: "#000000",
+        },
+      },
+      componentOptions: {
+        assistantAvatar: {
+          width: 40,
+          height: 40,
+          borderRadius: 4,
+        },
+        assistantChatBubble: {
+          backgroundColor: "#2c2c2c",
+          padding: 16,
+          borderRadius: 8,
+        },
+        assistantChatBubbleText: {
+          color: "#ffffff",
+        },
+        userChatBubble: {
+          backgroundColor: "#3eb575",
+          padding: 16,
+          borderRadius: 8,
+        },
+        userChatBubbleText: {
+          color: "#000000",
         },
       },
     },

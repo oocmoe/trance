@@ -1,47 +1,62 @@
 import { Box } from "@/components/ui/box";
 import { Button, ButtonIcon } from "@/components/ui/button";
 import { HStack } from "@/components/ui/hstack";
-import { Image } from "@/components/ui/image";
 import { Input, InputField } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import type { Messages } from "@/db/schema/message";
 import { useCharacterById } from "@/hook/character";
 import { useMessageByRoomId } from "@/hook/message";
 import { useRoomById } from "@/hook/room";
+import { useThemeRoomOptions } from "@/hook/theme";
 import { roomOptionsAtom } from "@/store/roomOptions";
 import { Stack, router, useLocalSearchParams } from "expo-router";
 import { useAtom } from "jotai";
 import { EllipsisIcon, SendIcon } from "lucide-react-native";
 import React from "react";
-import { Pressable, ScrollView } from "react-native";
+import { Image, ScrollView } from "react-native";
 
 export default function RoomScreen() {
   const { id } = useLocalSearchParams();
   const [roomOptions, setRoomOptions] = useAtom(roomOptionsAtom);
+  const themeRoomOptions = useThemeRoomOptions();
   const room = useRoomById(Number(id));
-  const character = useCharacterById(Number(room?.personnel?.[0]));
-  if (room && character) {
-    setRoomOptions({
-      assistantaAvatar: character.cover,
-      personnel: room.personnel,
-    });
-  }
+  React.useEffect(() => {
+    if (room) {
+      setRoomOptions({
+        ...roomOptions,
+        prompt: room.prompt,
+        personnel: room.personnel,
+      });
+    }
+  }, [room, roomOptions, setRoomOptions]);
+  if (room)
+    return (
+      <Box className="h-full">
+        <Stack.Screen
+          options={{
+            ...themeRoomOptions?.screenOptions,
+            title: room.name,
+            headerRight: () => {
+              return <HeaderRight />;
+            },
+          }}
+        />
+        <MessagesList />
+        <ActionBar />
+      </Box>
+    );
+  return <RoomSkeleton />;
+}
 
+const RoomSkeleton = () => {
   return (
     <Box className="h-full">
-      <Stack.Screen
-        options={{
-          headerRight: () => {
-            return <HeaderRight />;
-          },
-        }}
-      />
-      <MessagesList />
-      <ActionBar />
+      <Skeleton className="h-full" />
     </Box>
   );
-}
+};
 
 const HeaderRight = () => {
   const { id } = useLocalSearchParams();
@@ -57,53 +72,68 @@ const MessagesList = () => {
   const messages = useMessageByRoomId(Number(id));
   if (messages)
     return (
-      <Box className="flex-1 p-3">
-        <ScrollView>
-          <VStack>
+      <ScrollView>
+        <Box className="flex-1 p-3">
+          <VStack space="md">
             {messages.map((item) => (
               <ChatBubble key={item.id} item={item} />
             ))}
           </VStack>
-        </ScrollView>
-      </Box>
+        </Box>
+      </ScrollView>
     );
 };
 
 const ChatBubble = ({ item }: { item: Messages }) => {
   const [roomOptions] = useAtom(roomOptionsAtom);
+  const themeRoomOptions = useThemeRoomOptions();
+  const [assistantaAvatar, setAssistantaAvatar] = React.useState<string>();
+  if (roomOptions.personnel) {
+    const character = useCharacterById(Number(roomOptions.personnel[0]));
+    React.useEffect(() => {
+      setAssistantaAvatar(character?.cover);
+    }, [character]);
+  }
   // Assistant
   if (item.is_Sender === 0) {
     return (
-      <Pressable>
-        <Box>
-          <HStack space="md">
-            {roomOptions.assistantaAvatar && (
-              <Image
-                source={roomOptions.assistantaAvatar}
-                alt="AssistantaAvatar"
-              />
-            )}
+      <Box>
+        <HStack className="max-w-[80%]" space="md">
+          {assistantaAvatar ? (
+            <Image
+              source={{ uri: assistantaAvatar }}
+              alt="avatar"
+              style={themeRoomOptions?.componentOptions.assistantAvatar}
+            />
+          ) : (
+            <Skeleton
+              style={themeRoomOptions?.componentOptions.assistantAvatar}
+            />
+          )}
 
-            <Box className="max-w-[90%] ">
-              <Text>{item.content}</Text>
-            </Box>
-          </HStack>
-        </Box>
-      </Pressable>
+          <Box style={themeRoomOptions?.componentOptions.assistantChatBubble}>
+            <Text
+              style={themeRoomOptions?.componentOptions.assistantChatBubbleText}
+            >
+              {item.content}
+            </Text>
+          </Box>
+        </HStack>
+      </Box>
     );
   }
   // User
   if (item.is_Sender === 1) {
     return (
-      <Pressable>
-        <Box>
-          <HStack className="justify-end">
-            <Box>
-              <Text>{item.content}</Text>
-            </Box>
-          </HStack>
-        </Box>
-      </Pressable>
+      <Box>
+        <HStack className="max-w-[75%] self-end">
+          <Box style={themeRoomOptions?.componentOptions.userChatBubble}>
+            <Text style={themeRoomOptions?.componentOptions.userChatBubbleText}>
+              {item.content}
+            </Text>
+          </Box>
+        </HStack>
+      </Box>
     );
   }
 };
