@@ -7,8 +7,8 @@ import { useDB } from "./db";
 const db = useDB();
 
 export function useMessageByRoomId(roomId: number) {
-	const { data, error, updatedAt } = useLiveQuery(
-		db.select().from(message).where(eq(message.room_id, roomId)),
-	);
-	return data;
+  const { data, error, updatedAt } = useLiveQuery(
+    db.select().from(message).where(eq(message.room_id, roomId)),
+  );
+  return data;
 }

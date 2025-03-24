@@ -5,15 +5,15 @@ import { Storage } from "expo-sqlite/kv-store";
  * @param str
  */
 export async function regexUserName(str: string) {
-	try {
-		const value = await Storage.getItem("TRANCE_USER_NAME");
-		if (!value) {
-			return str;
-		}
-		const regex = /\{\{user\}\}/gi;
-		const result = str.replace(regex, value);
-		return result;
-	} catch (error) {
-		console.log(error);
-	}
+  try {
+    const value = await Storage.getItem("TRANCE_USER_NAME");
+    if (!value) {
+      return str;
+    }
+    const regex = /\{\{user\}\}/gi;
+    const result = str.replace(regex, value);
+    return result;
+  } catch (error) {
+    console.log(error);
+  }
 }

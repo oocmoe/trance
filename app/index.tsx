@@ -16,38 +16,38 @@ const expo = openDatabaseSync("trance.db");
 const db = drizzle(expo);
 
 export default function HomeScreen() {
-	const { success, error } = useMigrations(db, migrations);
-	const [migrationStatus, setMigrationStatus] = React.useState<
-		"loading" | "error" | "success"
-	>("loading");
+  const { success, error } = useMigrations(db, migrations);
+  const [migrationStatus, setMigrationStatus] = React.useState<
+    "loading" | "error" | "success"
+  >("loading");
 
-	React.useEffect(() => {
-		if (error) {
-			setMigrationStatus("error");
-		} else if (success) {
-			setMigrationStatus("success");
-		}
-	}, [success, error]);
+  React.useEffect(() => {
+    if (error) {
+      setMigrationStatus("error");
+    } else if (success) {
+      setMigrationStatus("success");
+    }
+  }, [success, error]);
 
-	if (migrationStatus === "loading") {
-		return (
-			<View className="flex-1 justify-center items-center">
-				<Text>Initializing...</Text>
-			</View>
-		);
-	}
+  if (migrationStatus === "loading") {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <Text>Initializing...</Text>
+      </View>
+    );
+  }
 
-	if (migrationStatus === "error") {
-		return (
-			<View className="flex-1 justify-center items-center">
-				<Text>Initialization Failure : {error?.message}</Text>
-			</View>
-		);
-	}
+  if (migrationStatus === "error") {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <Text>Initialization Failure : {error?.message}</Text>
+      </View>
+    );
+  }
 
-	if (migrationStatus === "success") {
-		return <Redirect href="/(drawer)/message" />;
-	}
+  if (migrationStatus === "success") {
+    return <Redirect href="/(drawer)/message" />;
+  }
 
-	return null;
+  return null;
 }

@@ -10,40 +10,40 @@ import { Pressable } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 export default function knowledgeBaseByIdScreen() {
-	return (
-		<Box>
-			<KnowledgeBaseEntryList />
-		</Box>
-	);
+  return (
+    <Box>
+      <KnowledgeBaseEntryList />
+    </Box>
+  );
 }
 
 const KnowledgeBaseEntryList = () => {
-	const { id } = useLocalSearchParams();
-	const list = useKnowledgeBaseById(Number(id));
-	const router = useRouter();
-	return (
-		<ScrollView className="p-3">
-			{list?.entries && (
-				<VStack space="sm">
-					{list.entries.map((item) => {
-						return (
-							<Pressable
-								onPress={() =>
-									router.push(`/knowledgeBase/${id}/entry/${item.id}`)
-								}
-								key={item.id}
-							>
-								<Card>
-									<HStack className="justify-between items-center">
-										<Heading>{item.name}</Heading>
-										<Icon as={ArrowRightIcon} />
-									</HStack>
-								</Card>
-							</Pressable>
-						);
-					})}
-				</VStack>
-			)}
-		</ScrollView>
-	);
+  const { id } = useLocalSearchParams();
+  const list = useKnowledgeBaseById(Number(id));
+  const router = useRouter();
+  return (
+    <ScrollView className="p-3">
+      {list?.entries && (
+        <VStack space="sm">
+          {list.entries.map((item) => {
+            return (
+              <Pressable
+                onPress={() =>
+                  router.push(`/knowledgeBase/${id}/entry/${item.id}`)
+                }
+                key={item.id}
+              >
+                <Card>
+                  <HStack className="justify-between items-center">
+                    <Heading>{item.name}</Heading>
+                    <Icon as={ArrowRightIcon} />
+                  </HStack>
+                </Card>
+              </Pressable>
+            );
+          })}
+        </VStack>
+      )}
+    </ScrollView>
+  );
 };

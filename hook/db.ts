@@ -7,7 +7,7 @@ import { openDatabaseSync } from "expo-sqlite";
  * @returns
  */
 export function useDB() {
-	const expo = openDatabaseSync("trance.db", { enableChangeListener: true });
-	const db = drizzle(expo);
-	return db;
+  const expo = openDatabaseSync("trance.db", { enableChangeListener: true });
+  const db = drizzle(expo);
+  return db;
 }

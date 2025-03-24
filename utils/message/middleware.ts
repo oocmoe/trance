@@ -32,24 +32,24 @@ import { tranceHiGemini } from "./gemini";
  * @returns
  */
 export async function tranceHi(content: string, type: string, room: Room) {
-	if (!room.model || room.personnel.length === 0 || !room.prompt)
-		throw new Error("房间未设置模型或者提示词");
-	const options = {
-		roomId: room.id,
-		content: content,
-		promptId: room.prompt,
-		personnel: room.personnel,
-		model: room.model.model,
-		model_version: room.model.version,
-	};
+  if (!room.model || room.personnel.length === 0 || !room.prompt)
+    throw new Error("房间未设置模型或者提示词");
+  const options = {
+    roomId: room.id,
+    content: content,
+    promptId: room.prompt,
+    personnel: room.personnel,
+    model: room.model.model,
+    model_version: room.model.version,
+  };
 
-	if (options.model === "Gemini") {
-		if (type === "text") {
-			const result = await tranceHiGemini(options);
-			if (!result) return;
-			return result;
-		}
-	}
+  if (options.model === "Gemini") {
+    if (type === "text") {
+      const result = await tranceHiGemini(options);
+      if (!result) return;
+      return result;
+    }
+  }
 }
 /**
  * 渲染消息
@@ -57,24 +57,24 @@ export async function tranceHi(content: string, type: string, room: Room) {
  * @returns
  */
 export async function tranceRenderMessages(messages: Messages[]) {
-	try {
-		const formatedMessages = await Promise.all(
-			messages.map(async (item) => {
-				const content = await tranceConvertMessage(item.content);
-				return {
-					id: item.id,
-					global_id: item.global_id,
-					type: item.type,
-					is_Sender: item.is_Sender,
-					content: content || "ERROR",
-					role: item.role,
-				};
-			}),
-		);
-		return formatedMessages;
-	} catch (error) {
-		console.log(error);
-	}
+  try {
+    const formatedMessages = await Promise.all(
+      messages.map(async (item) => {
+        const content = await tranceConvertMessage(item.content);
+        return {
+          id: item.id,
+          global_id: item.global_id,
+          type: item.type,
+          is_Sender: item.is_Sender,
+          content: content || "ERROR",
+          role: item.role,
+        };
+      }),
+    );
+    return formatedMessages;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 /**
@@ -83,27 +83,27 @@ export async function tranceRenderMessages(messages: Messages[]) {
  * @returns
  */
 export async function tranceConvertMessage(content: string) {
-	try {
-		const promptRegex = await readEnabledGlobalRenderRegex();
-		let message = content;
-		if (promptRegex) {
-			const regexRules = promptRegex.map((item) => ({
-				replace: new RegExp(item.replace),
-				placeholder: item.placement,
-			}));
-			for (const { replace, placeholder } of regexRules) {
-				message = content.replace(replace, placeholder);
-			}
-		}
-		message = removeSpareHtmlTag(content);
-		const highlightedChat = content.replace(
-			/["“](.*?)["”]/g,
-			'<span style="color: orange;">"$1"</span>',
-		);
-		return highlightedChat;
-	} catch (error) {
-		console.log(error);
-	}
+  try {
+    const promptRegex = await readEnabledGlobalRenderRegex();
+    let message = content;
+    if (promptRegex) {
+      const regexRules = promptRegex.map((item) => ({
+        replace: new RegExp(item.replace),
+        placeholder: item.placement,
+      }));
+      for (const { replace, placeholder } of regexRules) {
+        message = content.replace(replace, placeholder);
+      }
+    }
+    message = removeSpareHtmlTag(content);
+    const highlightedChat = content.replace(
+      /["“](.*?)["”]/g,
+      '<span style="color: orange;">"$1"</span>',
+    );
+    return highlightedChat;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 /**
@@ -112,49 +112,49 @@ export async function tranceConvertMessage(content: string) {
  * @returns
  */
 function removeSpareHtmlTag(str: string) {
-	let content = str;
-	const tagGroup = [
-		"h1",
-		"h2",
-		"h3",
-		"h4",
-		"h5",
-		"h6",
-		"p",
-		"span",
-		"div",
-		"img",
-		"ul",
-		"ol",
-		"li",
-		"table",
-		"tr",
-		"td",
-		"th",
-		"blockquote",
-		"code",
-		"pre",
-		"header",
-		"footer",
-		"section",
-		"article",
-		"aside",
-		"nav",
-		"main",
-		"br",
-		"hr",
-		"strong",
-		"em",
-		"i",
-		"b",
-		"u",
-	];
-	const allowedTags = tagGroup.join("|");
-	const regexPair = new RegExp(
-		`<(?!\\/?(?:${allowedTags})\\b)([a-zA-Z][^\\s/>]*)(?:\\s[^>]*)?>([\\s\\S]*?)<\\/\\1>`,
-		"gi",
-	);
-	content = content.replace(regexPair, "$2");
-	const regexSingle = new RegExp(`<\\/?(?!(${allowedTags})\\b)[^>]+>`, "gi");
-	return content.replace(regexSingle, "");
+  let content = str;
+  const tagGroup = [
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "p",
+    "span",
+    "div",
+    "img",
+    "ul",
+    "ol",
+    "li",
+    "table",
+    "tr",
+    "td",
+    "th",
+    "blockquote",
+    "code",
+    "pre",
+    "header",
+    "footer",
+    "section",
+    "article",
+    "aside",
+    "nav",
+    "main",
+    "br",
+    "hr",
+    "strong",
+    "em",
+    "i",
+    "b",
+    "u",
+  ];
+  const allowedTags = tagGroup.join("|");
+  const regexPair = new RegExp(
+    `<(?!\\/?(?:${allowedTags})\\b)([a-zA-Z][^\\s/>]*)(?:\\s[^>]*)?>([\\s\\S]*?)<\\/\\1>`,
+    "gi",
+  );
+  content = content.replace(regexPair, "$2");
+  const regexSingle = new RegExp(`<\\/?(?!(${allowedTags})\\b)[^>]+>`, "gi");
+  return content.replace(regexSingle, "");
 }
