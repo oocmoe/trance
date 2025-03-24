@@ -6,7 +6,7 @@ import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
 import { ArrowRightIcon, Icon } from "@/components/ui/icon";
 import { VStack } from "@/components/ui/vstack";
-import { type Href, router } from "expo-router";
+import { type Href, Stack, router } from "expo-router";
 import { InfoIcon, PaintRollerIcon } from "lucide-react-native";
 import { Pressable } from "react-native";
 
@@ -28,6 +28,14 @@ const lists = [
 export default function SettingScreen() {
 	return (
 		<Box>
+			<Stack.Screen
+				options={{
+					headerSearchBarOptions: {
+						placeholder: "搜索",
+					},
+				}}
+			/>
+
 			<SettingList />
 		</Box>
 	);

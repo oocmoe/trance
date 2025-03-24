@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { USER_avtarAtom, USER_nameAtom } from "@/store/core";
-import { colorModeAtom } from "@/store/theme";
+import { colorModeAtom, themeDrawerOptionsAtom } from "@/store/theme";
 import { router } from "expo-router";
 import { Drawer } from "expo-router/drawer";
 import { Storage } from "expo-sqlite/kv-store";
@@ -28,23 +28,29 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function DrawerLayout() {
 	const [colorMode] = useAtom(colorModeAtom);
+	const [themeDrawerOptions] = useAtom(themeDrawerOptionsAtom);
 	return (
 		<Drawer
 			drawerContent={() => <CustomDrawerContent />}
-			screenOptions={{
-				sceneStyle: {
-					backgroundColor: colorMode === "light" ? "#fff" : "#000000",
-				},
-				swipeEdgeWidth: 768,
-				drawerStyle: {
-					width: 300,
-					borderTopEndRadius: 0,
-					borderBottomEndRadius: 0,
-					backgroundColor: colorMode === "light" ? "#fff" : "#000000",
-				},
-				headerTintColor: colorMode === "light" ? "#000" : "#fff",
-				headerBackground: () => <CustomDrawerHeaderBackground />,
-			}}
+			screenOptions={
+				colorMode === "light"
+					? {
+							...themeDrawerOptions.light.screenOptions,
+							drawerStyle: {
+								...themeDrawerOptions.light.screenOptions.drawerStyle,
+								width: 300,
+							},
+							swipeEdgeWidth: 768,
+						}
+					: {
+							...themeDrawerOptions.dark.screenOptions,
+							drawerStyle: {
+								...themeDrawerOptions.dark.screenOptions.drawerStyle,
+								width: 300,
+							},
+							swipeEdgeWidth: 768,
+						}
+			}
 		>
 			<Drawer.Screen
 				name="my"
@@ -97,11 +103,6 @@ export default function DrawerLayout() {
 		</Drawer>
 	);
 }
-
-// 自定义Header颜色，限/(drawer)下路由
-const CustomDrawerHeaderBackground = () => {
-	return <Box className="flex-1" />;
-};
 
 // 导航列表
 const drawerNavList = [

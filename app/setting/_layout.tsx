@@ -1,12 +1,20 @@
-import { stackScreenOptionsAtom } from "@/store/theme";
+import { useThemeStackOptions } from "@/hook/theme";
 import { Stack } from "expo-router/stack";
-import { useAtomValue } from "jotai";
+import React from "react";
 
 export default function SettingLayout() {
+	const [optionsReady, setOptionsReady] = React.useState(false);
+	const stackOptions = useThemeStackOptions();
+	React.useEffect(() => {
+		if (stackOptions) {
+			setOptionsReady(true);
+		}
+	});
+	if (!optionsReady) return null;
 	return (
-		<Stack screenOptions={useAtomValue(stackScreenOptionsAtom)}>
-			<Stack.Screen name="about" />
-			<Stack.Screen name="theme" />
+		<Stack screenOptions={stackOptions}>
+			<Stack.Screen name="about" options={{ title: "关于" }} />
+			<Stack.Screen name="theme" options={{ title: "主题" }} />
 		</Stack>
 	);
 }

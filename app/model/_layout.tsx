@@ -1,10 +1,18 @@
-import { stackScreenOptionsAtom } from "@/store/theme";
+import { useThemeStackOptions } from "@/hook/theme";
 import { Stack } from "expo-router/stack";
-import { useAtomValue } from "jotai";
+import React from "react";
 
 export default function ModelLayout() {
+	const [optionsReady, setOptionsReady] = React.useState(false);
+	const stackOptions = useThemeStackOptions();
+	React.useEffect(() => {
+		if (stackOptions) {
+			setOptionsReady(true);
+		}
+	});
+	if (!optionsReady) return null;
 	return (
-		<Stack screenOptions={useAtomValue(stackScreenOptionsAtom)}>
+		<Stack screenOptions={stackOptions}>
 			<Stack.Screen name="gemini" options={{ title: "Gemini配置" }} />
 			<Stack.Screen
 				name="customOpenAI"

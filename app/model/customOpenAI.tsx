@@ -123,6 +123,15 @@ const ApiUrl = () => {
 			toast.error("保存失败");
 		}
 	};
+	React.useEffect(() => {
+		const fetchApiUrl = async () => {
+			const result = await Storage.getItem("TRANCE_MODEL_CUSTOMOPENAI_URL");
+			if (result) {
+				setApiUrl(result);
+			}
+		};
+		fetchApiUrl();
+	}, []);
 	return (
 		<Box>
 			<Pressable onPress={() => setIsOpen(true)}>

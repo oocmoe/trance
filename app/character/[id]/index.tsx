@@ -148,7 +148,6 @@ function CreateRoom() {
 						<Heading>创建新聊天</Heading>
 					</ModalHeader>
 					<ModalBody>
-						6
 						<VStack space="md">
 							<Box>
 								<Text>聊天名称</Text>

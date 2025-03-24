@@ -1,4 +1,8 @@
-import { colorModeAtom, stackScreenOptionsAtom } from "@/store/theme";
+import {
+	colorModeAtom,
+	themeDrawerOptionsAtom,
+	themeStackOptionsAtom,
+} from "@/store/theme";
 import { useAtom } from "jotai";
 
 export function useColorMode() {
@@ -6,7 +10,16 @@ export function useColorMode() {
 	return colorMode;
 }
 
-export function useCustomStackScreenOptionsAtom() {
-	const [stackScreenOptions] = useAtom(stackScreenOptionsAtom);
-	return stackScreenOptions;
+export function useThemeStackOptions() {
+	const [themeStackOptions] = useAtom(themeStackOptionsAtom);
+	const colorMode = useColorMode();
+	if (colorMode === "light") return themeStackOptions.light.screenOptions;
+	if (colorMode === "dark") return themeStackOptions.dark.screenOptions;
+}
+
+export function useThemeDrawerOptions() {
+	const [themeDrawerOptions] = useAtom(themeDrawerOptionsAtom);
+	const colorMode = useColorMode();
+	if (colorMode === "light") return themeDrawerOptions.light.screenOptions;
+	if (colorMode === "dark") return themeDrawerOptions.dark.screenOptions;
 }
