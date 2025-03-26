@@ -52,7 +52,7 @@ const Key = () => {
   const [key, setKey] = React.useState<string>("******************");
   const handleSaveKey = async () => {
     try {
-      await SecureStore.setItem("TRANCE_MODEL_CUSTOMOPENAI_KEY", key);
+      await SecureStore.setItem("TRANCE_MODEL_CUSTOM_OPENAI_KEY", key);
       setKey("******************");
       setIsOpen(false);
       toast.success("保存成功");
@@ -115,7 +115,7 @@ const ApiUrl = () => {
   const [apiUrl, setApiUrl] = React.useState<string>("");
   const handleSaveApiUrl = async () => {
     try {
-      await Storage.setItem("TRANCE_MODEL_CUSTOMOPENAI_URL", apiUrl);
+      await Storage.setItem("TRANCE_MODEL_CUSTOM_OPENAI_URL", apiUrl);
       setIsOpen(false);
       toast.success("保存成功");
     } catch (error) {
@@ -125,7 +125,7 @@ const ApiUrl = () => {
   };
   React.useEffect(() => {
     const fetchApiUrl = async () => {
-      const result = await Storage.getItem("TRANCE_MODEL_CUSTOMOPENAI_URL");
+      const result = await Storage.getItem("TRANCE_MODEL_CUSTOM_OPENAI_URL");
       if (result) {
         setApiUrl(result);
       }
@@ -184,7 +184,7 @@ const ModelSelect = () => {
   const [actionModel, setActionModel] = React.useState<string>("");
   const fetchModelConfig = async () => {
     try {
-      const apiUrl = await Storage.getItem("TRANCE_MODEL_CUSTOMOPENAI_URL");
+      const apiUrl = await Storage.getItem("TRANCE_MODEL_CUSTOM_OPENAI_URL");
       if (!apiUrl || apiUrl.length === 0) {
         throw new Error("请求地址不能为空");
       }
@@ -208,7 +208,7 @@ const ModelSelect = () => {
         toast.error("未选择模型");
         return;
       }
-      await Storage.setItem("TRANCE_MODEL_CUSTOMOPENAI_MODEL", actionModel);
+      await Storage.setItem("TRANCE_MODEL_CUSTOM_OPENAI_MODEL", actionModel);
       setIsOpen(false);
       toast.success("保存成功");
     } catch (error) {

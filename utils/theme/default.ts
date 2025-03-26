@@ -102,12 +102,12 @@ export const themeDefault: ThemeOptions = {
     dark: {
       screenOptions: {
         headerTitleAlign: "left",
-        headerTintColor: "#000000",
+        headerTintColor: "#ffffff",
         headerStyle: {
-          backgroundColor: "#ededed",
+          backgroundColor: "#000000",
         },
         contentStyle: {
-          backgroundColor: "#ededed",
+          backgroundColor: "#000000",
         },
       },
       componentOptions: {

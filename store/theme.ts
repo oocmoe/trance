@@ -123,24 +123,24 @@ const defaultStackOptions: ThemeStack = {
   light: {
     screenOptions: {
       headerTitleAlign: "left",
-      headerTintColor: "#000",
+      headerTintColor: "#000000",
       headerStyle: {
-        backgroundColor: "#fff",
+        backgroundColor: "#ffffff",
       },
       contentStyle: {
-        backgroundColor: "#fff",
+        backgroundColor: "#ffffff",
       },
     },
   },
   dark: {
     screenOptions: {
       headerTitleAlign: "left",
-      headerTintColor: "#fff",
+      headerTintColor: "#ffffff",
       headerStyle: {
-        backgroundColor: "#000",
+        backgroundColor: "#000000",
       },
       contentStyle: {
-        backgroundColor: "#000",
+        backgroundColor: "#000000",
       },
     },
   },
@@ -150,15 +150,15 @@ const defaultDrawerOptions: ThemeDrawer = {
   light: {
     screenOptions: {
       headerTitleAlign: "left",
-      headerTintColor: "#000",
+      headerTintColor: "#000000",
       headerStyle: {
-        backgroundColor: "#fff",
+        backgroundColor: "#ffffff",
       },
       sceneStyle: {
-        backgroundColor: "#fff",
+        backgroundColor: "#ffffff",
       },
       drawerStyle: {
-        backgroundColor: "#fff",
+        backgroundColor: "#ffffff",
         borderTopEndRadius: 0,
         borderBottomEndRadius: 0,
       },
@@ -167,15 +167,15 @@ const defaultDrawerOptions: ThemeDrawer = {
   dark: {
     screenOptions: {
       headerTitleAlign: "left",
-      headerTintColor: "#fff",
+      headerTintColor: "#ffffff",
       headerStyle: {
-        backgroundColor: "#000",
+        backgroundColor: "#000000",
       },
       sceneStyle: {
-        backgroundColor: "#000",
+        backgroundColor: "#000000",
       },
       drawerStyle: {
-        backgroundColor: "#000",
+        backgroundColor: "#000000",
         borderTopEndRadius: 0,
         borderBottomEndRadius: 0,
       },

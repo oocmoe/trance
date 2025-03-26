@@ -32,27 +32,20 @@ const DefaultTheme = () => {
   const [, setThemeRoomOptions] = useAtom(themeRoomOptionsAtom);
   const theme = themeDefault;
   const handleChangeTheme = () => {
-    setThemeStackOptions(async (prev) => {
-      const current = await prev;
-      return {
-        ...current,
-        ...theme.stackOptions,
-      };
-    });
-    setThemeDrawerOptions(async (prev) => {
-      const current = await prev;
-      return {
-        ...current,
-        ...theme.drawerOptions,
-      };
-    });
-    setThemeRoomOptions(async (prev) => {
-      const current = await prev;
-      return {
-        ...current,
-        ...theme.roomOptions,
-      };
-    });
+    setThemeStackOptions((prev) => ({
+      ...prev,
+      ...theme.stackOptions,
+    }));
+
+    setThemeDrawerOptions((prev) => ({
+      ...prev,
+      ...theme.drawerOptions,
+    }));
+
+    setThemeRoomOptions((prev) => ({
+      ...prev,
+      ...theme.roomOptions,
+    }));
   };
   return (
     <Pressable onPress={handleChangeTheme}>
@@ -71,27 +64,20 @@ const GreenTheme = () => {
   const [, setThemeRoomOptions] = useAtom(themeRoomOptionsAtom);
   const theme = themeDefaultGreen;
   const handleChangeTheme = () => {
-    setThemeStackOptions(async (prev) => {
-      const current = await prev;
-      return {
-        ...current,
-        ...theme.stackOptions,
-      };
-    });
-    setThemeDrawerOptions(async (prev) => {
-      const current = await prev;
-      return {
-        ...current,
-        ...theme.drawerOptions,
-      };
-    });
-    setThemeRoomOptions(async (prev) => {
-      const current = await prev;
-      return {
-        ...current,
-        ...theme.roomOptions,
-      };
-    });
+    setThemeStackOptions((prev) => ({
+      ...prev,
+      ...theme.stackOptions,
+    }));
+
+    setThemeDrawerOptions((prev) => ({
+      ...prev,
+      ...theme.drawerOptions,
+    }));
+
+    setThemeRoomOptions((prev) => ({
+      ...prev,
+      ...theme.roomOptions,
+    }));
   };
   return (
     <Pressable onPress={handleChangeTheme}>

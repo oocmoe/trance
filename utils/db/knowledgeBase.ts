@@ -45,6 +45,19 @@ export async function readKnowLedgeBaseField(
   } catch (error) {}
 }
 
+export async function readIsEnableKnowledgeBase() {
+  try {
+    const rows = await db
+      .select()
+      .from(knowledgeBase)
+      .where(eq(knowledgeBase.is_Enabled, true));
+    return rows;
+  } catch (error) {
+    if (error instanceof Error) throw new Error(error.message);
+    throw new Error("读取全局世界书失败");
+  }
+}
+
 export async function updateKnowledgeBaseEntriesFiled<
   T extends keyof KnowledgeBaseEntry,
 >(id: number, entryId: number, field: T, value: KnowledgeBaseEntry[T]) {

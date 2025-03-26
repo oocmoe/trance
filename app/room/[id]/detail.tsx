@@ -1,3 +1,4 @@
+import { ModelSelect } from "@/components/modelSelect";
 import {
   AlertDialog,
   AlertDialogBackdrop,
@@ -38,13 +39,12 @@ import { modalAtom } from "@/store/core";
 import { readPromptFieldById } from "@/utils/db/prompt";
 import {
   deleteRoomById,
-  readRoomById,
   readRoomFieldById,
   updateRoomFieldById,
 } from "@/utils/db/room";
 import { router, useLocalSearchParams } from "expo-router";
 import { useAtom } from "jotai";
-import { BotIcon, HammerIcon, Trash2Icon } from "lucide-react-native";
+import { HammerIcon, Trash2Icon } from "lucide-react-native";
 import React from "react";
 import { Pressable } from "react-native";
 import { toast } from "sonner-native";
@@ -53,7 +53,7 @@ export default function RoomDetailScreen() {
   return (
     <Box className="h-full p-3">
       <VStack space="sm">
-        <Box>
+        <Box className="gap-y-3">
           <Text>房间选项</Text>
           <Card>
             <VStack space="4xl">
@@ -70,176 +70,176 @@ export default function RoomDetailScreen() {
 }
 
 // 房间模型选择
-const ModelSelect = () => {
-  const [isOpen, setIsOpen] = React.useState<boolean>(false);
-  const [model, setModel] = React.useState<Models>();
-  const [version, setVersion] = React.useState<ModelVersionMap[Models]>();
-  const { id } = useLocalSearchParams();
-  const handleUpdateModel = (value: string) => {
-    if (!value) return;
-    setModel(value as Models);
-  };
-  const handleUpdateVersion = (value: string) => {
-    if (!value) return;
-    setVersion(value as ModelVersionMap[Models]);
-  };
-  const handleSaveModel = async () => {
-    if (!model || !version) return;
-    const data = {
-      model: model,
-      version: version,
-    };
-    const result = await updateRoomFieldById(Number(id), "model", data);
-    if (!result) {
-      toast.error("保存失败");
-      return;
-    }
-    toast.success("保存成功");
-    setIsOpen(false);
-  };
-  React.useEffect(() => {
-    const initModel = async () => {
-      const room = await readRoomById(Number(id));
-      if (!room || !room.model?.model || !room.model?.version) return;
-      setModel(room.model.model);
-      setVersion(room.model.version);
-    };
-    initModel();
-  }, [id]);
+// const ModelSelect = () => {
+//   const [isOpen, setIsOpen] = React.useState<boolean>(false);
+//   const [model, setModel] = React.useState<Models>();
+//   const [version, setVersion] = React.useState<ModelVersionMap[Models]>();
+//   const { id } = useLocalSearchParams();
+//   const handleUpdateModel = (value: string) => {
+//     if (!value) return;
+//     setModel(value as Models);
+//   };
+//   const handleUpdateVersion = (value: string) => {
+//     if (!value) return;
+//     setVersion(value as ModelVersionMap[Models]);
+//   };
+//   const handleSaveModel = async () => {
+//     if (!model || !version) return;
+//     const data = {
+//       model: model,
+//       version: version,
+//     };
+//     const result = await updateRoomFieldById(Number(id), "model", data);
+//     if (!result) {
+//       toast.error("保存失败");
+//       return;
+//     }
+//     toast.success("保存成功");
+//     setIsOpen(false);
+//   };
+//   React.useEffect(() => {
+//     const initModel = async () => {
+//       const room = await readRoomById(Number(id));
+//       if (!room || !room.model?.model || !room.model?.version) return;
+//       setModel(room.model.model);
+//       setVersion(room.model.version);
+//     };
+//     initModel();
+//   }, [id]);
 
-  const modelList = [
-    {
-      order: 1,
-      label: "Gemini",
-      value: "Gemini",
-    },
-  ];
+//   const modelList = [
+//     {
+//       order: 1,
+//       label: "Gemini",
+//       value: "Gemini",
+//     },
+//   ];
 
-  const versionList = [
-    {
-      order: 1,
-      label: "Gemini 2.0 Flash",
-      value: "gemini-2.0-flash",
-    },
+//   const versionList = [
+//     {
+//       order: 1,
+//       label: "Gemini 2.0 Flash",
+//       value: "gemini-2.0-flash",
+//     },
 
-    {
-      order: 2,
-      label: "Gemini 2.0 Flash-Lite",
-      value: "gemini-2.0-flash-lite",
-    },
-    {
-      order: 3,
-      label: "Gemini 1.5 Flash",
-      value: "gemini-1.5-flash",
-    },
-    {
-      order: 4,
-      label: "Gemini 1.5 Flash-8B",
-      value: "gemini-1.5-flash-8b",
-    },
-    {
-      order: 5,
-      label: "Gemini 1.5 Pro",
-      value: "gemini-1.5-pro",
-    },
-  ];
+//     {
+//       order: 2,
+//       label: "Gemini 2.0 Flash-Lite",
+//       value: "gemini-2.0-flash-lite",
+//     },
+//     {
+//       order: 3,
+//       label: "Gemini 1.5 Flash",
+//       value: "gemini-1.5-flash",
+//     },
+//     {
+//       order: 4,
+//       label: "Gemini 1.5 Flash-8B",
+//       value: "gemini-1.5-flash-8b",
+//     },
+//     {
+//       order: 5,
+//       label: "Gemini 1.5 Pro",
+//       value: "gemini-1.5-pro",
+//     },
+//   ];
 
-  return (
-    <>
-      <Box>
-        <Pressable onPress={() => setIsOpen(true)}>
-          <HStack className="items-center" space="sm">
-            <Icon as={BotIcon} />
-            <Text>选择模型</Text>
-          </HStack>
-        </Pressable>
-      </Box>
-      <Modal
-        isOpen={isOpen}
-        onClose={() => {
-          setIsOpen(false);
-        }}
-        size="md"
-      >
-        <ModalBackdrop />
-        <ModalContent>
-          <ModalHeader>
-            <Heading size="md" className="text-typography-950">
-              选择模型
-            </Heading>
-          </ModalHeader>
-          <ModalBody>
-            <VStack space="sm">
-              <Text>模型</Text>
-              <Select onValueChange={handleUpdateModel} defaultValue={model}>
-                <SelectTrigger>
-                  <SelectInput />
-                </SelectTrigger>
-                <SelectPortal>
-                  <SelectBackdrop />
-                  <SelectContent>
-                    <SelectDragIndicatorWrapper>
-                      <SelectDragIndicator />
-                    </SelectDragIndicatorWrapper>
-                    {modelList.map((item) => (
-                      <SelectItem
-                        key={item.order}
-                        value={item.value}
-                        label={item.label}
-                      />
-                    ))}
-                  </SelectContent>
-                </SelectPortal>
-              </Select>
-              {model && (
-                <>
-                  <Text>版本</Text>
-                  <Select
-                    onValueChange={handleUpdateVersion}
-                    defaultValue={version}
-                  >
-                    <SelectTrigger>
-                      <SelectInput />
-                    </SelectTrigger>
-                    <SelectPortal>
-                      <SelectBackdrop />
-                      <SelectContent>
-                        <SelectDragIndicatorWrapper>
-                          <SelectDragIndicator />
-                        </SelectDragIndicatorWrapper>
-                        {versionList.map((item) => (
-                          <SelectItem
-                            key={item.order}
-                            value={item.value}
-                            label={item.label}
-                          />
-                        ))}
-                      </SelectContent>
-                    </SelectPortal>
-                  </Select>
-                </>
-              )}
-            </VStack>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              variant="outline"
-              action="secondary"
-              onPress={() => {
-                setIsOpen(false);
-              }}
-            >
-              <ButtonText>取消</ButtonText>
-            </Button>
-            <Button onPress={handleSaveModel}>
-              <ButtonText>保存</ButtonText>
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
-  );
-};
+//   return (
+//     <>
+//       <Box>
+//         <Pressable onPress={() => setIsOpen(true)}>
+//           <HStack className="items-center" space="sm">
+//             <Icon as={BotIcon} />
+//             <Text>选择模型</Text>
+//           </HStack>
+//         </Pressable>
+//       </Box>
+//       <Modal
+//         isOpen={isOpen}
+//         onClose={() => {
+//           setIsOpen(false);
+//         }}
+//         size="md"
+//       >
+//         <ModalBackdrop />
+//         <ModalContent>
+//           <ModalHeader>
+//             <Heading size="md" className="text-typography-950">
+//               选择模型
+//             </Heading>
+//           </ModalHeader>
+//           <ModalBody>
+//             <VStack space="sm">
+//               <Text>模型</Text>
+//               <Select onValueChange={handleUpdateModel} defaultValue={model}>
+//                 <SelectTrigger>
+//                   <SelectInput />
+//                 </SelectTrigger>
+//                 <SelectPortal>
+//                   <SelectBackdrop />
+//                   <SelectContent>
+//                     <SelectDragIndicatorWrapper>
+//                       <SelectDragIndicator />
+//                     </SelectDragIndicatorWrapper>
+//                     {modelList.map((item) => (
+//                       <SelectItem
+//                         key={item.order}
+//                         value={item.value}
+//                         label={item.label}
+//                       />
+//                     ))}
+//                   </SelectContent>
+//                 </SelectPortal>
+//               </Select>
+//               {model && (
+//                 <>
+//                   <Text>版本</Text>
+//                   <Select
+//                     onValueChange={handleUpdateVersion}
+//                     defaultValue={version}
+//                   >
+//                     <SelectTrigger>
+//                       <SelectInput />
+//                     </SelectTrigger>
+//                     <SelectPortal>
+//                       <SelectBackdrop />
+//                       <SelectContent>
+//                         <SelectDragIndicatorWrapper>
+//                           <SelectDragIndicator />
+//                         </SelectDragIndicatorWrapper>
+//                         {versionList.map((item) => (
+//                           <SelectItem
+//                             key={item.order}
+//                             value={item.value}
+//                             label={item.label}
+//                           />
+//                         ))}
+//                       </SelectContent>
+//                     </SelectPortal>
+//                   </Select>
+//                 </>
+//               )}
+//             </VStack>
+//           </ModalBody>
+//           <ModalFooter>
+//             <Button
+//               variant="outline"
+//               action="secondary"
+//               onPress={() => {
+//                 setIsOpen(false);
+//               }}
+//             >
+//               <ButtonText>取消</ButtonText>
+//             </Button>
+//             <Button onPress={handleSaveModel}>
+//               <ButtonText>保存</ButtonText>
+//             </Button>
+//           </ModalFooter>
+//         </ModalContent>
+//       </Modal>
+//     </>
+//   );
+// };
 
 const PromptSelect = () => {
   const { id } = useLocalSearchParams();

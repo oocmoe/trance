@@ -29,6 +29,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function DrawerLayout() {
   const [colorMode] = useAtom(colorModeAtom);
   const [themeDrawerOptions] = useAtom(themeDrawerOptionsAtom);
+  React.useLayoutEffect(()=>{
+
+  },[])
   return (
     <Drawer
       drawerContent={() => <CustomDrawerContent />}

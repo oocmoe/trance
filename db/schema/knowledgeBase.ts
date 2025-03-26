@@ -41,7 +41,7 @@ export const knowledgeBase = sqliteTable("knowledgeBase", {
     .$type<KnowledgeBaseEntry[]>()
     .notNull(),
 
-  // 是否启用
+  // 是否全局启用
   is_Enabled: integer({ mode: "boolean" }).notNull().default(false),
 
   // 首次存档内容

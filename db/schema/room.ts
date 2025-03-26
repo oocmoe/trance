@@ -33,7 +33,7 @@ export const room = sqliteTable("room", {
   prompt: text("prompt").$type<number>().notNull(),
 
   // model 用于存储房间使用的模型信息
-  model: text("model", { mode: "json" }).$type<ModelList>(),
+  model: text("model", { mode: "json" }).$type<ModelList>().notNull(),
 
   /**
    * 类型
