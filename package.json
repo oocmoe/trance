@@ -1,7 +1,7 @@
 {
   "name": "trance",
   "main": "expo-router/entry",
-  "version": "1.0.0",
+  "version": "0.3.9",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -45,6 +45,7 @@
     "@gluestack-ui/modal": "^0.1.39",
     "@gluestack-ui/nativewind-utils": "^1.0.26",
     "@gluestack-ui/overlay": "^0.1.16",
+    "@gluestack-ui/popover": "^0.1.49",
     "@gluestack-ui/radio": "^0.1.40",
     "@gluestack-ui/select": "^0.1.31",
     "@gluestack-ui/slider": "^0.1.32",
@@ -88,6 +89,7 @@
     "jotai": "^2.12.1",
     "lucide-react-native": "^0.475.0",
     "nativewind": "^4.1.23",
+    "openai": "^4.89.1",
     "openai-gpt-token-counter": "^1.1.1",
     "png-chunk-text": "^1.0.0",
     "png-chunks-encode": "^1.0.0",

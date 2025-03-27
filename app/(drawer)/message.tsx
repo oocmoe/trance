@@ -16,70 +16,70 @@ import { Pressable, ScrollView } from "react-native";
 // 房间列表状态
 const renderRoomListAtom = atom<RenderRoomList>();
 export default function MessageScreen() {
-  renderRoomList();
-  return (
-    <Box className="h-full p-3">
-      <RoomList />
-    </Box>
-  );
+	renderRoomList();
+	return (
+		<Box className="h-full p-3">
+			<RoomList />
+		</Box>
+	);
 }
 
 // 房间列表
 function renderRoomList() {
-  const list = useRoomList();
-  const [, setRenderRoomList] = useAtom(renderRoomListAtom);
-  React.useEffect(() => {
-    setRenderRoomList(list.data);
-  }, [list.data, setRenderRoomList]);
+	const list = useRoomList();
+	const [, setRenderRoomList] = useAtom(renderRoomListAtom);
+	React.useEffect(() => {
+		setRenderRoomList(list.data);
+	}, [list.data, setRenderRoomList]);
 }
 
 // 渲染角色卡列表
 const RoomList = () => {
-  const [list] = useAtom(renderRoomListAtom);
-  if (!list)
-    return (
-      <Box>
-        <HStack className="h-20 m-2" space="md">
-          <Skeleton className="w-16 h-16 rounded-full" />
-          <VStack className="m-2" space="md">
-            <SkeletonText className="w-20 h-3" />
-            <SkeletonText className="w-16 h-2" />
-          </VStack>
-        </HStack>
-      </Box>
-    );
-  if (list.length === 0)
-    return (
-      <Box className="h-full justify-center items-center">
-        <Box className="flex flex-col items-center gap-y-4">
-          <Icon size="xl" as={MessageCircleDashedIcon} />
-          <Text>未找到相关聊天</Text>
-        </Box>
-      </Box>
-    );
-  return (
-    <ScrollView>
-      <VStack>
-        {list.map((item) => (
-          <Pressable
-            key={item.id}
-            onPress={() => router.push(`/room/${item.id}`)}
-            className="h-20 overflow-hidden"
-          >
-            <HStack className="flex-1 mx-2" space="md">
-              <Image
-                source={item.cover}
-                alt={item.name}
-                className="h-16 w-16 rounded-full"
-              />
-              <VStack className="flex-1 mx-2">
-                <Text bold>{item.name}</Text>
-                <Text>{item.type}</Text>
-              </VStack>
-            </HStack>
-          </Pressable>
-        ))}
-      </VStack>
-    </ScrollView>
-  );
+	const [list] = useAtom(renderRoomListAtom);
+	if (!list)
+		return (
+			<Box>
+				<HStack className="h-20 m-2" space="md">
+					<Skeleton className="w-16 h-16 rounded-full" />
+					<VStack className="m-2" space="md">
+						<SkeletonText className="w-20 h-3" />
+						<SkeletonText className="w-16 h-2" />
+					</VStack>
+				</HStack>
+			</Box>
+		);
+	if (list.length === 0)
+		return (
+			<Box className="h-full justify-center items-center">
+				<Box className="flex flex-col items-center gap-y-4">
+					<Icon size="xl" as={MessageCircleDashedIcon} />
+					<Text>未找到相关聊天</Text>
+				</Box>
+			</Box>
+		);
+	return (
+		<ScrollView>
+			<VStack>
+				{list.map((item) => (
+					<Pressable
+						key={item.id}
+						onPress={() => router.push(`/room/${item.id}`)}
+						className="h-20 overflow-hidden"
+					>
+						<HStack className="flex-1 mx-2" space="md">
+							<Image
+								source={item.cover}
+								alt={item.name}
+								className="h-16 w-16 rounded-full"
+							/>
+							<VStack className="flex-1 mx-2">
+								<Text bold>{item.name}</Text>
+								<Text>{item.type}</Text>
+							</VStack>
+						</HStack>
+					</Pressable>
+				))}
+			</VStack>
+		</ScrollView>
+	);
 };

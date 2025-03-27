@@ -14,25 +14,25 @@ import { Toaster } from "sonner-native";
 const db = SQLite.openDatabaseSync("trance.db");
 
 export default function RootLayout() {
-  const [colorMode] = useAtom(colorModeAtom);
+	const [colorMode] = useAtom(colorModeAtom);
 
-  useDrizzleStudio(db);
-  return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <GluestackUIProvider mode={colorMode}>
-        <StatusBar translucent backgroundColor="transparent" />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            presentation: "transparentModal",
-          }}
-        >
-          <Stack.Screen name="index" />
-          <Stack.Screen name="+not-found" />
-          <Stack.Screen name="(drawer)" />
-        </Stack>
-      </GluestackUIProvider>
-      <Toaster richColors />
-    </GestureHandlerRootView>
-  );
+	useDrizzleStudio(db);
+	return (
+		<GestureHandlerRootView style={{ flex: 1 }}>
+			<GluestackUIProvider mode={colorMode}>
+				<StatusBar translucent backgroundColor="transparent" />
+				<Stack
+					screenOptions={{
+						headerShown: false,
+						presentation: "transparentModal",
+					}}
+				>
+					<Stack.Screen name="index" />
+					<Stack.Screen name="+not-found" />
+					<Stack.Screen name="(drawer)" />
+				</Stack>
+			</GluestackUIProvider>
+			<Toaster richColors />
+		</GestureHandlerRootView>
+	);
 }

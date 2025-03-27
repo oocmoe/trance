@@ -11,22 +11,22 @@ const db = useDB();
  * @returns
  */
 export function useRegexList() {
-  const { data, error, updatedAt } = useLiveQuery(
-    db
-      .select({
-        id: regex.id,
-        global_id: regex.global_id,
-        name: regex.name,
-        is_Enabled: regex.is_Enabled,
-      })
-      .from(regex),
-  );
-  return data;
+	const { data, error, updatedAt } = useLiveQuery(
+		db
+			.select({
+				id: regex.id,
+				global_id: regex.global_id,
+				name: regex.name,
+				is_Enabled: regex.is_Enabled,
+			})
+			.from(regex),
+	);
+	return data;
 }
 
 export function useRegexById(id: number) {
-  const { data, error, updatedAt } = useLiveQuery(
-    db.select().from(regex).where(eq(regex.id, id)),
-  );
-  return data[0];
+	const { data, error, updatedAt } = useLiveQuery(
+		db.select().from(regex).where(eq(regex.id, id)),
+	);
+	return data[0];
 }
