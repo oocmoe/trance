@@ -99,3 +99,32 @@ export async function updateKnowledgeBaseEntriesFiled<
 		console.log(error);
 	}
 }
+
+export async function deleteKnowledgeBaseById(id: number) {
+	try {
+		const rows = await db.delete(knowledgeBase).where(eq(knowledgeBase.id, id));
+		return rows.changes;
+	} catch (error) {
+		throw error instanceof Error ? error.message : new Error("删除数据库失败");
+	}
+}
+
+export async function deleteKnowledgeBaseEntry(id: number, entryId: number) {
+	try {
+		const result = await readKnowLedgeBaseField(id, "entries");
+		if (!result) throw new Error("知识库条目不存在");
+		const entries = result.entries as KnowledgeBaseEntry[];
+		const updatedEntries = entries.filter((item) => item.id !== entryId);
+		const rows = await db
+			.update(knowledgeBase)
+			.set({
+				entries: updatedEntries,
+			})
+			.where(eq(knowledgeBase.id, id));
+		return rows;
+	} catch (error) {
+		throw error instanceof Error
+			? error.message
+			: new Error("删除知识库条目失败");
+	}
+}

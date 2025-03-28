@@ -1,8 +1,9 @@
 import { type Character, character } from "@/db/schema/character";
 import { knowledgeBase } from "@/db/schema/knowledgeBase";
+import { room } from "@/db/schema/room";
 import { useDB } from "@/hook/db";
 import type { ConvertCharacterResult } from "@/types/result";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import "react-native-get-random-values";
 import { v7 as uuidv7 } from "uuid";
 
@@ -95,16 +96,25 @@ export async function createImportCharacter(data: ConvertCharacterResult) {
 }
 
 /**
- * 删除角色卡
+ * 删除角色卡，同时删除角色卡对应的聊天
  * @param id
  * @returns
  */
 export async function deleteCharacter(id: number) {
 	try {
-		const rows = await db.delete(character).where(eq(character.id, id));
-		if (!rows) return;
-		return rows.changes;
+		const result = await db.transaction(async (tx) => {
+			const roomRows = await tx
+				.delete(room)
+				.where(and(eq(room.type, "dialog"), eq(room.personnel, [String(id)])));
+			if (!roomRows) throw new Error("删除聊天时发生错误");
+			const characterRows = await tx
+				.delete(character)
+				.where(eq(character.id, id));
+			if (!characterRows) throw new Error("删除角色卡时发生错误");
+			return characterRows.changes;
+		});
+		return result;
 	} catch (error) {
-		console.log(error);
+		throw new Error("删除角色卡时发生未知错误");
 	}
 }

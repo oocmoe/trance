@@ -19,6 +19,8 @@ export async function createDialogRoom(
 	id: number,
 	name: string,
 	prologueIndex?: number,
+	promptId?: number,
+	model?: ModelList,
 ) {
 	const character = await readCharacterById(id);
 	if (!character) return;
@@ -30,14 +32,14 @@ export async function createDialogRoom(
 			cover: character.cover,
 			name: name,
 			type: "dialog",
-			prompt: undefined,
-			model: undefined,
+			prompt: promptId,
+			model: model,
 			personnel: personnel,
 		});
 		if (!roomRows) return;
-		if (prologueIndex) {
+		if (prologueIndex?.valueOf() !== undefined) {
 			const content = character.prologue[prologueIndex].content;
-			const messageRows = await createMessage(
+			await createMessage(
 				roomRows.lastInsertRowId,
 				"text",
 				0,

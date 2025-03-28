@@ -1,4 +1,5 @@
 import { Box } from "@/components/ui/box";
+import { Button, ButtonIcon } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
@@ -8,31 +9,49 @@ import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { useKnowledgeBaseById } from "@/hook/knowledgeBase";
 import { updateKnowledgeBaseFiledById } from "@/utils/db/knowledgeBase";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, router, useLocalSearchParams, useRouter } from "expo-router";
+import { EllipsisIcon } from "lucide-react-native";
 import React from "react";
 import { Pressable } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import { toast } from "sonner-native";
 export default function knowledgeBaseByIdScreen() {
 	return (
 		<Box className="h-full p-3">
+			<Stack.Screen
+				options={{
+					headerRight: () => {
+						return <HeaderRight />;
+					},
+				}}
+			/>
 			<KnowledgeBaseIsEnableSwitch />
 			<KnowledgeBaseEntryList />
 		</Box>
 	);
 }
 
+const HeaderRight = () => {
+	const { id } = useLocalSearchParams();
+	return (
+		<Button
+			onPress={() => router.push(`/knowledgeBase/${id}/detail`)}
+			variant="link"
+		>
+			<ButtonIcon as={EllipsisIcon} />
+		</Button>
+	);
+};
+
 const KnowledgeBaseIsEnableSwitch = () => {
 	const { id } = useLocalSearchParams();
 	const list = useKnowledgeBaseById(Number(id));
 	const handleChange = async () => {
 		try {
-			const result = await updateKnowledgeBaseFiledById(
+			await updateKnowledgeBaseFiledById(
 				Number(id),
 				"is_Enabled",
 				!list.is_Enabled,
 			);
-			if (result) toast.success("更改成功");
 		} catch (error) {
 			throw error instanceof Error
 				? error.message

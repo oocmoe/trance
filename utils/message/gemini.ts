@@ -61,7 +61,9 @@ export async function tranceHiGemini(
 			return result;
 		}
 	} catch (error) {
-		throw error instanceof Error ? error.message : new Error("更新知识库失败");
+		throw error instanceof Error
+			? error.message
+			: new Error("Gemini中间件错误");
 	}
 }
 

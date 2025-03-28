@@ -28,15 +28,16 @@ import {
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { useCharacterDetailsById } from "@/hook/character";
+import { usePromptList } from "@/hook/prompt";
 import { useRoomListById } from "@/hook/room";
 import { deleteCharacter } from "@/utils/db/character";
 import { createDialogRoom } from "@/utils/db/room";
 import { router, useLocalSearchParams } from "expo-router";
+import { Storage } from "expo-sqlite/kv-store";
 import { MessageCirclePlusIcon, Trash2Icon } from "lucide-react-native";
 import React from "react";
 import { Pressable, ScrollView } from "react-native";
 import { toast } from "sonner-native";
-
 export default function CharacterByIdScreen() {
 	return (
 		<Box className="h-full p-3 gap-y-4">
@@ -111,6 +112,9 @@ function CreateRoom() {
 	const [isOpen, setIsOpen] = React.useState<boolean>(false);
 	const [name, setName] = React.useState<string>();
 	const [prologue, setPrologue] = React.useState<number>();
+	const [promptId, setPromptId] = React.useState<number>();
+	const [modelName, setModelName] = React.useState<string>();
+	const prompt = usePromptList();
 	// 初始化数据
 	React.useEffect(() => {
 		if (!character) return;
@@ -123,7 +127,32 @@ function CreateRoom() {
 			toast.warning("聊天名称不能为空");
 			return;
 		}
-		const result = await createDialogRoom(character.id, name, prologue);
+		let model: ModelList | undefined = undefined;
+		if (modelName) {
+			if (modelName === "gemini") {
+				model = {
+					model: "Gemini",
+					version: "gemini-2.0-flash",
+				};
+			}
+			if (modelName === "customOpenAI") {
+				const result = await Storage.getItem(
+					"TRANCE_MODEL_CUSTOM_OPENAI_MODEL",
+				);
+				if (!result) throw new Error("自定义模型版本不存在");
+				model = {
+					model: "Custom_OpenAI",
+					version: result,
+				};
+			}
+		}
+		const result = await createDialogRoom(
+			character.id,
+			name,
+			prologue,
+			promptId,
+			model,
+		);
 		if (result) {
 			setIsOpen(false);
 			toast.success("创建聊天成功");
@@ -132,6 +161,7 @@ function CreateRoom() {
 			toast.error("创建聊天失败");
 		}
 	};
+
 	return (
 		<>
 			<Pressable onPress={() => setIsOpen(true)}>
@@ -184,6 +214,45 @@ function CreateRoom() {
 							) : (
 								<Text>当前角色卡无开场白</Text>
 							)}
+
+							<Text>可选:提示词</Text>
+							<Select onValueChange={(value) => setPromptId(Number(value))}>
+								<SelectTrigger>
+									<SelectInput />
+								</SelectTrigger>
+								<SelectPortal>
+									<SelectBackdrop />
+									<SelectContent>
+										<SelectDragIndicatorWrapper>
+											<SelectDragIndicator />
+										</SelectDragIndicatorWrapper>
+										{prompt.map((item) => (
+											<SelectItem
+												key={item.id}
+												value={String(item.id)}
+												label={item.name}
+											/>
+										))}
+									</SelectContent>
+								</SelectPortal>
+							</Select>
+
+							<Text>可选: 初始模型</Text>
+							<Select onValueChange={(value) => setModelName(value)}>
+								<SelectTrigger>
+									<SelectInput />
+								</SelectTrigger>
+								<SelectPortal>
+									<SelectBackdrop />
+									<SelectContent>
+										<SelectDragIndicatorWrapper>
+											<SelectDragIndicator />
+										</SelectDragIndicatorWrapper>
+										<SelectItem label="Gemini" value="gemini" />
+										<SelectItem label="CustomOpenAI" value="customOpenAI" />
+									</SelectContent>
+								</SelectPortal>
+							</Select>
 						</VStack>
 					</ModalBody>
 					<ModalFooter className="w-full">
@@ -251,7 +320,7 @@ function DeleteCharacter() {
 							删除角色卡
 						</Heading>
 						<Text size="sm" className="text-typography-500 text-center">
-							它将永远离你而去,你下定决心了吗
+							同时会删除相关聊天，它们将永远离你而去,你下定决心了吗？
 						</Text>
 					</ModalBody>
 					<ModalFooter className="w-full">

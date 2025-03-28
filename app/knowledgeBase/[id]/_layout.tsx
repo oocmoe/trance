@@ -14,6 +14,7 @@ export default function KnowledgeBaseLayout() {
 	return (
 		<Stack screenOptions={stackOptions}>
 			<Stack.Screen name="index" options={{ title: "知识库信息" }} />
+			<Stack.Screen name="detail" options={{ title: "知识库信息" }} />
 			<Stack.Screen name="entry/[entryId]" options={{ title: "知识库条目" }} />
 		</Stack>
 	);

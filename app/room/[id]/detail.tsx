@@ -163,6 +163,8 @@ const PromptSelect = () => {
 	);
 };
 
+const ImportSillyTavernChatHistory = () => {};
+
 const DeleteRoomButton = () => {
 	const { id } = useLocalSearchParams();
 	const [, setIsOpen] = useAtom(modalAtom("deleteRoom"));

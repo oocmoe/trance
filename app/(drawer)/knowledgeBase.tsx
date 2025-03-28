@@ -121,12 +121,12 @@ const KnowledgeBaseList = () => {
 		);
 	return (
 		<ScrollView>
-			<VStack className="p-3">
+			<VStack space="md" className="p-3">
 				{list.map((item) => (
 					<Pressable
 						key={item.id}
 						onPress={() => router.push(`/knowledgeBase/${item.id}`)}
-						className="h-20 overflow-hidden"
+						className="overflow-hidden"
 					>
 						<Card>
 							<HStack className="justify-between items-center">

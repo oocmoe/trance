@@ -37,7 +37,9 @@ export const HighlightedUserText = ({ str }: { str: string }) => {
 			{parts.map((part, index) => {
 				const uniqueKey = `${index}-${part || ""}`;
 				return index % 2 === 1 ? (
-					<Text key={uniqueKey}>"{part}"</Text>
+					<Text className="text-amber-500" key={uniqueKey}>
+						"{part}"
+					</Text>
 				) : (
 					<Text
 						style={themeRoomOptions?.componentOptions.userChatBubbleText}

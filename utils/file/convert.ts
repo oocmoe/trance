@@ -113,7 +113,7 @@ async function covertCharacterTavernCardV2(
 			const alternate_greetings = characterJson.data.alternate_greetings.map(
 				(item) => {
 					return {
-						name: item.slice(0, 20),
+						name: item.slice(0, 20).replace(/\s+/g, ""),
 						content: item,
 					};
 				},

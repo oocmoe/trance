@@ -1,5 +1,4 @@
 import { Storage } from "expo-sqlite/kv-store";
-import { atom } from "jotai";
 import { atomWithStorage, createJSONStorage } from "jotai/utils";
 
 type HexColor = `#${string}`;
@@ -254,7 +253,11 @@ const defaultRoomOptions: ThemeRoom = {
 	},
 };
 
-export const colorModeAtom = atom<"light" | "dark">("dark");
+export const colorModeAtom = atomWithStorage<"light" | "dark">(
+	"TRANCE_THEME_COLORMODE",
+	"light",
+	createJSONStorage<"light" | "dark">(() => Storage),
+);
 
 export const themeStackOptionsAtom = atomWithStorage<ThemeStack>(
 	"TRANCE_THEME_STACK",
