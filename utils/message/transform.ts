@@ -110,7 +110,6 @@ export async function transformPrompt(
 		);
 
 		const prompt = activePrompt.map((item) => item.content).join("\n");
-		console.log(prompt);
 		return prompt;
 	} catch (error) {
 		throw error instanceof Error
@@ -155,7 +154,6 @@ export async function transformUserName(str: string) {
 		}
 		const regex = /\{\{user\}\}/gi;
 		const result = str.replace(regex, value);
-		console.log(result);
 		return result;
 	} catch (error) {
 		throw error instanceof Error ? error.message : new Error("替换用户名失败");
@@ -175,7 +173,6 @@ export async function transformRenderRegex(str: string) {
 				message = str.replace(replace, placeholder);
 			}
 		}
-		console.log(message);
 		return message;
 	} catch (error) {
 		throw error instanceof Error

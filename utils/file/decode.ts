@@ -44,3 +44,15 @@ export async function decodeJson(uri: string) {
 		console.log(error);
 	}
 }
+
+export async function decodeJsonl(uri: string) {
+	try {
+		const fileContent = await FileSystem.readAsStringAsync(uri, {
+			encoding: FileSystem.EncodingType.UTF8,
+		});
+		return fileContent;
+	} catch (error) {
+		console.log(error);
+		throw new Error("解码 jsonl 文件失败");
+	}
+}

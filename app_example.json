@@ -2,7 +2,7 @@
   "expo": {
     "name": "trance",
     "slug": "trance",
-    "version": "0.3.9",
+    "version": "0.4.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",

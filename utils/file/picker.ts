@@ -6,8 +6,9 @@ import {
 	convertKnowledgeBase,
 	convertPrompt,
 	convertRegex,
+	convertSillyTavernChatHistory,
 } from "./convert";
-import { decodeCharacter, decodeJson } from "./decode";
+import { decodeCharacter, decodeJson, decodeJsonl } from "./decode";
 
 /**
  * 选择json
@@ -19,6 +20,22 @@ export async function pickFileJson() {
 			type: ["application/json"],
 		});
 		if (result.canceled) return;
+		return result;
+	} catch (error) {
+		console.log(error);
+	}
+}
+
+/**
+ * 选择jsonl
+ * @returns
+ */
+export async function pickFileJsonl() {
+	try {
+		const result = await DocumentPicker.getDocumentAsync();
+		if (result.canceled) return;
+		if (!result.assets[0].name.endsWith(".jsonl"))
+			throw new Error("非 jsonl 文件");
 		return result;
 	} catch (error) {
 		console.log(error);
@@ -155,6 +172,20 @@ export async function pickKnowledgeBase() {
 			throw new Error("json文件解析失败");
 		}
 		const result = convertKnowledgeBase(json);
+		return result;
+	} catch (error) {
+		console.log(error);
+	}
+}
+
+export async function pickSillyTavernChatHistory() {
+	try {
+		const assets = await pickFileJsonl();
+		if (!assets || !assets.assets || !assets.assets[0]?.uri) {
+			throw new Error("取消选择");
+		}
+		const jsonl = await decodeJsonl(assets.assets[0].uri);
+		const result = await convertSillyTavernChatHistory(jsonl);
 		return result;
 	} catch (error) {
 		console.log(error);

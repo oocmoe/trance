@@ -263,3 +263,12 @@ type SillyTavernWorldBook = {
 	entries: Record<string, SillyTavernWorldBookEntry>;
 	originalData: SillyTavernWorldBookOriginalData;
 };
+
+type SillyTavernChatHisotry = {
+	name: string;
+	is_user: boolean;
+	send_date: string;
+	mes: string;
+	extras: Record<string, any>;
+	force_avatar: string;
+};

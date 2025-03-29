@@ -47,3 +47,11 @@ export type ConvertKnowledgeBaseResult = {
 	is_Enable?: boolean;
 	firstArchived: string;
 };
+
+export type ConvertSillyTavernChatHistory = {
+	id: number;
+	type: "text";
+	is_Sender: number;
+	content: string;
+	role: "user" | "assistant";
+};

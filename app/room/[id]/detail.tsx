@@ -8,7 +8,7 @@ import {
 	AlertDialogHeader,
 } from "@/components/ui/alert-dialog";
 import { Box } from "@/components/ui/box";
-import { Button, ButtonText } from "@/components/ui/button";
+import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
@@ -36,15 +36,23 @@ import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { usePromptList } from "@/hook/prompt";
 import { modalAtom } from "@/store/core";
+import type { ConvertSillyTavernChatHistory } from "@/types/result";
 import { readPromptFieldById } from "@/utils/db/prompt";
 import {
 	deleteRoomById,
 	readRoomFieldById,
 	updateRoomFieldById,
 } from "@/utils/db/room";
+import { pickSillyTavernChatHistory } from "@/utils/file/picker";
+import { importSillyTavernChatHistory } from "@/utils/message/importChatHistory";
 import { router, useLocalSearchParams } from "expo-router";
 import { useAtom } from "jotai";
-import { HammerIcon, Trash2Icon } from "lucide-react-native";
+import {
+	HammerIcon,
+	ImportIcon,
+	MessageSquareTextIcon,
+	Trash2Icon,
+} from "lucide-react-native";
 import React from "react";
 import { Pressable } from "react-native";
 import { toast } from "sonner-native";
@@ -59,6 +67,7 @@ export default function RoomDetailScreen() {
 						<VStack space="4xl">
 							<ModelSelect />
 							<PromptSelect />
+							<ImportSillyTavernChatHistory />
 							<DeleteRoomButton />
 						</VStack>
 					</Card>
@@ -98,15 +107,13 @@ const PromptSelect = () => {
 		initPrompt();
 	}, [id]);
 	return (
-		<>
-			<Box>
-				<Pressable onPress={() => setIsOpen(true)}>
-					<HStack className="items-center" space="sm">
-						<Icon as={HammerIcon} />
-						<Text>选择提示词</Text>
-					</HStack>
-				</Pressable>
-			</Box>
+		<Box>
+			<Pressable onPress={() => setIsOpen(true)}>
+				<HStack className="items-center" space="sm">
+					<Icon as={HammerIcon} />
+					<Text>选择提示词</Text>
+				</HStack>
+			</Pressable>
 			<Modal
 				isOpen={isOpen}
 				onClose={() => {
@@ -159,11 +166,9 @@ const PromptSelect = () => {
 					</ModalFooter>
 				</ModalContent>
 			</Modal>
-		</>
+		</Box>
 	);
 };
-
-const ImportSillyTavernChatHistory = () => {};
 
 const DeleteRoomButton = () => {
 	const { id } = useLocalSearchParams();
@@ -223,5 +228,90 @@ const DeleteRoomModal = () => {
 				</AlertDialogFooter>
 			</AlertDialogContent>
 		</AlertDialog>
+	);
+};
+
+const ImportSillyTavernChatHistory = () => {
+	const { id } = useLocalSearchParams();
+	const [isOpen, setIsOpen] = React.useState<boolean>(false);
+	const [historyPreview, setHistoryPreview] = React.useState<
+		ConvertSillyTavernChatHistory[] | undefined
+	>(undefined);
+	const handlePick = async () => {
+		try {
+			const result = await pickSillyTavernChatHistory();
+			if (result) {
+				setHistoryPreview(result);
+				toast.success("导入成功");
+			}
+		} catch (error) {
+			if (error instanceof Error) {
+				toast.error(error.message);
+				return;
+			}
+			toast.error("未知错误");
+		}
+	};
+	const handleImport = async () => {
+		try {
+			if (!historyPreview) throw new Error("数据未准备");
+			const rows = await importSillyTavernChatHistory(
+				Number(id),
+				historyPreview,
+			);
+			if (!rows) throw new Error("导入失败");
+			toast.success("导入成功");
+			setIsOpen(false);
+		} catch (error) {
+			if (error instanceof Error) {
+				toast.error(error.message);
+				return;
+			}
+			toast.error("未知错误");
+		}
+	};
+	return (
+		<Box>
+			<Pressable onPress={() => setIsOpen(true)}>
+				<HStack space="sm" className="items-center">
+					<Icon as={MessageSquareTextIcon} />
+					<Text>导入酒馆 SillyTavern 记录</Text>
+				</HStack>
+			</Pressable>
+			<Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+				<ModalBackdrop />
+				<ModalContent>
+					<ModalHeader>
+						<HStack className="w-full justify-between items-center">
+							<Heading>选择聊天记录文件</Heading>
+							<Button onPress={handlePick}>
+								<ButtonIcon as={ImportIcon} />
+							</Button>
+						</HStack>
+					</ModalHeader>
+					<ModalBody>
+						<Text className="text-red-400">注意:此操作会覆盖房间聊天记录</Text>
+						{historyPreview && (
+							<Box>
+								<Text>{`共找到 ${historyPreview.length} 条记录`}</Text>
+							</Box>
+						)}
+					</ModalBody>
+					<ModalFooter>
+						<Button
+							variant="outline"
+							action="secondary"
+							onPress={() => setIsOpen(false)}
+							size="sm"
+						>
+							<ButtonText>算了</ButtonText>
+						</Button>
+						<Button onPress={handleImport} isDisabled={!historyPreview}>
+							<ButtonText>导入</ButtonText>
+						</Button>
+					</ModalFooter>
+				</ModalContent>
+			</Modal>
+		</Box>
 	);
 };

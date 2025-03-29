@@ -21,9 +21,15 @@ import { type RoomOptions, roomOptionsAtom } from "@/store/roomOptions";
 import { createMessage, deleteMessageById } from "@/utils/db/message";
 import { tranceHi } from "@/utils/message/middleware";
 import { transformRenderMessage } from "@/utils/message/transform";
+import * as Clipboard from "expo-clipboard";
 import { Stack, router, useLocalSearchParams } from "expo-router";
 import { atom, useAtom } from "jotai";
-import { EllipsisIcon, SendIcon } from "lucide-react-native";
+import {
+	BookCopyIcon,
+	CopyIcon,
+	EllipsisIcon,
+	SendIcon,
+} from "lucide-react-native";
 import React from "react";
 import { Image, LogBox, Pressable, ScrollView } from "react-native";
 import { toast } from "sonner-native";
@@ -57,7 +63,6 @@ export default function RoomScreen() {
 			});
 		}
 	}, [id, room, setRoomOptions]);
-	console.log(roomOptions);
 	if (room)
 		return (
 			<Box className="h-full">
@@ -197,8 +202,10 @@ const ChatBubble = ({ item }: { item: Messages }) => {
 };
 
 const ChatBubbleLongPressModal = () => {
+	const { id } = useLocalSearchParams();
 	const [actionBubble, setActionBubble] = useAtom(actionBubbleAtom);
 	const [isOpen, setIsOpen] = useAtom(modalAtom("chatBubbleModal"));
+	const messages = useMessageByRoomId(Number(id));
 	const handleDeleteMessage = async () => {
 		try {
 			if (!actionBubble) throw new Error("消息ID状态丢失");
@@ -208,9 +215,33 @@ const ChatBubbleLongPressModal = () => {
 				toast.success("删除成功");
 			}
 		} catch (error) {
-			throw error instanceof Error
-				? error.message
-				: new Error("API远程请求失败");
+			throw error instanceof Error ? error.message : new Error("未知错误");
+		}
+	};
+	const handleCopySource = async () => {
+		try {
+			if (!actionBubble) throw new Error("消息ID状态丢失");
+			const message = messages.find((item) => item.id === actionBubble);
+			if (!message) throw new Error("消息状态丢失");
+			await Clipboard.setStringAsync(message.content);
+			setIsOpen(false);
+			toast.success("复制成功");
+		} catch (error) {
+			throw error instanceof Error ? error.message : new Error("未知错误");
+		}
+	};
+
+	const handleCopy = async () => {
+		try {
+			if (!actionBubble) throw new Error("消息ID状态丢失");
+			const message = messages.find((item) => item.id === actionBubble);
+			if (!message) throw new Error("消息状态丢失");
+			const result = await transformRenderMessage(message.content);
+			await Clipboard.setStringAsync(result);
+			setIsOpen(false);
+			toast.success("复制成功");
+		} catch (error) {
+			throw error instanceof Error ? error.message : new Error("未知错误");
 		}
 	};
 	return (
@@ -223,12 +254,24 @@ const ChatBubbleLongPressModal = () => {
 				}}
 				size="xs"
 			>
-				<ModalBackdrop />
-				<ModalContent>
+				<ModalBackdrop className="bg-transparent" />
+				<ModalContent className="gap-y-8">
+					<Pressable onPress={handleCopy}>
+						<HStack className="justify-between items-center">
+							<Text>复制消息</Text>
+							<Icon as={CopyIcon} />
+						</HStack>
+					</Pressable>
+					<Pressable onPress={handleCopySource}>
+						<HStack className="justify-between items-center">
+							<Text>复制源消息</Text>
+							<Icon as={BookCopyIcon} />
+						</HStack>
+					</Pressable>
 					<Pressable onPress={handleDeleteMessage}>
 						<HStack className="justify-between items-center">
-							<Text>删除</Text>
-							<Icon as={TrashIcon} />
+							<Text className="text-red-500">删除</Text>
+							<Icon color="red" as={TrashIcon} />
 						</HStack>
 					</Pressable>
 				</ModalContent>

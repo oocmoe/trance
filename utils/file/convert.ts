@@ -1,4 +1,5 @@
 import type { KnowledgeBaseEntry } from "@/db/schema/knowledgeBase";
+import type { ConvertSillyTavernChatHistory } from "@/types/result";
 import * as FileSystem from "expo-file-system";
 import "react-native-get-random-values";
 import { v7 as uuidv7 } from "uuid";
@@ -245,4 +246,35 @@ async function convertKnowledgeBaseSillyTavern(
 	};
 
 	return knowledgeBase;
+}
+
+export async function convertSillyTavernChatHistory(jsonl: string) {
+	try {
+		const lines = jsonl.split("\n").filter((line) => line.trim() !== "");
+		if (lines.length > 0) {
+			lines.shift();
+		}
+		const result: SillyTavernChatHisotry[] = lines.map((line) => {
+			try {
+				return JSON.parse(line);
+			} catch (error) {
+				throw new Error(`解析 jsonl 失败: "${line.substring(0, 30)}..."`);
+			}
+		});
+		const history: ConvertSillyTavernChatHistory[] = result.map((item) => {
+			let idConter = 1;
+			return {
+				id: idConter++,
+				type: "text",
+				is_Sender: item.is_user ? 1 : 0,
+				content: item.mes,
+				role: item.is_user ? "user" : "assistant",
+			};
+		});
+		return history;
+	} catch (error) {
+		throw error instanceof Error
+			? error.message
+			: new Error("转换酒馆 SillyTavern 聊天记录失败");
+	}
 }

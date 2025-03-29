@@ -38,6 +38,30 @@ export async function createMessage(
 	}
 }
 
+export async function createImportMessages(
+	messages: Array<{
+		room_id: number;
+		type: "text";
+		is_Sender: number;
+		content: string;
+		role: "assistant" | "user" | "system";
+	}>,
+) {
+	try {
+		const messagesData = messages.map((item) => ({
+			...item,
+			room_id: item.room_id,
+			global_id: uuidv7(),
+		}));
+		const rows = await db.insert(message).values(messagesData);
+		return rows;
+	} catch (error) {
+		throw error instanceof Error
+			? error.message
+			: new Error("创建聊天记录失败");
+	}
+}
+
 export async function readHistroyMessage(roomId: number) {
 	try {
 		const rows = await db
@@ -62,5 +86,16 @@ export async function deleteMessageById(id: number) {
 		return rows.changes;
 	} catch (error) {
 		console.log(error);
+	}
+}
+
+export async function deleteAllMessage(roomId: number) {
+	try {
+		const rows = await db.delete(message).where(eq(message.room_id, roomId));
+		return rows.changes;
+	} catch (error) {
+		throw error instanceof Error
+			? error.message
+			: new Error("删除房间全部消息失败");
 	}
 }
