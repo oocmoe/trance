@@ -1,255 +1,203 @@
+import type { DrawerNavigationOptions } from "@react-navigation/drawer";
+import type { NativeStackNavigationOptions } from "@react-navigation/native-stack";
 import { Storage } from "expo-sqlite/kv-store";
 import { atomWithStorage, createJSONStorage } from "jotai/utils";
+import type { StyleProp } from "react-native-css-interop/dist/types";
 
-type HexColor = `#${string}`;
-
-type ThemeStackOptions = {
-	headerTitleAlign: "left" | "center";
-	headerTintColor: HexColor;
-	headerStyle: {
-		backgroundColor: HexColor;
-	};
-	contentStyle: {
-		backgroundColor: HexColor;
-	};
+export type ThemeDrawer = {
+	options: DrawerNavigationOptions;
 };
 
-type ThemeStack = {
-	light: {
-		screenOptions: ThemeStackOptions;
-	};
-	dark: {
-		screenOptions: ThemeStackOptions;
-	};
+export type ThemeStack = {
+	options: NativeStackNavigationOptions;
 };
 
-type ThemeDrawerOptions = {
-	headerTintColor: HexColor;
-	headerTitleAlign: "left" | "center";
-	headerStyle: {
-		backgroundColor: HexColor;
-	};
-	sceneStyle: {
-		backgroundColor: HexColor;
-	};
-	drawerStyle: {
-		backgroundColor: HexColor;
-		borderTopEndRadius: number;
-		borderBottomEndRadius: number;
-	};
+export type ThemeRoom = {
+	options: NativeStackNavigationOptions;
+	componentStyle?: Record<string, StyleProp>;
 };
 
-type ThemeDrawer = {
-	light: {
-		screenOptions: ThemeDrawerOptions;
-	};
-	dark: {
-		screenOptions: ThemeDrawerOptions;
-	};
+type TranceThemeConfig = {
+	Drawer: ThemeDrawer;
+	Stack: ThemeStack;
+	Room: ThemeRoom;
 };
 
-type ThemeRoomStackOptions = {
-	headerTitleAlign: "left" | "center";
-	headerTintColor: HexColor;
-	headerStyle: {
-		backgroundColor: HexColor;
-	};
-	contentStyle: {
-		backgroundColor: HexColor;
-	};
+export type TranceTheme = {
+	light: TranceThemeConfig;
+	dark: TranceThemeConfig;
 };
 
-type ThemeRoomassistantAvatar = {
-	width: number;
-	height: number;
-	borderRadius?: number;
-	borderTopStartRadius?: number;
-	borderTopEndRadius?: number;
-	borderBottomStartRadius?: number;
-	borderBottomEndRadius?: number;
-};
-
-type ThemeRoomChatBubble = {
-	backgroundColor: HexColor;
-	padding?: number;
-	borderRadius?: number;
-	borderTopStartRadius?: number;
-	borderTopEndRadius?: number;
-	borderBottomStartRadius?: number;
-	borderBottomEndRadius?: number;
-};
-
-type ThemeRoomAssistantChatBubbleText = {
-	fontSize?: number;
-	color?: HexColor;
-};
-
-type ThemeRoomUserChatBubbleText = {
-	fontSize?: number;
-	color?: HexColor;
-};
-
-type ThemeRoom = {
-	light: {
-		screenOptions: ThemeRoomStackOptions;
-		componentOptions: {
-			assistantAvatar: ThemeRoomassistantAvatar;
-			assistantChatBubble: ThemeRoomChatBubble;
-			assistantChatBubbleText?: ThemeRoomAssistantChatBubbleText;
-			userChatBubble: ThemeRoomChatBubble;
-			userChatBubbleText?: ThemeRoomUserChatBubbleText;
-		};
-	};
-	dark: {
-		screenOptions: ThemeRoomStackOptions;
-		componentOptions: {
-			assistantAvatar: ThemeRoomassistantAvatar;
-			assistantChatBubble: ThemeRoomChatBubble;
-			assistantChatBubbleText?: ThemeRoomAssistantChatBubbleText;
-			userChatBubble: ThemeRoomChatBubble;
-			userChatBubbleText?: ThemeRoomUserChatBubbleText;
-		};
-	};
-};
-
-export type ThemeOptions = {
-	stackOptions: ThemeStack;
-	drawerOptions: ThemeDrawer;
-	roomOptions: ThemeRoom;
-};
-
-const defaultStackOptions: ThemeStack = {
-	light: {
-		screenOptions: {
-			headerTitleAlign: "left",
-			headerTintColor: "#000000",
-			headerStyle: {
-				backgroundColor: "#ffffff",
-			},
-			contentStyle: {
-				backgroundColor: "#ffffff",
-			},
+const defaultDrawerLightOptions: ThemeDrawer = {
+	options: {
+		headerTitleAlign: "left",
+		headerTintColor: "#000000",
+		headerStyle: {
+			backgroundColor: "#ffffff",
 		},
-	},
-	dark: {
-		screenOptions: {
-			headerTitleAlign: "left",
-			headerTintColor: "#ffffff",
-			headerStyle: {
-				backgroundColor: "#000000",
-			},
-			contentStyle: {
-				backgroundColor: "#000000",
-			},
+		sceneStyle: {
+			backgroundColor: "#ffffff",
+		},
+		drawerInactiveTintColor: "#000000",
+		drawerStyle: {
+			width: 300,
+			backgroundColor: "#ffffff",
+			borderTopEndRadius: 0,
+			borderBottomEndRadius: 0,
 		},
 	},
 };
 
-const defaultDrawerOptions: ThemeDrawer = {
-	light: {
-		screenOptions: {
-			headerTitleAlign: "left",
-			headerTintColor: "#000000",
-			headerStyle: {
-				backgroundColor: "#ffffff",
-			},
-			sceneStyle: {
-				backgroundColor: "#ffffff",
-			},
-			drawerStyle: {
-				backgroundColor: "#ffffff",
-				borderTopEndRadius: 0,
-				borderBottomEndRadius: 0,
-			},
+const defaultDrawerDarkOptions: ThemeDrawer = {
+	options: {
+		headerTitleAlign: "left",
+		headerTintColor: "#ffffff",
+		headerStyle: {
+			backgroundColor: "#000000",
 		},
-	},
-	dark: {
-		screenOptions: {
-			headerTitleAlign: "left",
-			headerTintColor: "#ffffff",
-			headerStyle: {
-				backgroundColor: "#000000",
-			},
-			sceneStyle: {
-				backgroundColor: "#000000",
-			},
-			drawerStyle: {
-				backgroundColor: "#000000",
-				borderTopEndRadius: 0,
-				borderBottomEndRadius: 0,
-			},
+		sceneStyle: {
+			backgroundColor: "#000000",
+		},
+		drawerInactiveTintColor: "#ffffff",
+		drawerStyle: {
+			width: 300,
+			backgroundColor: "#000000",
+			borderTopEndRadius: 0,
+			borderBottomEndRadius: 0,
 		},
 	},
 };
 
-const defaultRoomOptions: ThemeRoom = {
-	light: {
-		screenOptions: {
-			headerTitleAlign: "left",
-			headerTintColor: "#000000",
-			headerStyle: {
-				backgroundColor: "#ededed",
-			},
-			contentStyle: {
-				backgroundColor: "#ededed",
-			},
+const defaultStackLightOptions: ThemeStack = {
+	options: {
+		headerTitleAlign: "left",
+		headerTintColor: "#000000",
+		headerStyle: {
+			backgroundColor: "#ffffff",
 		},
-		componentOptions: {
-			assistantAvatar: {
-				width: 48,
-				height: 48,
-			},
-			assistantChatBubble: {
-				backgroundColor: "#ffffff",
-				padding: 16,
-				borderRadius: 16,
-			},
-			assistantChatBubbleText: {
-				color: "#ffffff",
-			},
-			userChatBubble: {
-				backgroundColor: "#ffffff",
-				padding: 16,
-				borderRadius: 16,
-			},
-			userChatBubbleText: {
-				color: "#ffffff",
-			},
+		contentStyle: {
+			backgroundColor: "#ffffff",
 		},
 	},
+};
+
+const defaultStackDarkOptions: ThemeStack = {
+	options: {
+		headerTitleAlign: "left",
+		headerTintColor: "#ffffff",
+		headerStyle: {
+			backgroundColor: "#000000",
+		},
+		contentStyle: {
+			backgroundColor: "#000000",
+		},
+	},
+};
+
+const defaultRoomLightOptions: ThemeRoom = {
+	options: {
+		headerTitleAlign: "left",
+		headerTintColor: "#000000",
+		headerStyle: {
+			backgroundColor: "#ededed",
+		},
+		contentStyle: {
+			backgroundColor: "#ededed",
+		},
+	},
+	componentStyle: {
+		assistantAvatar: {
+			width: 48,
+			height: 48,
+			borderRadius: 100,
+		},
+		assistantChatBubble: {
+			backgroundColor: "#ffffff",
+			padding: 16,
+			borderRadius: 16,
+		},
+		assistantChatBubbleText: {
+			color: "#000000",
+		},
+		assistantChatBubbleHighlightText: {
+			color: "#f59e0b",
+		},
+		userAvatar: {
+			width: 48,
+			height: 48,
+			borderRadius: 100,
+		},
+		userChatBubbleText: {
+			color: "#000000",
+		},
+		userChatBubbleHighlightText: {
+			color: "#f59e0b",
+		},
+		userChatBubble: {
+			backgroundColor: "#ffffff",
+			padding: 16,
+			borderRadius: 16,
+		},
+	},
+};
+
+const defaultRoomDarkOptions: ThemeRoom = {
+	options: {
+		headerTitleAlign: "left",
+		headerTintColor: "#000000",
+		headerStyle: {
+			backgroundColor: "#ededed",
+		},
+		contentStyle: {
+			backgroundColor: "#ededed",
+		},
+	},
+	componentStyle: {
+		assistantAvatar: {
+			width: 48,
+			height: 48,
+			borderRadius: 100,
+		},
+		assistantChatBubble: {
+			backgroundColor: "#ffffff",
+			padding: 16,
+			borderRadius: 16,
+		},
+		assistantChatBubbleText: {
+			color: "#000000",
+		},
+		assistantChatBubbleHighlightText: {
+			color: "#000000",
+		},
+		userAvatar: {
+			width: 48,
+			height: 48,
+			borderRadius: 100,
+		},
+		userChatBubbleText: {
+			color: "#000000",
+		},
+		userChatBubbleHighlightText: {
+			color: "#000000",
+		},
+		userChatBubble: {
+			backgroundColor: "#ffffff",
+			padding: 16,
+			borderRadius: 16,
+		},
+	},
+};
+
+export const defaultThemeOptions: TranceTheme = {
+	light: {
+		Drawer: defaultDrawerLightOptions,
+		Stack: defaultStackLightOptions,
+		Room: defaultRoomLightOptions,
+	},
 	dark: {
-		screenOptions: {
-			headerTitleAlign: "left",
-			headerTintColor: "#000000",
-			headerStyle: {
-				backgroundColor: "#ededed",
-			},
-			contentStyle: {
-				backgroundColor: "#ededed",
-			},
-		},
-		componentOptions: {
-			assistantAvatar: {
-				width: 48,
-				height: 48,
-			},
-			assistantChatBubble: {
-				backgroundColor: "#000000",
-				padding: 16,
-				borderRadius: 16,
-			},
-			assistantChatBubbleText: {
-				color: "#ffffff",
-			},
-			userChatBubble: {
-				backgroundColor: "#000000",
-				padding: 16,
-				borderRadius: 16,
-			},
-			userChatBubbleText: {
-				color: "#ffffff",
-			},
-		},
+		Drawer: defaultDrawerDarkOptions,
+		Stack: defaultStackDarkOptions,
+		Room: defaultRoomDarkOptions,
 	},
 };
 
@@ -259,20 +207,26 @@ export const colorModeAtom = atomWithStorage<"light" | "dark">(
 	createJSONStorage<"light" | "dark">(() => Storage),
 );
 
-export const themeStackOptionsAtom = atomWithStorage<ThemeStack>(
-	"TRANCE_THEME_STACK",
-	defaultStackOptions,
-	createJSONStorage<ThemeStack>(() => Storage),
+export const tranceThemeAtom = atomWithStorage<TranceTheme>(
+	"TRANCE_THEME",
+	defaultThemeOptions,
+	createJSONStorage<TranceTheme>(() => Storage),
 );
 
-export const themeDrawerOptionsAtom = atomWithStorage<ThemeDrawer>(
-	"TRANCE_THEME_DRAWER",
-	defaultDrawerOptions,
-	createJSONStorage<ThemeDrawer>(() => Storage),
-);
+// export const themeStackOptionsAtom = atomWithStorage<ThemeStack>(
+// 	"TRANCE_THEME_STACK",
+// 	defaultStackOptions,
+// 	createJSONStorage<ThemeStack>(() => Storage),
+// );
 
-export const themeRoomOptionsAtom = atomWithStorage<ThemeRoom>(
-	"TRANCE_THEME_ROOM",
-	defaultRoomOptions,
-	createJSONStorage<ThemeRoom>(() => Storage),
-);
+// export const themeDrawerOptionsAtom = atomWithStorage<ThemeDrawer>(
+// 	"TRANCE_THEME_DRAWER",
+// 	defaultDrawerOptions,
+// 	createJSONStorage<ThemeDrawer>(() => Storage),
+// );
+
+// export const themeRoomOptionsAtom = atomWithStorage<ThemeRoom>(
+// 	"TRANCE_THEME_ROOM",
+// 	defaultRoomOptions,
+// 	createJSONStorage<ThemeRoom>(() => Storage),
+// );

@@ -8,7 +8,12 @@ import {
 	AlertDialogHeader,
 } from "@/components/ui/alert-dialog";
 import { Box } from "@/components/ui/box";
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
+import {
+	Button,
+	ButtonIcon,
+	ButtonSpinner,
+	ButtonText,
+} from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
@@ -234,6 +239,7 @@ const DeleteRoomModal = () => {
 const ImportSillyTavernChatHistory = () => {
 	const { id } = useLocalSearchParams();
 	const [isOpen, setIsOpen] = React.useState<boolean>(false);
+	const [isLoading, setIsLoading] = React.useState<boolean>(false);
 	const [historyPreview, setHistoryPreview] = React.useState<
 		ConvertSillyTavernChatHistory[] | undefined
 	>(undefined);
@@ -254,20 +260,23 @@ const ImportSillyTavernChatHistory = () => {
 	};
 	const handleImport = async () => {
 		try {
+			setIsLoading(true);
 			if (!historyPreview) throw new Error("数据未准备");
 			const rows = await importSillyTavernChatHistory(
 				Number(id),
 				historyPreview,
 			);
 			if (!rows) throw new Error("导入失败");
-			toast.success("导入成功");
+			toast.success("导入成功", { id: "importSillyTavernChatHistory" });
 			setIsOpen(false);
 		} catch (error) {
 			if (error instanceof Error) {
-				toast.error(error.message);
+				toast.error(error.message, { id: "importSillyTavernChatHistory" });
 				return;
 			}
-			toast.error("未知错误");
+			toast.error("未知错误", { id: "importSillyTavernChatHistory" });
+		} finally {
+			setIsLoading(false);
 		}
 	};
 	return (
@@ -306,9 +315,13 @@ const ImportSillyTavernChatHistory = () => {
 						>
 							<ButtonText>算了</ButtonText>
 						</Button>
-						<Button onPress={handleImport} isDisabled={!historyPreview}>
-							<ButtonText>导入</ButtonText>
-						</Button>
+						{isLoading ? (
+							<ButtonSpinner />
+						) : (
+							<Button onPress={handleImport} isDisabled={!historyPreview}>
+								<ButtonText>导入</ButtonText>
+							</Button>
+						)}
 					</ModalFooter>
 				</ModalContent>
 			</Modal>

@@ -8,8 +8,9 @@ import { Image } from "@/components/ui/image";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { useThemeDrawer, useTranceTheme } from "@/hook/theme";
 import { USER_avtarAtom, USER_nameAtom } from "@/store/core";
-import { colorModeAtom, themeDrawerOptionsAtom } from "@/store/theme";
+import { colorModeAtom } from "@/store/theme";
 import { router } from "expo-router";
 import { Drawer } from "expo-router/drawer";
 import { Storage } from "expo-sqlite/kv-store";
@@ -28,30 +29,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function DrawerLayout() {
 	const [colorMode] = useAtom(colorModeAtom);
-	const [themeDrawerOptions] = useAtom(themeDrawerOptionsAtom);
-	React.useLayoutEffect(() => {}, []);
+	const themeConfig = useTranceTheme();
 	return (
 		<Drawer
 			drawerContent={() => <CustomDrawerContent />}
-			screenOptions={
-				colorMode === "light"
-					? {
-							...themeDrawerOptions.light.screenOptions,
-							drawerStyle: {
-								...themeDrawerOptions.light.screenOptions.drawerStyle,
-								width: 300,
-							},
-							swipeEdgeWidth: 768,
-						}
-					: {
-							...themeDrawerOptions.dark.screenOptions,
-							drawerStyle: {
-								...themeDrawerOptions.dark.screenOptions.drawerStyle,
-								width: 300,
-							},
-							swipeEdgeWidth: 768,
-						}
-			}
+			screenOptions={{
+				...themeConfig.Drawer.options,
+				swipeEdgeWidth: 768,
+			}}
 		>
 			<Drawer.Screen
 				name="my"
@@ -156,6 +141,7 @@ const drawerNavList = [
 const CustomDrawerContent = () => {
 	const [avatar, setAvatar] = useAtom(USER_avtarAtom);
 	const [name, setName] = useAtom(USER_nameAtom);
+	const themeConfig = useThemeDrawer();
 	React.useEffect(() => {
 		const initAvatar = async () => {
 			const avatar = await Storage.getItem("TRANCE_USER_AVATAR");
@@ -194,7 +180,16 @@ const CustomDrawerContent = () => {
 										<Skeleton className="w-16 h-16 rounded-full" />
 									</Pressable>
 								)}
-								{name && <Text bold>{name}</Text>}
+								{name && (
+									<Text
+										style={{
+											color: themeConfig.options.drawerInactiveTintColor,
+										}}
+										bold
+									>
+										{name}
+									</Text>
+								)}
 							</VStack>
 							<ThemeSwitch />
 						</HStack>
@@ -207,8 +202,20 @@ const CustomDrawerContent = () => {
 									key={item.sortId}
 								>
 									<HStack space="2xl" className="items-center">
-										<Icon size="xl" as={item.icon} />
-										<Heading>{item.name}</Heading>
+										<Icon
+											style={{
+												color: themeConfig.options.drawerInactiveTintColor,
+											}}
+											size="xl"
+											as={item.icon}
+										/>
+										<Heading
+											style={{
+												color: themeConfig.options.drawerInactiveTintColor,
+											}}
+										>
+											{item.name}
+										</Heading>
 									</HStack>
 								</Pressable>
 							))}

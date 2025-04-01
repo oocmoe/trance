@@ -19,9 +19,9 @@ import { VStack } from "@/components/ui/vstack";
 import type { Regex } from "@/db/schema/regex";
 import { useRegexById } from "@/hook/regex";
 import { deleteRegexById, updateRegexFieldById } from "@/utils/db/regex";
-import React from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Trash2Icon } from "lucide-react-native";
+import React from "react";
 import { ScrollView } from "react-native-gesture-handler";
 import { toast } from "sonner-native";
 

@@ -1,20 +1,15 @@
-import { useThemeStackOptions } from "@/hook/theme";
+import { useThemeStack } from "@/hook/theme";
 import { Stack } from "expo-router/stack";
 import React from "react";
-
+import { SafeAreaView } from "react-native-safe-area-context";
 export default function SettingLayout() {
-	const [optionsReady, setOptionsReady] = React.useState(false);
-	const stackOptions = useThemeStackOptions();
-	React.useEffect(() => {
-		if (stackOptions) {
-			setOptionsReady(true);
-		}
-	});
-	if (!optionsReady) return null;
+	const themeConfig = useThemeStack();
 	return (
-		<Stack screenOptions={stackOptions}>
-			<Stack.Screen name="about" options={{ title: "关于" }} />
-			<Stack.Screen name="theme" options={{ title: "主题" }} />
-		</Stack>
+		<SafeAreaView style={{ flex: 1 }}>
+			<Stack screenOptions={themeConfig.options}>
+				<Stack.Screen name="about" options={{ title: "关于" }} />
+				<Stack.Screen name="theme" options={{ title: "主题" }} />
+			</Stack>
+		</SafeAreaView>
 	);
 }

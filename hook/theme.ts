@@ -1,9 +1,4 @@
-import {
-	colorModeAtom,
-	themeDrawerOptionsAtom,
-	themeRoomOptionsAtom,
-	themeStackOptionsAtom,
-} from "@/store/theme";
+import { colorModeAtom, tranceThemeAtom } from "@/store/theme";
 import { useAtom } from "jotai";
 
 export function useColorMode() {
@@ -11,23 +6,30 @@ export function useColorMode() {
 	return colorMode;
 }
 
-export function useThemeStackOptions() {
-	const [themeStackOptions] = useAtom(themeStackOptionsAtom);
+export function useTranceTheme() {
+	const [themeConfig] = useAtom(tranceThemeAtom);
 	const colorMode = useColorMode();
-	if (colorMode === "light") return themeStackOptions.light.screenOptions;
-	if (colorMode === "dark") return themeStackOptions.dark.screenOptions;
+	if (colorMode === "dark") return themeConfig.dark;
+	return themeConfig.light;
 }
 
-export function useThemeDrawerOptions() {
-	const [themeDrawerOptions] = useAtom(themeDrawerOptionsAtom);
+export function useThemeStack() {
+	const [themeConfig] = useAtom(tranceThemeAtom);
 	const colorMode = useColorMode();
-	if (colorMode === "light") return themeDrawerOptions.light.screenOptions;
-	if (colorMode === "dark") return themeDrawerOptions.dark.screenOptions;
+	if (colorMode === "dark") return themeConfig.dark.Stack;
+	return themeConfig.light.Stack;
 }
 
-export function useThemeRoomOptions() {
-	const [themeRoomOptions] = useAtom(themeRoomOptionsAtom);
+export function useThemeDrawer() {
+	const [themeConfig] = useAtom(tranceThemeAtom);
 	const colorMode = useColorMode();
-	if (colorMode === "light") return themeRoomOptions.light;
-	if (colorMode === "dark") return themeRoomOptions.dark;
+	if (colorMode === "dark") return themeConfig.dark.Drawer;
+	return themeConfig.light.Drawer;
+}
+
+export function useThemeRoom() {
+	const [themeConfig] = useAtom(tranceThemeAtom);
+	const colorMode = useColorMode();
+	if (colorMode === "dark") return themeConfig.dark.Room;
+	return themeConfig.light.Room;
 }

@@ -1,4 +1,5 @@
 import type { KnowledgeBaseEntry } from "@/db/schema/knowledgeBase";
+import { RoomOptions } from "@/store/roomOptions";
 import { Storage } from "expo-sqlite/kv-store";
 import { readCharacterById } from "../db/character";
 import { readIsEnableKnowledgeBase } from "../db/knowledgeBase";
@@ -232,11 +233,15 @@ export async function transformPureHtml(str: string) {
 	}
 }
 
-export async function transformRenderMessage(str: string) {
+export async function transformRenderMessage(
+	str: string,
+	roomOptions: RoomOptions,
+) {
 	try {
 		const regexResult = await transformRenderRegex(str);
 		const pureHtmlResult = await transformPureHtml(regexResult);
-		const response = pureHtmlResult.replace(/^\n+/g, "");
+		const userResult = await transformUserName(pureHtmlResult);
+		const response = userResult.replace(/^\n+/g, "");
 		return response;
 	} catch (error) {
 		throw error instanceof Error ? error.message : new Error("渲染消息失败");

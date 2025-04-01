@@ -43,7 +43,6 @@ export default function CharacterByIdScreen() {
 		<Box className="h-full p-3 gap-y-4">
 			<IDCard />
 			<Action />
-			<Text>聊天</Text>
 			<CharacterRoomLists />
 		</Box>
 	);
@@ -353,22 +352,26 @@ const CharacterRoomLists = () => {
 	const roomList = useRoomListById(Number(id));
 	if (roomList.data)
 		return (
-			<ScrollView>
-				<VStack space="sm">
-					{roomList.data.map((item) => (
-						<Pressable
-							onPress={() => router.push(`/room/${item.id}`)}
-							key={item.id}
-						>
-							<Card>
-								<HStack className="justify-between items-center">
-									<Text>{item.name}</Text>
-									<Icon as={ArrowRightIcon} />
-								</HStack>
-							</Card>
-						</Pressable>
-					))}
-				</VStack>
-			</ScrollView>
+			<Box className="gap-y-2">
+				{roomList.data.length > 0 && <Text>聊天</Text>}
+
+				<ScrollView>
+					<VStack space="sm">
+						{roomList.data.map((item) => (
+							<Pressable
+								onPress={() => router.push(`/room/${item.id}`)}
+								key={item.id}
+							>
+								<Card>
+									<HStack className="justify-between items-center">
+										<Text>{item.name}</Text>
+										<Icon as={ArrowRightIcon} />
+									</HStack>
+								</Card>
+							</Pressable>
+						))}
+					</VStack>
+				</ScrollView>
+			</Box>
 		);
 };

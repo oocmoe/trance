@@ -6,19 +6,20 @@ export async function importSillyTavernChatHistory(
 	chatHistory: ConvertSillyTavernChatHistory[],
 ) {
 	try {
-		await deleteAllMessage(roomId);
-		const messages = chatHistory.map((item) => {
-			return {
-				room_id: roomId,
-				type: item.type,
-				is_Sender: item.is_Sender,
-				content: item.content,
-				role: item.role,
-			};
-		});
-
-		const rows = await createImportMessages(messages);
-		return rows;
+		const deleteRows = await deleteAllMessage(roomId);
+		if (deleteRows) {
+			const messages = chatHistory.map((item) => {
+				return {
+					room_id: roomId,
+					type: item.type,
+					is_Sender: item.is_Sender,
+					content: item.content,
+					role: item.role,
+				};
+			});
+			const rows = await createImportMessages(messages);
+			return rows;
+		}
 	} catch (error) {
 		throw error instanceof Error
 			? error.message

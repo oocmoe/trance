@@ -1,6 +1,6 @@
 import { message } from "@/db/schema/message";
 import { useDB } from "@/hook/db";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import "react-native-get-random-values";
 import { v7 as uuidv7 } from "uuid";
 
@@ -76,6 +76,26 @@ export async function readHistroyMessage(roomId: number) {
 		return rows;
 	} catch (error) {
 		console.log(error);
+	}
+}
+
+export async function readMessageDescByIdOffset(
+	roomId: number,
+	offset: number,
+) {
+	try {
+		const rows = await db
+			.select()
+			.from(message)
+			.where(eq(message.room_id, roomId))
+			.orderBy(desc(message.id))
+			.offset(offset)
+			.limit(10);
+		return rows;
+	} catch (error) {
+		throw error instanceof Error
+			? error.message
+			: new Error("创建聊天记录失败");
 	}
 }
 

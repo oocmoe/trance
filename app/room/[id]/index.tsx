@@ -1,7 +1,4 @@
-import {
-	HighlightedAssistantText,
-	HighlightedUserText,
-} from "@/components/highlighted";
+import { HighlightedAssistantText } from "@/components/highlighted";
 import { Box } from "@/components/ui/box";
 import { Button, ButtonIcon, ButtonSpinner } from "@/components/ui/button";
 import { HStack } from "@/components/ui/hstack";
@@ -15,10 +12,15 @@ import type { Messages } from "@/db/schema/message";
 import { useCharacterById } from "@/hook/character";
 import { useMessageByRoomId } from "@/hook/message";
 import { useRoomById } from "@/hook/room";
-import { useThemeRoomOptions } from "@/hook/theme";
+import { useThemeRoom, useThemeStack, useTranceTheme } from "@/hook/theme";
 import { modalAtom } from "@/store/core";
 import { type RoomOptions, roomOptionsAtom } from "@/store/roomOptions";
-import { createMessage, deleteMessageById } from "@/utils/db/message";
+import { colorModeAtom, tranceThemeAtom } from "@/store/theme";
+import {
+	createMessage,
+	deleteMessageById,
+	readMessageDescByIdOffset,
+} from "@/utils/db/message";
 import { tranceHi } from "@/utils/message/middleware";
 import { transformRenderMessage } from "@/utils/message/transform";
 import * as Clipboard from "expo-clipboard";
@@ -28,30 +30,19 @@ import {
 	BookCopyIcon,
 	CopyIcon,
 	EllipsisIcon,
-	SendIcon,
+	SendHorizonalIcon,
 } from "lucide-react-native";
 import React from "react";
-import { Image, LogBox, Pressable, ScrollView } from "react-native";
+import { FlatList, Image, Pressable } from "react-native";
 import { toast } from "sonner-native";
-
-if (__DEV__) {
-	const ignoreErrors = ["Support for defaultProps will be removed"];
-
-	const error = console.error;
-	console.error = (...arg) => {
-		for (const error of ignoreErrors) if (arg[0].includes(error)) return;
-		error(...arg);
-	};
-
-	LogBox.ignoreLogs(ignoreErrors);
-}
 
 const actionBubbleAtom = atom<number>();
 
 export default function RoomScreen() {
 	const { id } = useLocalSearchParams();
-	const [roomOptions, setRoomOptions] = useAtom(roomOptionsAtom);
-	const themeRoomOptions = useThemeRoomOptions();
+	const [, setRoomOptions] = useAtom(roomOptionsAtom);
+	const [colorMode] = useAtom(colorModeAtom);
+	const [themeConfig] = useAtom(tranceThemeAtom);
 	const room = useRoomById(Number(id));
 	React.useEffect(() => {
 		if (room) {
@@ -68,11 +59,8 @@ export default function RoomScreen() {
 			<Box className="h-full">
 				<Stack.Screen
 					options={{
-						...themeRoomOptions?.screenOptions,
 						title: room.name,
-						headerRight: () => {
-							return <HeaderRight />;
-						},
+						headerRight: () => <HeaderRight />,
 					}}
 				/>
 				<MessagesList />
@@ -93,51 +81,73 @@ const RoomSkeleton = () => {
 
 const HeaderRight = () => {
 	const { id } = useLocalSearchParams();
+	const themeConfig = useThemeStack();
 	return (
 		<Button onPress={() => router.push(`/room/${id}/detail`)} variant="link">
-			<ButtonIcon as={EllipsisIcon} />
+			<ButtonIcon
+				style={{
+					color: themeConfig.options.headerTintColor,
+				}}
+				as={EllipsisIcon}
+			/>
 		</Button>
 	);
 };
 
 const MessagesList = () => {
 	const { id } = useLocalSearchParams();
-	const messages = useMessageByRoomId(Number(id));
-	const scrollViewRef = React.useRef<ScrollView>(null);
-	React.useEffect(() => {
-		setTimeout(() => {
-			if (scrollViewRef.current) {
-				scrollViewRef.current.scrollToEnd({ animated: false });
-			}
-		}, 100);
-	}, []);
-	if (messages)
-		return (
-			<ScrollView ref={scrollViewRef}>
-				<Box className="flex-1 p-3">
-					<VStack space="md">
-						{messages.map((item) => (
-							<ChatBubble key={item.id} item={item} />
-						))}
-					</VStack>
-				</Box>
-			</ScrollView>
-		);
+	const [messageLists, setMessageLists] = React.useState<Messages[]>([]);
+	const [offset, setOffset] = React.useState<number>(0);
+	const [isMessageLoading, setIsMessageLoading] =
+		React.useState<boolean>(false);
+
+	const handleOnEndReached = async () => {
+		try {
+			if (isMessageLoading) return;
+			setIsMessageLoading(true);
+			const newMessages = readMessageDescByIdOffset(Number(id), offset);
+			setMessageLists([...messageLists, ...(await newMessages)]);
+			setOffset(offset + 10);
+			setIsMessageLoading(false);
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	return (
+		<FlatList
+			contentContainerStyle={{
+				flexGrow: 1,
+				justifyContent: "flex-end",
+				padding: 16,
+			}}
+			data={messageLists}
+			onEndReachedThreshold={0.2}
+			onEndReached={handleOnEndReached}
+			keyExtractor={(item) => item.id.toString()}
+			renderItem={({ item }) => <ChatBubble item={item} />}
+			ItemSeparatorComponent={() => <Box style={{ height: 16 }} />}
+			inverted
+		/>
+	);
 };
 
 const ChatBubble = ({ item }: { item: Messages }) => {
+	const [, setRoomOptions] = useAtom(roomOptionsAtom);
 	const [actionBubble, setActionBubble] = useAtom(actionBubbleAtom);
 	const [roomOptions] = useAtom(roomOptionsAtom);
 	const [assistantaAvatar, setAssistantaAvatar] = React.useState<string>();
+	const [assistantaName, setAssistantaName] = React.useState<string>();
 	const [chatBubbleModal, setChatBubbleModal] = useAtom(
 		modalAtom("chatBubbleModal"),
 	);
 	const [content, setContent] = React.useState<string>();
-	const themeRoomOptions = useThemeRoomOptions();
+	const themeConfig = useTranceTheme();
 	if (roomOptions.personnel) {
 		const character = useCharacterById(Number(roomOptions.personnel[0]));
 		React.useEffect(() => {
 			setAssistantaAvatar(character?.cover);
+			setAssistantaName(character?.name);
 		}, [character]);
 	}
 	const handleLongPressBubble = (id: number) => {
@@ -161,21 +171,31 @@ const ChatBubble = ({ item }: { item: Messages }) => {
 							<Image
 								source={{ uri: assistantaAvatar }}
 								alt="avatar"
-								style={themeRoomOptions?.componentOptions.assistantAvatar}
+								style={themeConfig.Room?.componentStyle?.assistantAvatar}
 							/>
 						) : (
 							<Skeleton
-								style={themeRoomOptions?.componentOptions.assistantAvatar}
+								style={themeConfig.Room?.componentStyle?.assistantAvatar}
 							/>
 						)}
+						{content ? (
+							<VStack>
+								<Text style={themeConfig.Room.componentStyle?.assistantName}>
+									{assistantaName}
+								</Text>
 
-						<Box style={themeRoomOptions?.componentOptions.assistantChatBubble}>
-							{content ? (
-								<HighlightedAssistantText str={content} />
-							) : (
-								<Skeleton className="w-24 h-4" />
-							)}
-						</Box>
+								<Box
+									style={themeConfig.Room?.componentStyle?.assistantChatBubble}
+								>
+									<HighlightedAssistantText str={content} />
+								</Box>
+							</VStack>
+						) : (
+							<Skeleton
+								className="w-32 h-8 rounded-sm"
+								style={themeConfig.Room?.componentStyle?.assistantChatBubble}
+							/>
+						)}
 					</HStack>
 				</Box>
 			</Pressable>
@@ -187,13 +207,16 @@ const ChatBubble = ({ item }: { item: Messages }) => {
 			<Pressable onLongPress={() => handleLongPressBubble(item.id)}>
 				<Box>
 					<HStack className="max-w-[75%] self-end">
-						<Box style={themeRoomOptions?.componentOptions.userChatBubble}>
-							{content ? (
-								<HighlightedUserText str={content} />
-							) : (
-								<Skeleton className="w-full h-8" />
-							)}
-						</Box>
+						{content ? (
+							<Box style={themeConfig.Room?.componentStyle?.userChatBubble}>
+								<HighlightedAssistantText str={content} />
+							</Box>
+						) : (
+							<Skeleton
+								className="w-24 h-8  rounded-sm"
+								style={themeConfig.Room?.componentStyle?.userChatBubble}
+							/>
+						)}
 					</HStack>
 				</Box>
 			</Pressable>
@@ -203,6 +226,7 @@ const ChatBubble = ({ item }: { item: Messages }) => {
 
 const ChatBubbleLongPressModal = () => {
 	const { id } = useLocalSearchParams();
+	const [roomOptions] = useAtom(roomOptionsAtom);
 	const [actionBubble, setActionBubble] = useAtom(actionBubbleAtom);
 	const [isOpen, setIsOpen] = useAtom(modalAtom("chatBubbleModal"));
 	const messages = useMessageByRoomId(Number(id));
@@ -284,6 +308,7 @@ const ActionBar = () => {
 	const [userInput, setUserInput] = React.useState<string>();
 	const [isLoading, setIsLoading] = React.useState<boolean>(false);
 	const [roomOptions] = useAtom(roomOptionsAtom);
+	const themeConfig = useThemeRoom();
 	const handleSayHi = async () => {
 		const userInputTemp = userInput;
 		try {
@@ -325,16 +350,26 @@ const ActionBar = () => {
 		}
 	};
 	return (
-		<Box className="p-3">
+		<Box style={themeConfig.componentStyle?.actionBar} className="p-3">
 			<HStack space="sm" className="justify-between items-center">
 				<Input className="flex-1 h-auto min-h-[36px] max-h-[200px] overflow-y-auto resize-none">
-					<InputField onChangeText={setUserInput} multiline value={userInput} />
+					<InputField
+						style={themeConfig.componentStyle?.userInputField}
+						onChangeText={setUserInput}
+						multiline
+						value={userInput}
+					/>
 				</Input>
 				<Button
 					onPress={handleSayHi}
 					isDisabled={userInput?.length === 0 || isLoading}
+					style={themeConfig.componentStyle?.sendButton}
 				>
-					{isLoading ? <ButtonSpinner /> : <ButtonIcon as={SendIcon} />}
+					{isLoading ? (
+						<ButtonSpinner />
+					) : (
+						<ButtonIcon as={SendHorizonalIcon} />
+					)}
 				</Button>
 			</HStack>
 		</Box>

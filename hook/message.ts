@@ -1,5 +1,5 @@
 import { message } from "@/db/schema/message";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useDB } from "./db";
 
@@ -9,6 +9,20 @@ const db = useDB();
 export function useMessageByRoomId(roomId: number) {
 	const { data, error, updatedAt } = useLiveQuery(
 		db.select().from(message).where(eq(message.room_id, roomId)),
+	);
+	return data;
+}
+
+export function useMessageByIdOffset(roomId: number, offset: number) {
+	console.log(offset);
+	const { data, error, updatedAt } = useLiveQuery(
+		db
+			.select()
+			.from(message)
+			.where(eq(message.room_id, roomId))
+			.orderBy(desc(message.id))
+			.offset(offset)
+			.limit(2),
 	);
 	return data;
 }

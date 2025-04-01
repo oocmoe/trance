@@ -34,12 +34,12 @@ import { toast } from "sonner-native";
 const actionContentIdAtom = atom<number>();
 export default function PromptByIdScreen() {
 	return (
-		<>
+		<Box>
 			<ScrollView>
 				<PromptContentList />
 			</ScrollView>
 			<PromptContetnModal />
-		</>
+		</Box>
 	);
 }
 
