@@ -90,9 +90,37 @@ async function tranceHiCustomoOpenAIText(
 			messages: messages,
 		});
 		console.log(completion);
-		console.log(completion.choices[0]);
 		return completion.choices[0];
 	} catch (error) {
+		throw error instanceof Error ? error.message : new Error("API远程请求失败");
+	}
+}
+
+export async function tranceHiCustomoOpenAITextTest() {
+	try {
+		const baseUrl = await Storage.getItem("TRANCE_MODEL_CUSTOM_OPENAI_URL");
+		if (baseUrl === null) throw new Error("未设置请求地址");
+		const key = await SecureStore.getItem("TRANCE_MODEL_CUSTOM_OPENAI_KEY");
+		if (key === null) throw new Error("未设置密钥");
+		const model = await Storage.getItem("TRANCE_MODEL_CUSTOM_OPENAI_MODEL");
+		if (model === null) throw new Error("未设置模型");
+		const client = new OpenAI({
+			baseURL: baseUrl,
+			apiKey: key,
+		});
+		const completion = await client.chat.completions.create({
+			model: model,
+			messages: [
+				{
+					role: "user",
+					content: "Who are you?",
+				},
+			],
+		});
+		console.log(completion);
+		return completion.choices[0];
+	} catch (error) {
+		console.log(error);
 		throw error instanceof Error ? error.message : new Error("API远程请求失败");
 	}
 }

@@ -225,3 +225,27 @@ async function tranceHiGeminiText(
 		throw new Error("Gemini远程错误");
 	}
 }
+
+export async function tranceHiGeminiTextTest() {
+	try {
+		const keyGroupResult = await SecureStore.getItem(
+			"TRANCE_MODEL_GEMINI_KEYGROUP",
+		);
+		if (!keyGroupResult) throw new Error("未设置密钥组");
+		const keyGroup = JSON.parse(keyGroupResult);
+		const key = await geminiKeyReady(keyGroup);
+		const ai = new GoogleGenAI({ apiKey: key });
+		const response = await ai.models.generateContent({
+			model: "gemini-2.0-flash",
+			contents: "Who are you?",
+		});
+		console.log(response.text);
+		return response.text;
+	} catch (error) {
+		if (error instanceof Error) {
+			throw new Error(error.message);
+		}
+		console.log(error);
+		throw new Error("Gemini远程错误");
+	}
+}

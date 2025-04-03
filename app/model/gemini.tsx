@@ -1,5 +1,10 @@
 import { Box } from "@/components/ui/box";
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
+import {
+	Button,
+	ButtonIcon,
+	ButtonSpinner,
+	ButtonText,
+} from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
@@ -21,9 +26,18 @@ import {
 } from "@/components/ui/slider";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { tranceHiGeminiTextTest } from "@/utils/message/gemini";
 import * as SecureStore from "expo-secure-store";
 import { Storage } from "expo-sqlite/kv-store";
-import { BoltIcon, KeyIcon, ListRestartIcon, XIcon } from "lucide-react-native";
+import {
+	BoltIcon,
+	CableIcon,
+	CogIcon,
+	KeyIcon,
+	ListRestartIcon,
+	PlugZapIcon,
+	XIcon,
+} from "lucide-react-native";
 import React from "react";
 import { Pressable, ScrollView } from "react-native";
 import { toast } from "sonner-native";
@@ -33,6 +47,7 @@ export default function GeminiScreen() {
 			<VStack space="md">
 				<KeyGroup />
 				<KeyGroupPolling />
+				<TextTest />
 			</VStack>
 		</Box>
 	);
@@ -250,6 +265,70 @@ const KeyGroupPolling = () => {
 							<ButtonText onPress={handleSave}>保存</ButtonText>
 						</Button>
 					</ModalFooter>
+				</ModalContent>
+			</Modal>
+		</Box>
+	);
+};
+
+const TextTest = () => {
+	const [isOpen, setIsOpen] = React.useState<boolean>(false);
+	const [isLoading, setIsLoading] = React.useState<boolean>(false);
+	const [content, setContent] = React.useState<string | undefined>(undefined);
+	const handleText = async () => {
+		try {
+			setIsLoading(true);
+			const result = await tranceHiGeminiTextTest();
+			if (result) {
+				setContent(result);
+				toast.success("获取响应成功");
+			}
+		} catch (error) {
+			if (error instanceof Error) {
+				toast.error(error.message);
+				return;
+			}
+			toast.error("未知错误");
+		} finally {
+			setIsLoading(false);
+		}
+	};
+	return (
+		<Box>
+			<Pressable onPress={() => setIsOpen(true)}>
+				<Card>
+					<HStack className="justify-between items-center">
+						<HStack className="items-center" space="md">
+							<Icon as={CableIcon} />
+							<Heading>模型文字通信测试 2.0 Flash</Heading>
+						</HStack>
+						<Icon as={CogIcon} />
+					</HStack>
+				</Card>
+			</Pressable>
+
+			<Modal
+				onClose={() => {
+					setIsOpen(false);
+				}}
+				isOpen={isOpen}
+			>
+				<ModalBackdrop />
+				<ModalContent>
+					<ModalHeader className="flex flex-row justify-between items-center">
+						<Heading>模型文字通信测试 2.0 Flash</Heading>
+
+						<Button isDisabled={isLoading} onPress={handleText}>
+							{isLoading ? (
+								<ButtonSpinner />
+							) : (
+								<ButtonIcon variant="outline" as={PlugZapIcon} />
+							)}
+						</Button>
+					</ModalHeader>
+					<ModalBody className="max-h-64">
+						{content && <Text>{content}</Text>}
+					</ModalBody>
 				</ModalContent>
 			</Modal>
 		</Box>

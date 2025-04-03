@@ -2,7 +2,7 @@
 	"expo": {
 		"name": "trance",
 		"slug": "trance",
-		"version": "0.6.3",
+		"version": "0.7.0",
 		"orientation": "portrait",
 		"icon": "./assets/images/icon.png",
 		"scheme": "myapp",
@@ -44,10 +44,14 @@
 			[
 				"expo-splash-screen",
 				{
-					"image": "./assets/images/splash-icon.png",
+					"image": "./assets/images/splash-light.png",
 					"imageWidth": 200,
 					"resizeMode": "contain",
-					"backgroundColor": "#ffffff"
+					"backgroundColor": "#ffffff",
+					"dark": {
+            "image": "./assets/images/splash-dark.png",
+            "backgroundColor": "#000000"
+          }
 				}
 			],
 			"expo-localization",
