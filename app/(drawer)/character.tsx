@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Fab, FabIcon } from "@/components/ui/fab";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
-import { AddIcon, Icon, SearchIcon } from "@/components/ui/icon";
+import { AddIcon, Icon } from "@/components/ui/icon";
 import { Image } from "@/components/ui/image";
 import { Input, InputField } from "@/components/ui/input";
 import { Menu, MenuItem, MenuItemLabel } from "@/components/ui/menu";
@@ -34,7 +34,6 @@ import {
 	FileUpIcon,
 	ImportIcon,
 	UserRoundSearchIcon,
-	UserSearchIcon,
 } from "lucide-react-native";
 import React from "react";
 import { Pressable, ScrollView } from "react-native";
@@ -44,36 +43,7 @@ import { toast } from "sonner-native";
 const renderCharacterListAtom = atom<RenderCharacterList>();
 
 export default function CharacterScreen() {
-	return (
-		<>
-			<Box>
-				<Stack.Screen
-					options={{
-						headerRight: () => {
-							return <HeaderRight />;
-						},
-					}}
-				/>
-			</Box>
-			<Box className="h-full p-3">
-				<CharacterList />
-			</Box>
-			<CharacterFab />
-			<NewCharacterModal />
-			<ImportCharacterModal />
-		</>
-	);
-}
-
-// Header 右侧按钮
-function HeaderRight() {
-	return <SearchCharacter />;
-}
-
-// 渲染搜索的角色卡
-function SearchCharacter() {
 	const list = useCharacterList();
-	const [isPress, setIsPress] = React.useState<boolean>(false);
 	const [inputValue, setInputValue] = React.useState<string>("");
 	const [, setRenderCharacterList] = useAtom(renderCharacterListAtom);
 	React.useEffect(() => {
@@ -86,27 +56,24 @@ function SearchCharacter() {
 			setRenderCharacterList(list.data);
 		}
 	}, [list.data, inputValue, setRenderCharacterList]);
-
 	return (
 		<>
-			{isPress ? (
-				<Input variant="underlined" className="w-[90%] mx-2">
-					<InputField
-						value={inputValue}
-						onBlur={() => setIsPress(false)}
-						onChangeText={setInputValue}
-						placeholder="搜索"
-					/>
-				</Input>
-			) : (
-				<Pressable className="mx-4" onPress={() => setIsPress(true)}>
-					{inputValue.length === 0 ? (
-						<Icon as={SearchIcon} />
-					) : (
-						<Icon as={UserSearchIcon} />
-					)}
-				</Pressable>
-			)}
+			<Box>
+				<Stack.Screen
+					options={{
+						headerSearchBarOptions: {
+							placeholder: "搜索角色卡",
+							onChangeText: (e) => setInputValue(e.nativeEvent.text),
+						},
+					}}
+				/>
+			</Box>
+			<Box className="h-full p-3">
+				<CharacterList />
+			</Box>
+			<CharacterFab />
+			<NewCharacterModal />
+			<ImportCharacterModal />
 		</>
 	);
 }

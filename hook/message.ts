@@ -13,6 +13,24 @@ export function useMessageByRoomId(roomId: number) {
 	return data;
 }
 
+export function useMessageDescByRoomId(roomId: number) {
+	const { data, error, updatedAt } = useLiveQuery(
+		db
+			.select()
+			.from(message)
+			.where(eq(message.room_id, roomId))
+			.orderBy(desc(message.id)),
+	);
+	return data;
+}
+
+export function useMessageRecordByRoomId(roomId: number) {
+	const { data, error, updatedAt } = useLiveQuery(
+		db.select().from(message).where(eq(message.room_id, roomId)),
+	);
+	return data.length;
+}
+
 export function useMessageByIdOffset(roomId: number, offset: number) {
 	console.log(offset);
 	const { data, error, updatedAt } = useLiveQuery(

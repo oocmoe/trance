@@ -54,7 +54,7 @@ export async function createImportMessages(
 			global_id: uuidv7(),
 		}));
 		const rows = await db.insert(message).values(messagesData);
-		return rows;
+		return rows.lastInsertRowId;
 	} catch (error) {
 		throw error instanceof Error
 			? error.message
@@ -111,8 +111,13 @@ export async function deleteMessageById(id: number) {
 
 export async function deleteAllMessage(roomId: number) {
 	try {
-		const rows = await db.delete(message).where(eq(message.room_id, roomId));
-		return rows.changes;
+		const rows = await db.transaction(async (tx) => {
+			const deleteRows = await tx
+				.delete(message)
+				.where(eq(message.room_id, roomId));
+			return deleteRows.changes;
+		});
+		return rows;
 	} catch (error) {
 		throw error instanceof Error
 			? error.message

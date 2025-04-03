@@ -4,12 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Fab, FabIcon } from "@/components/ui/fab";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
-import {
-	AddIcon,
-	ArrowRightIcon,
-	Icon,
-	SearchIcon,
-} from "@/components/ui/icon";
+import { AddIcon, ArrowRightIcon, Icon } from "@/components/ui/icon";
 import { Input, InputField } from "@/components/ui/input";
 import { Menu, MenuItem, MenuItemLabel } from "@/components/ui/menu";
 import {
@@ -31,12 +26,7 @@ import { createImportKnowledgeBase } from "@/utils/db/knowledgeBase";
 import { pickKnowledgeBase } from "@/utils/file/picker";
 import { Stack, router } from "expo-router";
 import { atom, useAtom } from "jotai";
-import {
-	FileUpIcon,
-	ImportIcon,
-	LibraryIcon,
-	ScanSearchIcon,
-} from "lucide-react-native";
+import { FileUpIcon, ImportIcon, LibraryIcon } from "lucide-react-native";
 import React from "react";
 import { Pressable, ScrollView } from "react-native";
 import { toast } from "sonner-native";
@@ -44,27 +34,7 @@ import { toast } from "sonner-native";
 const renderKnowledgeBaseListAtom = atom<RenderKnowledgeBaseList[]>();
 
 export default function KnowledgeBaseScreen() {
-	return (
-		<Box className="h-full">
-			<Stack.Screen
-				options={{
-					headerRight: () => {
-						return <HeaderRight />;
-					},
-				}}
-			/>
-			<KnowledgeBaseList />
-			<KnowledgeBaseFab />
-			<ImportKnowledgeBaseModal />
-		</Box>
-	);
-}
-
-const HeaderRight = () => <SearchKnowledgeBase />;
-
-const SearchKnowledgeBase = () => {
 	const list = useKnowledgeBaseList();
-	const [isPress, setIsPress] = React.useState<boolean>(false);
 	const [inputValue, setInputValue] = React.useState<string>("");
 	const [, setRenderKnowledgeBaseList] = useAtom(renderKnowledgeBaseListAtom);
 	React.useEffect(() => {
@@ -77,30 +47,22 @@ const SearchKnowledgeBase = () => {
 			setRenderKnowledgeBaseList(list);
 		}
 	}, [list, inputValue, setRenderKnowledgeBaseList]);
-
 	return (
-		<>
-			{isPress ? (
-				<Input variant="underlined" className="w-[90%] mx-2">
-					<InputField
-						value={inputValue}
-						onBlur={() => setIsPress(false)}
-						onChangeText={setInputValue}
-						placeholder="搜索"
-					/>
-				</Input>
-			) : (
-				<Pressable className="mx-4" onPress={() => setIsPress(true)}>
-					{inputValue.length === 0 ? (
-						<Icon as={SearchIcon} />
-					) : (
-						<Icon as={ScanSearchIcon} />
-					)}
-				</Pressable>
-			)}
-		</>
+		<Box className="h-full">
+			<Stack.Screen
+				options={{
+					headerSearchBarOptions: {
+						placeholder: "搜索知识库",
+						onChangeText: (e) => setInputValue(e.nativeEvent.text),
+					},
+				}}
+			/>
+			<KnowledgeBaseList />
+			<KnowledgeBaseFab />
+			<ImportKnowledgeBaseModal />
+		</Box>
 	);
-};
+}
 
 const KnowledgeBaseList = () => {
 	const [list] = useAtom(renderKnowledgeBaseListAtom);

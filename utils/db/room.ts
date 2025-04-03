@@ -1,3 +1,4 @@
+import { message } from "@/db/schema/message";
 import { type Room, room } from "@/db/schema/room";
 import { useDB } from "@/hook/db";
 import { eq } from "drizzle-orm";
@@ -103,8 +104,13 @@ export async function updateRoomFieldById(
 
 export async function deleteRoomById(id: number) {
 	try {
-		const rows = await db.delete(room).where(eq(room.id, id));
-		return rows.changes;
+		const result = await db.transaction(async (tx) => {
+			await tx.delete(message).where(eq(message.room_id, id));
+			const deletedRoom = await tx.delete(room).where(eq(room.id, id));
+
+			return deletedRoom.changes;
+		});
+		return result;
 	} catch (error) {
 		console.log(error);
 	}

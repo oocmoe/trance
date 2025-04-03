@@ -4,12 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Fab, FabIcon } from "@/components/ui/fab";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
-import {
-	AddIcon,
-	ArrowRightIcon,
-	Icon,
-	SearchIcon,
-} from "@/components/ui/icon";
+import { AddIcon, ArrowRightIcon, Icon } from "@/components/ui/icon";
 import { Input, InputField } from "@/components/ui/input";
 import { Menu, MenuItem, MenuItemLabel } from "@/components/ui/menu";
 import {
@@ -31,12 +26,7 @@ import { createImportPrompt } from "@/utils/db/prompt";
 import { pickPrompt } from "@/utils/file/picker";
 import { Stack, router } from "expo-router";
 import { atom, useAtom } from "jotai";
-import {
-	FileUpIcon,
-	HammerIcon,
-	ImportIcon,
-	ScanSearchIcon,
-} from "lucide-react-native";
+import { FileUpIcon, HammerIcon, ImportIcon } from "lucide-react-native";
 import React from "react";
 import { Pressable, ScrollView } from "react-native";
 import { toast } from "sonner-native";
@@ -44,29 +34,7 @@ import { toast } from "sonner-native";
 const renderPromptListAtom = atom<RenderPromptList>();
 
 export default function PromptScreen() {
-	return (
-		<Box className="h-full p-3">
-			<Stack.Screen
-				options={{
-					headerRight: () => {
-						return <HeaderRight />;
-					},
-				}}
-			/>
-			<PromptList />
-			<PromptFab />
-			<ImportPromptModal />
-		</Box>
-	);
-}
-
-function HeaderRight() {
-	return <SearchPrompt />;
-}
-
-function SearchPrompt() {
 	const list = usePromptList();
-	const [isPress, setIsPress] = React.useState<boolean>(false);
 	const [inputValue, setInputValue] = React.useState<string>("");
 	const [, setRenderPromptList] = useAtom(renderPromptListAtom);
 	React.useEffect(() => {
@@ -79,28 +47,20 @@ function SearchPrompt() {
 			setRenderPromptList(list);
 		}
 	}, [list, inputValue, setRenderPromptList]);
-
 	return (
-		<>
-			{isPress ? (
-				<Input variant="underlined" className="w-[90%] mx-2">
-					<InputField
-						value={inputValue}
-						onBlur={() => setIsPress(false)}
-						onChangeText={setInputValue}
-						placeholder="搜索"
-					/>
-				</Input>
-			) : (
-				<Pressable className="mx-4" onPress={() => setIsPress(true)}>
-					{inputValue.length === 0 ? (
-						<Icon as={SearchIcon} />
-					) : (
-						<Icon as={ScanSearchIcon} />
-					)}
-				</Pressable>
-			)}
-		</>
+		<Box className="h-full p-3">
+			<Stack.Screen
+				options={{
+					headerSearchBarOptions: {
+						placeholder: "搜索提示词",
+						onChangeText: (e) => setInputValue(e.nativeEvent.text),
+					},
+				}}
+			/>
+			<PromptList />
+			<PromptFab />
+			<ImportPromptModal />
+		</Box>
 	);
 }
 

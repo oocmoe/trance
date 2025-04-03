@@ -5,13 +5,14 @@ import { Image } from "@/components/ui/image";
 import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { useMessageRecordByRoomId } from "@/hook/message";
 import { useRoomList } from "@/hook/room";
 import type { RenderRoomList } from "@/types/render";
-import { router } from "expo-router";
+import { Link } from "expo-router";
 import { atom, useAtom } from "jotai";
 import { MessageCircleDashedIcon } from "lucide-react-native";
 import React from "react";
-import { Pressable, ScrollView } from "react-native";
+import { ScrollView } from "react-native";
 
 // 房间列表状态
 const renderRoomListAtom = atom<RenderRoomList>();
@@ -61,9 +62,9 @@ const RoomList = () => {
 		<ScrollView>
 			<VStack>
 				{list.map((item) => (
-					<Pressable
+					<Link
+						href={{ pathname: "/room/[id]", params: { id: item.id } }}
 						key={item.id}
-						onPress={() => router.push(`/room/${item.id}`)}
 						className="h-20 overflow-hidden"
 					>
 						<HStack className="flex-1 mx-2" space="md">
@@ -74,12 +75,17 @@ const RoomList = () => {
 							/>
 							<VStack className="flex-1 mx-2">
 								<Text bold>{item.name}</Text>
-								<Text>{item.type}</Text>
+								<MessageCounter roomId={item.id} />
 							</VStack>
 						</HStack>
-					</Pressable>
+					</Link>
 				))}
 			</VStack>
 		</ScrollView>
 	);
+};
+
+const MessageCounter = ({ roomId }: { roomId: number }) => {
+	const message = useMessageRecordByRoomId(roomId);
+	return <Text>共 {message} 条消息</Text>;
 };

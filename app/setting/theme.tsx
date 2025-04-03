@@ -2,13 +2,16 @@ import { Box } from "@/components/ui/box";
 import { Card } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
+import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { useThemeRoom } from "@/hook/theme";
 import { tranceThemeAtom } from "@/store/theme";
 import {
 	themeDefaultConfig,
 	themeDefaultGreenConfig,
 	themeDefaultPeachConfig,
+	themeDefaultPomeloThemeConfig,
 } from "@/utils/theme/presuppose";
 import { useAtom } from "jotai";
 import { Pressable, ScrollView } from "react-native";
@@ -17,6 +20,11 @@ export default function ThemeScreen() {
 		<Box className="h-full p-3">
 			<ScrollView>
 				<VStack space="md">
+					<Text>房间设置</Text>
+					<RoomAssistantAvatarShow />
+					<RoomAssistantNameShow />
+					<RoomUserAvatarShow />
+					<RoomUserNameShow />
 					<Text>双色模式</Text>
 					<DefaultTheme />
 					<GreenTheme />
@@ -28,6 +36,182 @@ export default function ThemeScreen() {
 		</Box>
 	);
 }
+
+const RoomAssistantAvatarShow = () => {
+	const themeConfig = useThemeRoom();
+	const [, setTranceTheme] = useAtom(tranceThemeAtom);
+	const handleChange = async (value: boolean) => {
+		setTranceTheme(async (prev) => {
+			const theme = await prev;
+			return {
+				...theme,
+				light: {
+					...theme.light,
+					Room: {
+						...theme.light.Room,
+						profile: {
+							...theme.light.Room.profile,
+							is_AssistantAvatarShow: value,
+						},
+					},
+				},
+				dark: {
+					...theme.dark,
+					Room: {
+						...theme.dark.Room,
+						profile: {
+							...theme.dark.Room.profile,
+							is_AssistantAvatarShow: value,
+						},
+					},
+				},
+			};
+		});
+	};
+	return (
+		<Box>
+			<HStack className="justify-between items-center">
+				<Heading>显示角色头像</Heading>
+				<Switch
+					onValueChange={handleChange}
+					value={themeConfig.profile.is_AssistantAvatarShow}
+				/>
+			</HStack>
+		</Box>
+	);
+};
+
+const RoomAssistantNameShow = () => {
+	const themeConfig = useThemeRoom();
+	const [, setTranceTheme] = useAtom(tranceThemeAtom);
+	const handleChange = async (value: boolean) => {
+		setTranceTheme(async (prev) => {
+			const theme = await prev;
+			return {
+				...theme,
+				light: {
+					...theme.light,
+					Room: {
+						...theme.light.Room,
+						profile: {
+							...theme.light.Room.profile,
+							is_AssistantNameShow: value,
+						},
+					},
+				},
+				dark: {
+					...theme.dark,
+					Room: {
+						...theme.dark.Room,
+						profile: {
+							...theme.dark.Room.profile,
+							is_AssistantNameShow: value,
+						},
+					},
+				},
+			};
+		});
+	};
+	return (
+		<Box>
+			<HStack className="justify-between items-center">
+				<Heading>显示角色名字</Heading>
+				<Switch
+					onValueChange={handleChange}
+					value={themeConfig.profile.is_AssistantNameShow}
+				/>
+			</HStack>
+		</Box>
+	);
+};
+
+const RoomUserAvatarShow = () => {
+	const themeConfig = useThemeRoom();
+	const [, setTranceTheme] = useAtom(tranceThemeAtom);
+	const handleChange = async (value: boolean) => {
+		setTranceTheme(async (prev) => {
+			const theme = await prev;
+			return {
+				...theme,
+				light: {
+					...theme.light,
+					Room: {
+						...theme.light.Room,
+						profile: {
+							...theme.light.Room.profile,
+							is_UserAvatarShow: value,
+						},
+					},
+				},
+				dark: {
+					...theme.dark,
+					Room: {
+						...theme.dark.Room,
+						profile: {
+							...theme.dark.Room.profile,
+							is_UserAvatarShow: value,
+						},
+					},
+				},
+			};
+		});
+	};
+	return (
+		<Box>
+			<HStack className="justify-between items-center">
+				<Heading>显示用户头像</Heading>
+				<Switch
+					onValueChange={handleChange}
+					value={themeConfig.profile.is_UserAvatarShow}
+				/>
+			</HStack>
+		</Box>
+	);
+};
+
+const RoomUserNameShow = () => {
+	const themeConfig = useThemeRoom();
+	const [, setTranceTheme] = useAtom(tranceThemeAtom);
+	const handleChange = async (value: boolean) => {
+		setTranceTheme(async (prev) => {
+			const theme = await prev;
+			return {
+				...theme,
+				light: {
+					...theme.light,
+					Room: {
+						...theme.light.Room,
+						profile: {
+							...theme.light.Room.profile,
+							is_UserNameShow: value,
+						},
+					},
+				},
+				dark: {
+					...theme.dark,
+					Room: {
+						...theme.dark.Room,
+						profile: {
+							...theme.dark.Room.profile,
+							is_UserNameShow: value,
+						},
+					},
+				},
+			};
+		});
+	};
+	return (
+		<Box>
+			<HStack className="justify-between items-center">
+				<Heading>显示用户名字</Heading>
+				<Switch
+					onValueChange={handleChange}
+					value={themeConfig.profile.is_UserNameShow}
+				/>
+			</HStack>
+		</Box>
+	);
+};
 
 const DefaultTheme = () => {
 	const [, setTranceTheme] = useAtom(tranceThemeAtom);
@@ -80,7 +264,7 @@ const PeachTheme = () => {
 const PomeloTheme = () => {
 	const [, setTranceTheme] = useAtom(tranceThemeAtom);
 	const handleChange = async () => {
-		setTranceTheme(themeDefaultPeachConfig);
+		setTranceTheme(themeDefaultPomeloThemeConfig);
 	};
 	return (
 		<Pressable onPress={handleChange}>

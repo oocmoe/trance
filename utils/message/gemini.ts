@@ -170,13 +170,58 @@ async function tranceHiGeminiText(
 				safetySettings: GeminiSafetySettings as SafetySetting[],
 			},
 		});
-
 		const response = await chat.sendMessage({
 			message: message,
 		});
-		if (!response.text) throw new Error("获取了响应但是没有返回文本内容");
+		if (!response.candidates || response.candidates.length === 0) {
+			const blockReason = response.promptFeedback?.blockReason;
+			const safetyRatings = response.promptFeedback?.safetyRatings || [];
+			if (blockReason === "SAFETY") {
+				const blockedCategories = safetyRatings
+					.filter((r) => r.blocked)
+					.map((r) => r.category)
+					.join(", ");
+				throw new Error(`BLOCKED_SAFETY: ${blockedCategories}`);
+			}
+			if (blockReason === "BLOCKLIST") {
+				throw new Error("BLOCKED_BLOCKLIST");
+			}
+			if (blockReason === "OTHER") {
+				throw new Error("BLOCKED_OTHER");
+			}
+			if (blockReason === "PROHIBITED_CONTENT") {
+				throw new Error("BLOCKED_PROHIBITED");
+			}
+			throw new Error(`BLOCKED_UNKNOWN: ${blockReason}`);
+		}
+		const candidate = response.candidates[0];
+		if (
+			!candidate.content ||
+			!candidate.content.parts ||
+			candidate.content.parts.length === 0
+		) {
+			throw new Error("EMPTY_CONTENT");
+		}
+
+		if (candidate.finishReason === "SAFETY") {
+			const safetyDetails = (candidate.safetyRatings ?? [])
+				.filter((r) => r.blocked)
+				.map((r) => r.category)
+				.join(", ");
+			throw new Error(`FINISH_SAFETY: ${safetyDetails}`);
+		}
+		if (candidate.finishReason === "MAX_TOKENS") {
+			throw new Error("FINISH_MAX_TOKENS");
+		}
+		if (!response.text) {
+			throw new Error("MISSING_TEXT");
+		}
 		return response.text;
 	} catch (error) {
-		throw error instanceof Error ? error.message : new Error("API远程错误");
+		if (error instanceof Error) {
+			throw new Error(error.message);
+		}
+		console.log(error);
+		throw new Error("Gemini远程错误");
 	}
 }

@@ -1,6 +1,11 @@
 import { HighlightedAssistantText } from "@/components/highlighted";
 import { Box } from "@/components/ui/box";
-import { Button, ButtonIcon, ButtonSpinner } from "@/components/ui/button";
+import {
+	Button,
+	ButtonIcon,
+	ButtonSpinner,
+	ButtonText,
+} from "@/components/ui/button";
 import { HStack } from "@/components/ui/hstack";
 import { Icon, TrashIcon } from "@/components/ui/icon";
 import { Input, InputField } from "@/components/ui/input";
@@ -10,17 +15,13 @@ import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import type { Messages } from "@/db/schema/message";
 import { useCharacterById } from "@/hook/character";
-import { useMessageByRoomId } from "@/hook/message";
+import { useMessageByRoomId, useMessageDescByRoomId } from "@/hook/message";
 import { useRoomById } from "@/hook/room";
 import { useThemeRoom, useThemeStack, useTranceTheme } from "@/hook/theme";
-import { modalAtom } from "@/store/core";
+import { USER_avtarAtom, USER_nameAtom, modalAtom } from "@/store/core";
 import { type RoomOptions, roomOptionsAtom } from "@/store/roomOptions";
 import { colorModeAtom, tranceThemeAtom } from "@/store/theme";
-import {
-	createMessage,
-	deleteMessageById,
-	readMessageDescByIdOffset,
-} from "@/utils/db/message";
+import { createMessage, deleteMessageById } from "@/utils/db/message";
 import { tranceHi } from "@/utils/message/middleware";
 import { transformRenderMessage } from "@/utils/message/transform";
 import * as Clipboard from "expo-clipboard";
@@ -97,22 +98,15 @@ const HeaderRight = () => {
 const MessagesList = () => {
 	const { id } = useLocalSearchParams();
 	const [messageLists, setMessageLists] = React.useState<Messages[]>([]);
-	const [offset, setOffset] = React.useState<number>(0);
+	const [offset, setOffset] = React.useState<number>(10);
 	const [isMessageLoading, setIsMessageLoading] =
 		React.useState<boolean>(false);
 
-	const handleOnEndReached = async () => {
-		try {
-			if (isMessageLoading) return;
-			setIsMessageLoading(true);
-			const newMessages = readMessageDescByIdOffset(Number(id), offset);
-			setMessageLists([...messageLists, ...(await newMessages)]);
-			setOffset(offset + 10);
-			setIsMessageLoading(false);
-		} catch (error) {
-			console.log(error);
-		}
-	};
+	const messages = useMessageDescByRoomId(Number(id));
+
+	React.useEffect(() => {
+		setMessageLists(messages);
+	}, [messages]);
 
 	return (
 		<FlatList
@@ -123,7 +117,6 @@ const MessagesList = () => {
 			}}
 			data={messageLists}
 			onEndReachedThreshold={0.2}
-			onEndReached={handleOnEndReached}
 			keyExtractor={(item) => item.id.toString()}
 			renderItem={({ item }) => <ChatBubble item={item} />}
 			ItemSeparatorComponent={() => <Box style={{ height: 16 }} />}
@@ -138,6 +131,8 @@ const ChatBubble = ({ item }: { item: Messages }) => {
 	const [roomOptions] = useAtom(roomOptionsAtom);
 	const [assistantaAvatar, setAssistantaAvatar] = React.useState<string>();
 	const [assistantaName, setAssistantaName] = React.useState<string>();
+	const [userAvatar] = useAtom(USER_avtarAtom);
+	const [userName] = useAtom(USER_nameAtom);
 	const [chatBubbleModal, setChatBubbleModal] = useAtom(
 		modalAtom("chatBubbleModal"),
 	);
@@ -150,6 +145,7 @@ const ChatBubble = ({ item }: { item: Messages }) => {
 			setAssistantaName(character?.name);
 		}, [character]);
 	}
+
 	const handleLongPressBubble = (id: number) => {
 		setActionBubble(id);
 		setChatBubbleModal(true);
@@ -166,23 +162,27 @@ const ChatBubble = ({ item }: { item: Messages }) => {
 		return (
 			<Pressable onLongPress={() => handleLongPressBubble(item.id)}>
 				<Box>
-					<HStack className="max-w-[80%]" space="md">
-						{assistantaAvatar ? (
-							<Image
-								source={{ uri: assistantaAvatar }}
-								alt="avatar"
-								style={themeConfig.Room?.componentStyle?.assistantAvatar}
-							/>
-						) : (
-							<Skeleton
-								style={themeConfig.Room?.componentStyle?.assistantAvatar}
-							/>
-						)}
+					<HStack className="max-w-[80%]" space="sm">
+						{themeConfig.Room.profile.is_AssistantAvatarShow &&
+							(assistantaAvatar ? (
+								<Image
+									source={{ uri: assistantaAvatar }}
+									alt="avatar"
+									style={themeConfig.Room?.componentStyle?.assistantAvatar}
+								/>
+							) : (
+								<Skeleton
+									style={themeConfig.Room?.componentStyle?.assistantAvatar}
+								/>
+							))}
+
 						{content ? (
 							<VStack>
-								<Text style={themeConfig.Room.componentStyle?.assistantName}>
-									{assistantaName}
-								</Text>
+								{themeConfig.Room.profile.is_AssistantNameShow && (
+									<Text style={themeConfig.Room.componentStyle?.assistantName}>
+										{assistantaName}
+									</Text>
+								)}
 
 								<Box
 									style={themeConfig.Room?.componentStyle?.assistantChatBubble}
@@ -205,18 +205,40 @@ const ChatBubble = ({ item }: { item: Messages }) => {
 	if (item.is_Sender === 1) {
 		return (
 			<Pressable onLongPress={() => handleLongPressBubble(item.id)}>
-				<Box>
-					<HStack className="max-w-[75%] self-end">
+				<Box className="max-w-[70%] ml-[30%]">
+					<HStack space="sm" className="self-end">
 						{content ? (
-							<Box style={themeConfig.Room?.componentStyle?.userChatBubble}>
-								<HighlightedAssistantText str={content} />
-							</Box>
+							<VStack className="items-end">
+								{themeConfig.Room.profile.is_UserNameShow && (
+									<Text style={themeConfig.Room.componentStyle?.assistantName}>
+										{userName}
+									</Text>
+								)}
+								<Box
+									className=""
+									style={themeConfig.Room?.componentStyle?.userChatBubble}
+								>
+									<HighlightedAssistantText str={content} />
+								</Box>
+							</VStack>
 						) : (
 							<Skeleton
 								className="w-24 h-8  rounded-sm"
 								style={themeConfig.Room?.componentStyle?.userChatBubble}
 							/>
 						)}
+						{themeConfig.Room.profile.is_UserAvatarShow &&
+							(userAvatar ? (
+								<Image
+									source={{ uri: userAvatar }}
+									alt="avatar"
+									style={themeConfig.Room?.componentStyle?.userAvatar}
+								/>
+							) : (
+								<Skeleton
+									style={themeConfig.Room?.componentStyle?.userAvatar}
+								/>
+							))}
 					</HStack>
 				</Box>
 			</Pressable>
@@ -360,17 +382,36 @@ const ActionBar = () => {
 						value={userInput}
 					/>
 				</Input>
-				<Button
-					onPress={handleSayHi}
-					isDisabled={userInput?.length === 0 || isLoading}
-					style={themeConfig.componentStyle?.sendButton}
-				>
-					{isLoading ? (
-						<ButtonSpinner />
-					) : (
-						<ButtonIcon as={SendHorizonalIcon} />
-					)}
-				</Button>
+				{themeConfig.componentStyle?.sendButtonText ? (
+					<Button
+						onPress={handleSayHi}
+						isDisabled={userInput?.length === 0 || isLoading}
+						style={themeConfig.componentStyle?.sendButton}
+					>
+						{isLoading ? (
+							<ButtonSpinner />
+						) : (
+							<ButtonText style={themeConfig.componentStyle?.sendButtonText}>
+								发送
+							</ButtonText>
+						)}
+					</Button>
+				) : (
+					<Button
+						onPress={handleSayHi}
+						isDisabled={userInput?.length === 0 || isLoading}
+						style={themeConfig.componentStyle?.sendButton}
+					>
+						{isLoading ? (
+							<ButtonSpinner />
+						) : (
+							<ButtonIcon
+								style={themeConfig.componentStyle?.sendButtonIcon}
+								as={SendHorizonalIcon}
+							/>
+						)}
+					</Button>
+				)}
 			</HStack>
 		</Box>
 	);

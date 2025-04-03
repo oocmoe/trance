@@ -15,6 +15,14 @@ export type ThemeStack = {
 export type ThemeRoom = {
 	options: NativeStackNavigationOptions;
 	componentStyle?: Record<string, StyleProp>;
+	profile: ThemeRoomProfile;
+};
+
+type ThemeRoomProfile = {
+	is_AssistantAvatarShow: boolean;
+	is_AssistantNameShow: boolean;
+	is_UserAvatarShow: boolean;
+	is_UserNameShow: boolean;
 };
 
 type TranceThemeConfig = {
@@ -99,16 +107,22 @@ const defaultRoomLightOptions: ThemeRoom = {
 		headerTitleAlign: "left",
 		headerTintColor: "#000000",
 		headerStyle: {
-			backgroundColor: "#ededed",
+			backgroundColor: "#ffffff",
 		},
 		contentStyle: {
-			backgroundColor: "#ededed",
+			backgroundColor: "#ffffff",
 		},
+	},
+	profile: {
+		is_AssistantAvatarShow: true,
+		is_AssistantNameShow: true,
+		is_UserAvatarShow: true,
+		is_UserNameShow: true,
 	},
 	componentStyle: {
 		assistantAvatar: {
-			width: 48,
-			height: 48,
+			width: 40,
+			height: 40,
 			borderRadius: 100,
 		},
 		assistantChatBubble: {
@@ -123,8 +137,8 @@ const defaultRoomLightOptions: ThemeRoom = {
 			color: "#f59e0b",
 		},
 		userAvatar: {
-			width: 48,
-			height: 48,
+			width: 40,
+			height: 40,
 			borderRadius: 100,
 		},
 		userChatBubbleText: {
@@ -144,44 +158,50 @@ const defaultRoomLightOptions: ThemeRoom = {
 const defaultRoomDarkOptions: ThemeRoom = {
 	options: {
 		headerTitleAlign: "left",
-		headerTintColor: "#000000",
+		headerTintColor: "#ffffff",
 		headerStyle: {
-			backgroundColor: "#ededed",
+			backgroundColor: "#000000",
 		},
 		contentStyle: {
-			backgroundColor: "#ededed",
+			backgroundColor: "#000000",
 		},
+	},
+	profile: {
+		is_AssistantAvatarShow: true,
+		is_AssistantNameShow: true,
+		is_UserAvatarShow: true,
+		is_UserNameShow: true,
 	},
 	componentStyle: {
 		assistantAvatar: {
-			width: 48,
-			height: 48,
+			width: 40,
+			height: 40,
 			borderRadius: 100,
 		},
 		assistantChatBubble: {
-			backgroundColor: "#ffffff",
+			backgroundColor: "#000000",
 			padding: 16,
 			borderRadius: 16,
 		},
 		assistantChatBubbleText: {
-			color: "#000000",
+			color: "#ffffff",
 		},
 		assistantChatBubbleHighlightText: {
-			color: "#000000",
+			color: "#f59e0b",
 		},
 		userAvatar: {
-			width: 48,
-			height: 48,
+			width: 40,
+			height: 40,
 			borderRadius: 100,
 		},
 		userChatBubbleText: {
-			color: "#000000",
+			color: "#ffffff",
 		},
 		userChatBubbleHighlightText: {
-			color: "#000000",
+			color: "#f59e0b",
 		},
 		userChatBubble: {
-			backgroundColor: "#ffffff",
+			backgroundColor: "#000000",
 			padding: 16,
 			borderRadius: 16,
 		},

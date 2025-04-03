@@ -3,7 +3,7 @@ import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Fab, FabIcon } from "@/components/ui/fab";
 import { Heading } from "@/components/ui/heading";
-import { AddIcon, Icon, SearchIcon } from "@/components/ui/icon";
+import { AddIcon, Icon } from "@/components/ui/icon";
 import { Input, InputField } from "@/components/ui/input";
 import { Menu, MenuItem, MenuItemLabel } from "@/components/ui/menu";
 import {
@@ -26,12 +26,7 @@ import { createImportRegex } from "@/utils/db/regex";
 import { pickRegex } from "@/utils/file/picker";
 import { Stack, router } from "expo-router";
 import { atom, useAtom } from "jotai";
-import {
-	FileUpIcon,
-	ImportIcon,
-	RegexIcon,
-	ScanSearchIcon,
-} from "lucide-react-native";
+import { FileUpIcon, ImportIcon, RegexIcon } from "lucide-react-native";
 import React from "react";
 import { Pressable, ScrollView } from "react-native";
 import { toast } from "sonner-native";
@@ -39,29 +34,7 @@ import { toast } from "sonner-native";
 const renderRegexListAtom = atom<RenderRegexList>();
 
 export default function RegexScreen() {
-	return (
-		<Box className="h-full">
-			<Stack.Screen
-				options={{
-					headerRight: () => {
-						return <HeaderRight />;
-					},
-				}}
-			/>
-			<RgexList />
-			<RegexFab />
-			<ImportRegexModal />
-		</Box>
-	);
-}
-
-function HeaderRight() {
-	return <SearchRegex />;
-}
-
-function SearchRegex() {
 	const list = useRegexList();
-	const [isPress, setIsPress] = React.useState<boolean>(false);
 	const [inputValue, setInputValue] = React.useState<string>("");
 	const [, setRenderRegexList] = useAtom(renderRegexListAtom);
 	React.useEffect(() => {
@@ -74,28 +47,20 @@ function SearchRegex() {
 			setRenderRegexList(list);
 		}
 	}, [list, inputValue, setRenderRegexList]);
-
 	return (
-		<>
-			{isPress ? (
-				<Input variant="underlined" className="w-[90%] mx-2">
-					<InputField
-						value={inputValue}
-						onBlur={() => setIsPress(false)}
-						onChangeText={setInputValue}
-						placeholder="搜索"
-					/>
-				</Input>
-			) : (
-				<Pressable className="mx-4" onPress={() => setIsPress(true)}>
-					{inputValue.length === 0 ? (
-						<Icon as={SearchIcon} />
-					) : (
-						<Icon as={ScanSearchIcon} />
-					)}
-				</Pressable>
-			)}
-		</>
+		<Box className="h-full">
+			<Stack.Screen
+				options={{
+					headerSearchBarOptions: {
+						placeholder: "搜索正则脚本",
+						onChangeText: (e) => setInputValue(e.nativeEvent.text),
+					},
+				}}
+			/>
+			<RgexList />
+			<RegexFab />
+			<ImportRegexModal />
+		</Box>
 	);
 }
 

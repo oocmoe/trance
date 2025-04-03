@@ -258,15 +258,13 @@ const GeminiModelVersionSelect = () => {
 								<SelectDragIndicator />
 							</SelectDragIndicatorWrapper>
 
-							<Box>
-								{geminiModelVersion.map((item) => (
-									<SelectItem
-										key={item.order}
-										label={item.label}
-										value={item.value}
-									/>
-								))}
-							</Box>
+							{geminiModelVersion.map((item) => (
+								<SelectItem
+									key={item.order}
+									label={item.label}
+									value={item.value}
+								/>
+							))}
 						</SelectContent>
 					</SelectPortal>
 				</Select>

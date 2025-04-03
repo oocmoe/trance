@@ -8,12 +8,7 @@ import {
 	AlertDialogHeader,
 } from "@/components/ui/alert-dialog";
 import { Box } from "@/components/ui/box";
-import {
-	Button,
-	ButtonIcon,
-	ButtonSpinner,
-	ButtonText,
-} from "@/components/ui/button";
+import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
@@ -59,7 +54,7 @@ import {
 	Trash2Icon,
 } from "lucide-react-native";
 import React from "react";
-import { Pressable } from "react-native";
+import { InteractionManager, Pressable } from "react-native";
 import { toast } from "sonner-native";
 
 export default function RoomDetailScreen() {
@@ -239,7 +234,6 @@ const DeleteRoomModal = () => {
 const ImportSillyTavernChatHistory = () => {
 	const { id } = useLocalSearchParams();
 	const [isOpen, setIsOpen] = React.useState<boolean>(false);
-	const [isLoading, setIsLoading] = React.useState<boolean>(false);
 	const [historyPreview, setHistoryPreview] = React.useState<
 		ConvertSillyTavernChatHistory[] | undefined
 	>(undefined);
@@ -260,23 +254,25 @@ const ImportSillyTavernChatHistory = () => {
 	};
 	const handleImport = async () => {
 		try {
-			setIsLoading(true);
 			if (!historyPreview) throw new Error("数据未准备");
-			const rows = await importSillyTavernChatHistory(
+			const result = await importSillyTavernChatHistory(
 				Number(id),
 				historyPreview,
 			);
-			if (!rows) throw new Error("导入失败");
-			toast.success("导入成功", { id: "importSillyTavernChatHistory" });
-			setIsOpen(false);
+			if (result) {
+				InteractionManager.runAfterInteractions(() => {
+					setIsOpen(false);
+					toast.success("导入成功");
+					router.push("/(drawer)/message");
+				});
+			}
 		} catch (error) {
 			if (error instanceof Error) {
-				toast.error(error.message, { id: "importSillyTavernChatHistory" });
+				toast.error(error.message);
 				return;
 			}
-			toast.error("未知错误", { id: "importSillyTavernChatHistory" });
-		} finally {
-			setIsLoading(false);
+			toast.error("未知错误");
+			console.log(error);
 		}
 	};
 	return (
@@ -299,7 +295,9 @@ const ImportSillyTavernChatHistory = () => {
 						</HStack>
 					</ModalHeader>
 					<ModalBody>
-						<Text className="text-red-400">注意:此操作会覆盖房间聊天记录</Text>
+						<Text className="text-red-400">
+							注意:此操作会覆盖房间聊天记录,当前版本导入长内容如卡死请重启应用
+						</Text>
 						{historyPreview && (
 							<Box>
 								<Text>{`共找到 ${historyPreview.length} 条记录`}</Text>
@@ -315,13 +313,10 @@ const ImportSillyTavernChatHistory = () => {
 						>
 							<ButtonText>算了</ButtonText>
 						</Button>
-						{isLoading ? (
-							<ButtonSpinner />
-						) : (
-							<Button onPress={handleImport} isDisabled={!historyPreview}>
-								<ButtonText>导入</ButtonText>
-							</Button>
-						)}
+
+						<Button onPress={handleImport} isDisabled={!historyPreview}>
+							<ButtonText>导入</ButtonText>
+						</Button>
 					</ModalFooter>
 				</ModalContent>
 			</Modal>
