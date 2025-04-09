@@ -7,6 +7,7 @@ export default function CharacterLayout() {
 	return (
 		<Stack screenOptions={themeConfig.Stack.options}>
 			<Stack.Screen name="index" options={{ title: "角色卡信息" }} />
+			<Stack.Screen name="editor" options={{ title: "编辑器" }} />
 		</Stack>
 	);
 }

@@ -98,12 +98,14 @@ async function tranceHiCustomoOpenAIText(
 
 export async function tranceHiCustomoOpenAITextTest() {
 	try {
+		console.log(1)
 		const baseUrl = await Storage.getItem("TRANCE_MODEL_CUSTOM_OPENAI_URL");
 		if (baseUrl === null) throw new Error("未设置请求地址");
 		const key = await SecureStore.getItem("TRANCE_MODEL_CUSTOM_OPENAI_KEY");
 		if (key === null) throw new Error("未设置密钥");
 		const model = await Storage.getItem("TRANCE_MODEL_CUSTOM_OPENAI_MODEL");
 		if (model === null) throw new Error("未设置模型");
+
 		const client = new OpenAI({
 			baseURL: baseUrl,
 			apiKey: key,

@@ -200,6 +200,7 @@ const CustomModelOpenAIVersionSelect = () => {
 };
 
 const geminiModelVersion = [
+
 	{
 		order: 1,
 		label: "Gemini 2.5 Pro Exp 0325",
@@ -230,6 +231,11 @@ const geminiModelVersion = [
 		order: 6,
 		label: "Gemini 1.5 Pro",
 		value: "gemini-1.5-pro",
+	},
+	{
+		order: 7,
+		label: "Gemini 2.5 Pro Preview 0325",
+		value: "gemini-2.5-pro-preview-03-25",
 	},
 ];
 

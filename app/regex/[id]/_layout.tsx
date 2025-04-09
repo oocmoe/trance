@@ -2,6 +2,7 @@ import { useTranceTheme } from "@/hook/theme";
 import { Stack } from "expo-router/stack";
 import React from "react";
 
+
 export default function RegexLayout() {
 	const themeConfig = useTranceTheme();
 	return (

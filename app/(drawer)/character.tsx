@@ -320,14 +320,25 @@ function ImportCharacterModal() {
 												</HStack>
 											)}
 											{previewData && (
-												<HStack space="sm" className="items-center">
-													{previewData.knowledgeBase ? (
-														<Icon color="green" as={CircleCheckBigIcon} />
-													) : (
-														<Icon color="red" as={CircleXIcon} />
-													)}
-													<Text>知识库数据</Text>
-												</HStack>
+												<Box>
+													<HStack space="sm" className="items-center">
+														{previewData.knowledgeBase ? (
+															<Icon color="green" as={CircleCheckBigIcon} />
+														) : (
+															<Icon color="red" as={CircleXIcon} />
+														)}
+														<Text>知识库数据</Text>
+													</HStack>
+
+													<HStack space="sm" className="items-center">
+														{previewData.regex ? (
+															<Icon color="green" as={CircleCheckBigIcon} />
+														) : (
+															<Icon color="red" as={CircleXIcon} />
+														)}
+														<Text>正则脚本数据</Text>
+													</HStack>
+												</Box>
 											)}
 										</Box>
 									)}

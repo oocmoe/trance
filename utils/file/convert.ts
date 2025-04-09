@@ -1,4 +1,5 @@
 import type { KnowledgeBaseEntry } from "@/db/schema/knowledgeBase";
+import { Regex } from "@/db/schema/regex";
 import type { ConvertSillyTavernChatHistory } from "@/types/result";
 import * as FileSystem from "expo-file-system";
 import "react-native-get-random-values";
@@ -143,10 +144,10 @@ async function covertCharacterTavernCardV2(
 		//处理知识库数据
 		let knowledgeBase: KnowledgeBaseEntry[] | undefined;
 		if (characterJson.data.character_book) {
-			let idCounter = 0;
+			let knowledgeBaseIdCounter = 0;
 			knowledgeBase = characterJson.data.character_book.entries.map((item) => {
 				return {
-					id: idCounter++,
+					id: knowledgeBaseIdCounter++,
 					name: item.comment || "",
 					content: item.content,
 					trigger: item.constant ? "always" : "key",
@@ -156,10 +157,38 @@ async function covertCharacterTavernCardV2(
 			});
 		}
 
+		let regex:{
+			global_id: string,
+			name: string,
+			replace: string,
+			placement: string,
+			is_Enabled: boolean,
+			is_Global: boolean,
+			is_Send: boolean,
+			is_Render: boolean,
+			firstArchived: string,
+		}[]| undefined
+
+		if(characterJson.data.extensions.regex_scripts){
+			regex = characterJson.data.extensions.regex_scripts.map((item: any) => {
+				return {
+					name: item.scriptName,
+					replace:item.findRegex,
+					placement: item.replaceString,
+					is_Enabled:false,
+					is_Global:false,
+					is_Send: item.placement.includes(2) || false,
+					is_Render:  item.placement.includes(1) || false,
+					firstArchived: JSON.stringify(item),
+				};
+			})
+		}
+
 		// 整合
 		const converData = {
 			character: character,
 			knowledgeBase: knowledgeBase,
+			regex: regex
 		};
 
 		return converData;

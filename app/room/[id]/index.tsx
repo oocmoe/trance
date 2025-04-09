@@ -49,8 +49,8 @@ export default function RoomScreen() {
 		if (room) {
 			setRoomOptions({
 				id: Number(id),
-				model: room.model,
-				prompt: room.prompt,
+				model: room.model ?? undefined,
+				prompt: room.prompt ?? undefined,
 				personnel: room.personnel,
 			});
 		}

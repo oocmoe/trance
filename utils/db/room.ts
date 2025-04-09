@@ -33,9 +33,9 @@ export async function createDialogRoom(
 			cover: character.cover,
 			name: name,
 			type: "dialog",
-			prompt: promptId,
-			model: model,
 			personnel: personnel,
+			...(promptId && { prompt: promptId }),
+			...(model && { model: model }),
 		});
 		if (!roomRows) return;
 		if (prologueIndex?.valueOf() !== undefined) {

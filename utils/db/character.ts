@@ -1,5 +1,6 @@
 import { type Character, character } from "@/db/schema/character";
 import { knowledgeBase } from "@/db/schema/knowledgeBase";
+import { regex } from "@/db/schema/regex";
 import { room } from "@/db/schema/room";
 import { useDB } from "@/hook/db";
 import type { ConvertCharacterResult } from "@/types/result";
@@ -80,7 +81,6 @@ export async function createImportCharacter(data: ConvertCharacterResult) {
 		});
 		if (!characterRows) throw new Error("导入角色卡失败");
 		if (data.knowledgeBase) {
-			console.log(1);
 			const knowledgeBaseRows = await db.insert(knowledgeBase).values({
 				global_id: uuidv7(),
 				name: data.character.name,
@@ -88,6 +88,18 @@ export async function createImportCharacter(data: ConvertCharacterResult) {
 				firstArchived: data.firstArchived,
 			});
 			if (!knowledgeBaseRows) throw new Error("导入知识库失败");
+		}
+		console.log(data.regex)
+		if(data.regex){
+			const regexData = data.regex.map((item)=>{
+				return{
+					...item,
+					global_id: uuidv7(),
+
+				}
+			})
+			const regexRows = await db.insert(regex).values(regexData)
+			if (!regexRows) throw new Error("导入正则脚本失败");
 		}
 		return characterRows;
 	} catch (error) {

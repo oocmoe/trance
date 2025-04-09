@@ -20,15 +20,15 @@ export default function ThemeScreen() {
 		<Box className="h-full p-3">
 			<ScrollView>
 				<VStack space="md">
-					<Text>房间设置</Text>
+					<Text bold>房间设置</Text>
 					<RoomAssistantAvatarShow />
 					<RoomAssistantNameShow />
 					<RoomUserAvatarShow />
 					<RoomUserNameShow />
-					<Text>双色模式</Text>
+					<Text bold>双色模式</Text>
 					<DefaultTheme />
 					<GreenTheme />
-					<Text>单色模式</Text>
+					<Text bold>单色模式</Text>
 					<PeachTheme />
 					<PomeloTheme />
 				</VStack>
@@ -71,7 +71,7 @@ const RoomAssistantAvatarShow = () => {
 	return (
 		<Box>
 			<HStack className="justify-between items-center">
-				<Heading>显示角色头像</Heading>
+				<Text>显示角色头像</Text>
 				<Switch
 					onValueChange={handleChange}
 					value={themeConfig.profile.is_AssistantAvatarShow}
@@ -115,7 +115,7 @@ const RoomAssistantNameShow = () => {
 	return (
 		<Box>
 			<HStack className="justify-between items-center">
-				<Heading>显示角色名字</Heading>
+				<Text>显示角色名字</Text>
 				<Switch
 					onValueChange={handleChange}
 					value={themeConfig.profile.is_AssistantNameShow}
@@ -159,7 +159,7 @@ const RoomUserAvatarShow = () => {
 	return (
 		<Box>
 			<HStack className="justify-between items-center">
-				<Heading>显示用户头像</Heading>
+				<Text>显示用户头像</Text>
 				<Switch
 					onValueChange={handleChange}
 					value={themeConfig.profile.is_UserAvatarShow}
@@ -203,7 +203,7 @@ const RoomUserNameShow = () => {
 	return (
 		<Box>
 			<HStack className="justify-between items-center">
-				<Heading>显示用户名字</Heading>
+				<Text>显示用户名字</Text>
 				<Switch
 					onValueChange={handleChange}
 					value={themeConfig.profile.is_UserNameShow}

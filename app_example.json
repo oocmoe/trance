@@ -20,14 +20,6 @@
 			"bundleIdentifier": "com.oocmoe.trance"
 		},
 		"android": {
-			"splash": {
-				"image": "./assets/images/splash-icon.png",
-				"backgroundColor": "#ffffff",
-				"dark": {
-					"image": "./assets/images/splash-icon.png",
-					"backgroundColor": "#ffffff"
-				}
-			},
 			"adaptiveIcon": {
 				"foregroundImage": "./assets/images/adaptive-icon.png",
 				"backgroundColor": "#ffffff"
@@ -49,9 +41,9 @@
 					"resizeMode": "contain",
 					"backgroundColor": "#ffffff",
 					"dark": {
-            "image": "./assets/images/splash-dark.png",
-            "backgroundColor": "#000000"
-          }
+						"image": "./assets/images/splash-dark.png",
+						"backgroundColor": "#000000"
+					}
 				}
 			],
 			"expo-localization",

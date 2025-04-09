@@ -32,7 +32,7 @@ export default function RootLayout() {
 					<Stack.Screen name="(drawer)" />
 				</Stack>
 			</GluestackUIProvider>
-			<Toaster richColors />
+			<Toaster closeButton richColors visibleToasts={1} swipeToDismissDirection="left" duration={1000} />
 		</GestureHandlerRootView>
 	);
 }

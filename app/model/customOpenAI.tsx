@@ -49,7 +49,7 @@ type NewApiModelsResult = {
 		object: "model";
 		created: number;
 		owned_by: "vertex-ai" | "custom" | string;
-		permission: Array<{
+		permission?: Array<{
 			id: string;
 			object: "model_permission";
 			created: number;
@@ -340,17 +340,18 @@ const RemoteModelsSelect = () => {
 			if (!apiUrl || apiUrl.length === 0) {
 				throw new Error("请求地址不能为空");
 			}
+			const headers: Record<string, string> = {
+				"Content-Type": "application/json"
+			};
+			
+			if (apiKey) {
+				headers.Authorization = `Bearer ${apiKey}`;
+			}
 			const response = await fetch(`${apiUrl}/models`, {
 				method: "GET",
-				headers: {
-					Authorization: `Bearer ${apiKey}`,
-					"Content-Type": "application/json",
-				},
+				headers: headers
 			});
 			const result: NewApiModelsResult = await response.json();
-			if (!result.success) {
-				throw new Error("获取模型失败，请检查请求地址或者密钥");
-			}
 			setModelConfig(result);
 		} catch (error) {
 			if (error instanceof Error) {

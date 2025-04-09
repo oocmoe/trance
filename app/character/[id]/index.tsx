@@ -3,7 +3,7 @@ import { Button, ButtonText } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
-import { ArrowRightIcon, Icon } from "@/components/ui/icon";
+import { ArrowRightIcon, EditIcon, Icon } from "@/components/ui/icon";
 import { Image } from "@/components/ui/image";
 import { Input, InputField } from "@/components/ui/input";
 import {
@@ -51,7 +51,8 @@ export default function CharacterByIdScreen() {
 /**
  * 角色卡基本信息
  * @returns
- */ function IDCard() {
+ */ 
+function IDCard() {
 	const character = useCharacterDetailsById();
 	return (
 		<>
@@ -93,6 +94,7 @@ function Action() {
 					<ScrollView>
 						<VStack space="4xl">
 							<CreateRoom />
+							<EditCharacter />
 							<DeleteCharacter />
 						</VStack>
 					</ScrollView>
@@ -111,8 +113,8 @@ function CreateRoom() {
 	const [isOpen, setIsOpen] = React.useState<boolean>(false);
 	const [name, setName] = React.useState<string>();
 	const [prologue, setPrologue] = React.useState<number>();
-	const [promptId, setPromptId] = React.useState<number>();
-	const [modelName, setModelName] = React.useState<string>();
+	const [promptId, setPromptId] = React.useState<number | undefined>(undefined);
+	const [modelName, setModelName] = React.useState<string | undefined>(undefined);
 	const prompt = usePromptList();
 	// 初始化数据
 	React.useEffect(() => {
@@ -122,42 +124,52 @@ function CreateRoom() {
 
 	// 创建聊天
 	const handleCreateDialogRoom = async () => {
-		if (!name) {
-			toast.warning("聊天名称不能为空");
-			return;
-		}
-		let model: ModelList | undefined = undefined;
-		if (modelName) {
-			if (modelName === "gemini") {
-				model = {
-					model: "Gemini",
-					version: "gemini-2.0-flash",
-				};
+		try{
+			if (!name) {
+				toast.warning("聊天名称不能为空");
+				return;
 			}
-			if (modelName === "customOpenAI") {
-				const result = await Storage.getItem(
-					"TRANCE_MODEL_CUSTOM_OPENAI_MODEL",
-				);
-				if (!result) throw new Error("自定义模型版本不存在");
-				model = {
-					model: "Custom_OpenAI",
-					version: result,
-				};
+			let model: ModelList | undefined = undefined;
+			if (modelName) {
+				if (modelName === "gemini") {
+					model = {
+						model: "Gemini",
+						version: "gemini-2.0-flash",
+					};
+				}
+				if (modelName === "customOpenAI") {
+					const result = await Storage.getItem(
+						"TRANCE_MODEL_CUSTOM_OPENAI_MODEL",
+					);
+					console.log(modelName)
+					if (result === null) throw new Error("自定义模型版本未设置");
+					model = {
+						model: "Custom_OpenAI",
+						version: result,
+					};
+				}
 			}
-		}
-		const result = await createDialogRoom(
-			character.id,
-			name,
-			prologue,
-			promptId,
-			model,
-		);
-		if (result) {
-			setIsOpen(false);
-			toast.success("创建聊天成功");
-		} else {
-			setIsOpen(false);
-			toast.error("创建聊天失败");
+			const result = await createDialogRoom(
+				character.id,
+				name,
+				prologue,
+				promptId,
+				model,
+			); 
+			if (result) {
+				setIsOpen(false);
+				toast.success("创建聊天成功");
+			} else {
+				setIsOpen(false);
+				toast.error("创建聊天失败");
+			}
+		}catch(error){
+			console.log(error)
+			if(error instanceof Error){
+				toast.error(error.message)
+				return
+			}
+			toast.error("未知错误")
 		}
 	};
 
@@ -170,7 +182,11 @@ function CreateRoom() {
 				</HStack>
 			</Pressable>
 
-			<Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+			<Modal isOpen={isOpen} onClose={() => {
+				setIsOpen(false)
+				setModelName(undefined)
+				setPromptId(undefined)
+			}}>
 				<ModalBackdrop />
 				<ModalContent>
 					<ModalHeader>
@@ -277,6 +293,22 @@ function CreateRoom() {
 		</>
 	);
 }
+
+const EditCharacter = () => {
+	const { id } = useLocalSearchParams();
+	return(
+		<Box>
+		<Pressable onPress={()=>router.push(`/character/${id}/editor`)}>
+			<HStack className="items-center" space="md">
+				<Icon as={EditIcon} />
+				<Heading>编辑角色卡</Heading>
+			</HStack>
+		</Pressable>
+	</Box>
+	)
+}
+
+
 
 /**
  * 删除角色卡

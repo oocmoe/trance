@@ -30,12 +30,11 @@ export const room = sqliteTable("room", {
 	cover: text("cover").notNull(),
 
 	// 提示词 用于存储此房间使用的提示词id
-	prompt: text("prompt").$type<number | undefined>().notNull(),
+	prompt: text("prompt").$type<number | undefined>(),
 
 	// model 用于存储房间使用的模型信息
 	model: text("model", { mode: "json" })
-		.$type<ModelList | undefined>()
-		.notNull(),
+		.$type<ModelList | undefined>(),
 
 	/**
 	 * 类型
