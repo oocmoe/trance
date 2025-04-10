@@ -41,6 +41,7 @@ export async function tranceHiGemini(
 	content: string,
 	type: string,
 	roomOptions: RoomOptions,
+	messageId?: number
 ) {
 	try {
 		const keyGroupResult = await SecureStore.getItem(
@@ -51,7 +52,7 @@ export async function tranceHiGemini(
 
 		if (type === "text") {
 			const key = await geminiKeyReady(keyGroup);
-			const history = await geminiChatHistoryReady(content, roomOptions);
+			const history = await geminiChatHistoryReady(content, roomOptions,messageId);
 			const result = await tranceHiGeminiText(
 				content,
 				history,
@@ -74,9 +75,10 @@ export async function tranceHiGemini(
 async function geminiChatHistoryReady(
 	content: string,
 	roomOptions: RoomOptions,
+	messageId?: number
 ) {
 	try {
-		const historyResult = await transformHistroyMessage(roomOptions.id);
+		const historyResult = await transformHistroyMessage(roomOptions.id,messageId);
 		const knowledgeBaseResult = await transformKnowledgeBase(
 			content,
 			historyResult.lastAssistantContent,

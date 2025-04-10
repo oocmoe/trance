@@ -1,7 +1,9 @@
 import {
-	useBreakpointValue,
 	getBreakPointValue,
+	useBreakpointValue,
 } from "@/components/ui/utils/use-break-point-value";
+import type { VariantProps } from "@gluestack-ui/nativewind-utils";
+import { cssInterop } from "nativewind";
 import React, {
 	useEffect,
 	useState,
@@ -10,10 +12,8 @@ import React, {
 	useMemo,
 	forwardRef,
 } from "react";
-import { View, Dimensions, Platform, ViewProps } from "react-native";
-import type { VariantProps } from "@gluestack-ui/nativewind-utils";
-import { cssInterop } from "nativewind";
-import { gridStyle, gridItemStyle } from "./styles";
+import { Dimensions, Platform, View, type ViewProps } from "react-native";
+import { gridItemStyle, gridStyle } from "./styles";
 
 const { width: DEVICE_WIDTH } = Dimensions.get("window");
 
@@ -71,7 +71,7 @@ function generateResponsiveNumColumns({ gridClass }: { gridClass: string }) {
 		const match = classname.match(regex);
 		if (match) {
 			const prefix = match[1] || "default";
-			const value = parseInt(match[2], 10);
+			const value = Number.parseInt(match[2], 10);
 			result[prefix] = value;
 		}
 	});
@@ -97,7 +97,7 @@ function generateResponsiveColSpans({
 		const match = classname.match(regex);
 		if (match) {
 			const prefix = match[1] || "default";
-			const value = parseInt(match[2], 10);
+			const value = Number.parseInt(match[2], 10);
 			result[prefix] = value;
 		}
 	});

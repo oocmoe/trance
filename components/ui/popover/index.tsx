@@ -1,20 +1,20 @@
 "use client";
-import React from "react";
-import { View, Pressable, ScrollView, ViewStyle } from "react-native";
-import {
-	Motion,
-	createMotionAnimatedComponent,
-	AnimatePresence,
-	MotionComponentProps,
-} from "@legendapp/motion";
-import { createPopover } from "@gluestack-ui/popover";
+import type { VariantProps } from "@gluestack-ui/nativewind-utils";
 import { tva } from "@gluestack-ui/nativewind-utils/tva";
 import {
-	withStyleContext,
 	useStyleContext,
+	withStyleContext,
 } from "@gluestack-ui/nativewind-utils/withStyleContext";
+import { createPopover } from "@gluestack-ui/popover";
+import {
+	AnimatePresence,
+	Motion,
+	type MotionComponentProps,
+	createMotionAnimatedComponent,
+} from "@legendapp/motion";
 import { cssInterop } from "nativewind";
-import type { VariantProps } from "@gluestack-ui/nativewind-utils";
+import React from "react";
+import { Pressable, ScrollView, View, type ViewStyle } from "react-native";
 
 type IAnimatedPressableProps = React.ComponentProps<typeof Pressable> &
 	MotionComponentProps<typeof Pressable, ViewStyle, unknown, unknown, unknown>;

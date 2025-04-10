@@ -89,21 +89,38 @@ export async function createImportCharacter(data: ConvertCharacterResult) {
 			});
 			if (!knowledgeBaseRows) throw new Error("导入知识库失败");
 		}
-		console.log(data.regex)
-		if(data.regex){
-			const regexData = data.regex.map((item)=>{
-				return{
+		if (data.regex) {
+			const regexData = data.regex.map((item) => {
+				return {
 					...item,
 					global_id: uuidv7(),
-
-				}
-			})
-			const regexRows = await db.insert(regex).values(regexData)
+				};
+			});
+			const regexRows = await db.insert(regex).values(regexData);
 			if (!regexRows) throw new Error("导入正则脚本失败");
 		}
 		return characterRows;
 	} catch (error) {
 		console.log(error);
+	}
+}
+
+export async function updateCharacterFiledById(
+	id: number,
+	field: keyof Character,
+	value: Character[keyof Character],
+) {
+	try {
+		const rows = await db
+			.update(character)
+			.set({
+				[field]: value,
+			})
+			.where(eq(character.id, id));
+		return rows.changes;
+	} catch (error) {
+		console.log(error);
+		throw error;
 	}
 }
 

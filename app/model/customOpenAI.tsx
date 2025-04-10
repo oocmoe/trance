@@ -341,15 +341,15 @@ const RemoteModelsSelect = () => {
 				throw new Error("请求地址不能为空");
 			}
 			const headers: Record<string, string> = {
-				"Content-Type": "application/json"
+				"Content-Type": "application/json",
 			};
-			
+
 			if (apiKey) {
 				headers.Authorization = `Bearer ${apiKey}`;
 			}
 			const response = await fetch(`${apiUrl}/models`, {
 				method: "GET",
-				headers: headers
+				headers: headers,
 			});
 			const result: NewApiModelsResult = await response.json();
 			setModelConfig(result);

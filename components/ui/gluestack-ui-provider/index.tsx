@@ -1,7 +1,12 @@
-import React from "react";
-import { ColorSchemeName, View, ViewProps, useColorScheme } from "react-native";
 import { OverlayProvider } from "@gluestack-ui/overlay";
 import { colorScheme as colorSchemeNW } from "nativewind";
+import type React from "react";
+import {
+	type ColorSchemeName,
+	View,
+	type ViewProps,
+	useColorScheme,
+} from "react-native";
 import { config } from "./config";
 
 type ModeType = "light" | "dark" | "system";

@@ -1,4 +1,4 @@
-import { message } from "@/db/schema/message";
+import { message, type Messages } from "@/db/schema/message";
 import { useDB } from "@/hook/db";
 import { desc, eq } from "drizzle-orm";
 import "react-native-get-random-values";
@@ -28,7 +28,7 @@ export async function createMessage(
 			room_id: room_id,
 			type: type,
 			is_Sender: is_Sender,
-			content: content,
+			content: [content],
 			role: role,
 		});
 		if (!rows) return;
@@ -43,7 +43,7 @@ export async function createImportMessages(
 		room_id: number;
 		type: "text";
 		is_Sender: number;
-		content: string;
+		content: string[];
 		role: "assistant" | "user" | "system";
 	}>,
 ) {
@@ -62,6 +62,55 @@ export async function createImportMessages(
 	}
 }
 
+export async function readMessageContentById(id: number) {
+	try{
+		const rows = await db.select({
+			message:message.content
+		}).from(message).where(eq(message.id, id))
+		return rows[0].message
+	}catch(error){
+		console.log(error)
+		throw error
+	}
+}
+
+export async function updatePushMessage(
+	messageId: number,
+	content: string,
+) {
+	try{
+		const updatedContent = await readMessageContentById(messageId)
+		updatedContent.push(content)
+		const rows = await db.update(message).set({
+			content: updatedContent
+		}).where(eq(message.id, messageId))
+		return rows.changes
+	}catch(error){
+		console.log(error)
+		throw error
+	}
+}
+
+export async function updateUnshiftMessageGroup(messageId: number, index: number) {
+  try {
+    const updatedContent: string[] = await readMessageContentById(messageId) as unknown as string[];
+
+    if (index < 0 || index >= updatedContent.length) {
+      throw new Error("消息 Index 超出范围");
+    }
+    const [item] = updatedContent.splice(index, 1);
+    updatedContent.unshift(item);
+
+    const rows = await db.update(message).set({
+      content: updatedContent,
+    }).where(eq(message.id, messageId));
+
+    return rows.changes;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
 export async function readHistroyMessage(roomId: number) {
 	try {
 		const rows = await db

@@ -3,20 +3,25 @@ import { Regex } from "@/db/schema/regex";
 import type { ConvertSillyTavernChatHistory } from "@/types/result";
 import * as FileSystem from "expo-file-system";
 import "react-native-get-random-values";
+import * as ImageManipulator from "expo-image-manipulator";
 import { v7 as uuidv7 } from "uuid";
-
 /**
  * 处理角色卡封面
  * @param data
  */
 export async function convertCover(uri: string) {
 	try {
-		const coverBase64 = await FileSystem.readAsStringAsync(uri, {
-			encoding: "base64",
+		const manipulated = await ImageManipulator.manipulateAsync(uri, [], {
+			format: ImageManipulator.SaveFormat.WEBP,
+			base64: true,
+			compress: 1,
 		});
-		const cover = `data:image/png;base64,${coverBase64}`;
+		const cover = `data:image/webp;base64,${manipulated.base64}`;
 		return cover;
-	} catch (error) {}
+	} catch (error) {
+		console.log(error);
+		throw error;
+	}
 }
 
 /**
@@ -157,38 +162,40 @@ async function covertCharacterTavernCardV2(
 			});
 		}
 
-		let regex:{
-			global_id: string,
-			name: string,
-			replace: string,
-			placement: string,
-			is_Enabled: boolean,
-			is_Global: boolean,
-			is_Send: boolean,
-			is_Render: boolean,
-			firstArchived: string,
-		}[]| undefined
+		let regex:
+			| {
+					global_id: string;
+					name: string;
+					replace: string;
+					placement: string;
+					is_Enabled: boolean;
+					is_Global: boolean;
+					is_Send: boolean;
+					is_Render: boolean;
+					firstArchived: string;
+			  }[]
+			| undefined;
 
-		if(characterJson.data.extensions.regex_scripts){
+		if (characterJson.data.extensions.regex_scripts) {
 			regex = characterJson.data.extensions.regex_scripts.map((item: any) => {
 				return {
 					name: item.scriptName,
-					replace:item.findRegex,
+					replace: item.findRegex,
 					placement: item.replaceString,
-					is_Enabled:false,
-					is_Global:false,
+					is_Enabled: false,
+					is_Global: false,
 					is_Send: item.placement.includes(2) || false,
-					is_Render:  item.placement.includes(1) || false,
+					is_Render: item.placement.includes(1) || false,
 					firstArchived: JSON.stringify(item),
 				};
-			})
+			});
 		}
 
 		// 整合
 		const converData = {
 			character: character,
 			knowledgeBase: knowledgeBase,
-			regex: regex
+			regex: regex,
 		};
 
 		return converData;
@@ -296,7 +303,7 @@ export async function convertSillyTavernChatHistory(jsonl: string) {
 				id: idConter++,
 				type: "text",
 				is_Sender: item.is_user ? 1 : 0,
-				content: item.mes,
+				content: [item.mes],
 				role: item.is_user ? "user" : "assistant",
 			};
 		});

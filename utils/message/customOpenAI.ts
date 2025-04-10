@@ -17,12 +17,14 @@ export async function tranceHiCustomoOpenAI(
 	content: string,
 	type: "text",
 	roomOptions: RoomOptions,
+	messageId?: number
 ) {
 	try {
 		if (type === "text") {
 			const messages = await customoOpenAIChatMessageReady(
 				content,
 				roomOptions,
+				messageId
 			);
 			const result = await tranceHiCustomoOpenAIText(messages, roomOptions);
 			return result;
@@ -35,9 +37,10 @@ export async function tranceHiCustomoOpenAI(
 async function customoOpenAIChatMessageReady(
 	content: string,
 	roomOptions: RoomOptions,
+	messageId?: number
 ) {
 	try {
-		const historyResult = await transformHistroyMessage(roomOptions.id);
+		const historyResult = await transformHistroyMessage(roomOptions.id,messageId);
 		const knowledgeBaseResult = await transformKnowledgeBase(
 			content,
 			historyResult.lastAssistantContent,
@@ -98,7 +101,6 @@ async function tranceHiCustomoOpenAIText(
 
 export async function tranceHiCustomoOpenAITextTest() {
 	try {
-		console.log(1)
 		const baseUrl = await Storage.getItem("TRANCE_MODEL_CUSTOM_OPENAI_URL");
 		if (baseUrl === null) throw new Error("未设置请求地址");
 		const key = await SecureStore.getItem("TRANCE_MODEL_CUSTOM_OPENAI_KEY");

@@ -1,5 +1,5 @@
-import React from "react";
 import type { VariantProps } from "@gluestack-ui/nativewind-utils";
+import React from "react";
 import { boxStyle } from "./styles";
 
 type IBoxProps = React.ComponentPropsWithoutRef<"div"> &

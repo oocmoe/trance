@@ -1,11 +1,11 @@
 "use client";
 
-import React from "react";
-import { Switch as RNSwitch } from "react-native";
 import type { VariantProps } from "@gluestack-ui/nativewind-utils";
 import { tva } from "@gluestack-ui/nativewind-utils/tva";
 import { withStyleContext } from "@gluestack-ui/nativewind-utils/withStyleContext";
 import { createSwitch } from "@gluestack-ui/switch";
+import React from "react";
+import { Switch as RNSwitch } from "react-native";
 
 const UISwitch = createSwitch({
 	Root: withStyleContext(RNSwitch),

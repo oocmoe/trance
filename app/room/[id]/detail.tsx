@@ -12,7 +12,8 @@ import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
-import { Icon } from "@/components/ui/icon";
+import { Icon, SettingsIcon } from "@/components/ui/icon";
+import { Input, InputField } from "@/components/ui/input";
 import {
 	Modal,
 	ModalBackdrop,
@@ -35,6 +36,7 @@ import {
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { usePromptList } from "@/hook/prompt";
+import { useRoomById } from "@/hook/room";
 import { modalAtom } from "@/store/core";
 import type { ConvertSillyTavernChatHistory } from "@/types/result";
 import { readPromptFieldById } from "@/utils/db/prompt";
@@ -68,6 +70,7 @@ export default function RoomDetailScreen() {
 							<ModelSelect />
 							<PromptSelect />
 							<ImportSillyTavernChatHistory />
+							<ChangeRoomName />
 							<DeleteRoomButton />
 						</VStack>
 					</Card>
@@ -78,6 +81,10 @@ export default function RoomDetailScreen() {
 	);
 }
 
+/**
+ * 选择提示词
+ * @returns
+ */
 const PromptSelect = () => {
 	const { id } = useLocalSearchParams();
 	const [isOpen, setIsOpen] = React.useState<boolean>(false);
@@ -170,6 +177,10 @@ const PromptSelect = () => {
 	);
 };
 
+/**
+ * 删除房间
+ * @returns
+ */
 const DeleteRoomButton = () => {
 	const { id } = useLocalSearchParams();
 	const [, setIsOpen] = useAtom(modalAtom("deleteRoom"));
@@ -231,6 +242,10 @@ const DeleteRoomModal = () => {
 	);
 };
 
+/**
+ * 导入 酒馆 SillyTavern 聊天记录
+ * @returns
+ */
 const ImportSillyTavernChatHistory = () => {
 	const { id } = useLocalSearchParams();
 	const [isOpen, setIsOpen] = React.useState<boolean>(false);
@@ -316,6 +331,79 @@ const ImportSillyTavernChatHistory = () => {
 
 						<Button onPress={handleImport} isDisabled={!historyPreview}>
 							<ButtonText>导入</ButtonText>
+						</Button>
+					</ModalFooter>
+				</ModalContent>
+			</Modal>
+		</Box>
+	);
+};
+
+const ChangeRoomName = () => {
+	const { id } = useLocalSearchParams();
+	const room = useRoomById(Number(id));
+	const [isOpen, setIsOpen] = React.useState<boolean>(false);
+	const [name, setName] = React.useState<string>("");
+	const handleSave = async () => {
+		try {
+			const result = await updateRoomFieldById(Number(id), "name", name);
+			if (result) {
+				setIsOpen(false);
+				toast.success("修改成功");
+			}
+		} catch (error) {
+			if (error instanceof Error) {
+				toast.error(error.message);
+				return;
+			}
+			toast.error("未知错误");
+		}
+	};
+
+	React.useEffect(() => {
+		if (!room?.name) return;
+		setName(room.name);
+	}, [room]);
+	return (
+		<Box>
+			<Pressable onPress={() => setIsOpen(true)}>
+				<HStack className="items-center" space="md">
+					<Icon as={SettingsIcon} />
+					<Text>修改房间名称</Text>
+				</HStack>
+			</Pressable>
+
+			<Modal
+				isOpen={isOpen}
+				onClose={() => {
+					setIsOpen(false);
+				}}
+				size="md"
+			>
+				<ModalBackdrop />
+				<ModalContent>
+					<ModalHeader>
+						<Heading size="md" className="text-typography-950">
+							房间名称
+						</Heading>
+					</ModalHeader>
+					<ModalBody>
+						<Input>
+							<InputField value={name} onChangeText={setName} />
+						</Input>
+					</ModalBody>
+					<ModalFooter>
+						<Button
+							variant="outline"
+							action="secondary"
+							onPress={() => {
+								setIsOpen(false);
+							}}
+						>
+							<ButtonText>取消</ButtonText>
+						</Button>
+						<Button onPress={handleSave}>
+							<ButtonText>保存</ButtonText>
 						</Button>
 					</ModalFooter>
 				</ModalContent>

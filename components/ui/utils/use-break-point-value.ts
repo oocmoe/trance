@@ -16,7 +16,7 @@ const resolveScreenWidth: any = {
 
 Object.entries(screenSize).forEach(([key, value]) => {
 	if (typeof value === "string") {
-		resolveScreenWidth[key] = parseInt(value.replace("px", ""), 10);
+		resolveScreenWidth[key] = Number.parseInt(value.replace("px", ""), 10);
 	}
 });
 

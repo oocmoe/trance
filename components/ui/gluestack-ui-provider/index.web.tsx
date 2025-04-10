@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useLayoutEffect } from "react";
 import { setFlushStyles } from "@gluestack-ui/nativewind-utils/flush";
 import { OverlayProvider } from "@gluestack-ui/overlay";
+import React, { useEffect, useLayoutEffect } from "react";
 import { config } from "./config";
 import { script } from "./script";
 

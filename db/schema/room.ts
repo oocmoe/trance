@@ -33,8 +33,7 @@ export const room = sqliteTable("room", {
 	prompt: text("prompt").$type<number | undefined>(),
 
 	// model 用于存储房间使用的模型信息
-	model: text("model", { mode: "json" })
-		.$type<ModelList | undefined>(),
+	model: text("model", { mode: "json" }).$type<ModelList | undefined>(),
 
 	/**
 	 * 类型

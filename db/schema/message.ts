@@ -41,7 +41,10 @@ export const message = sqliteTable("message", {
 	is_Sender: integer("is_Sender").notNull(),
 
 	// 内容
-	content: text("content").$type<string>().default("").notNull(),
+	content: text("content", { mode: "json" })
+		.$type<string[]>()
+		.default([""])
+		.notNull(),
 
 	/**
 	 * 消息所属角色

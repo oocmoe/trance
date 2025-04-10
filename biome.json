@@ -11,8 +11,8 @@
 	},
 	"formatter": {
 		"enabled": true,
-    "indentStyle": "tab",
-    "indentWidth": 2
+		"indentStyle": "tab",
+		"indentWidth": 2
 	},
 	"organizeImports": {
 		"enabled": true
@@ -22,8 +22,8 @@
 		"rules": {
 			"recommended": true,
 			"suspicious": {
-        "noExplicitAny": "warn"
-      }
+				"noExplicitAny": "warn"
+			}
 		}
 	},
 	"javascript": {

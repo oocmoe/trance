@@ -51,7 +51,7 @@ export default function CharacterByIdScreen() {
 /**
  * 角色卡基本信息
  * @returns
- */ 
+ */
 function IDCard() {
 	const character = useCharacterDetailsById();
 	return (
@@ -114,7 +114,9 @@ function CreateRoom() {
 	const [name, setName] = React.useState<string>();
 	const [prologue, setPrologue] = React.useState<number>();
 	const [promptId, setPromptId] = React.useState<number | undefined>(undefined);
-	const [modelName, setModelName] = React.useState<string | undefined>(undefined);
+	const [modelName, setModelName] = React.useState<string | undefined>(
+		undefined,
+	);
 	const prompt = usePromptList();
 	// 初始化数据
 	React.useEffect(() => {
@@ -124,7 +126,7 @@ function CreateRoom() {
 
 	// 创建聊天
 	const handleCreateDialogRoom = async () => {
-		try{
+		try {
 			if (!name) {
 				toast.warning("聊天名称不能为空");
 				return;
@@ -141,7 +143,7 @@ function CreateRoom() {
 					const result = await Storage.getItem(
 						"TRANCE_MODEL_CUSTOM_OPENAI_MODEL",
 					);
-					console.log(modelName)
+					console.log(modelName);
 					if (result === null) throw new Error("自定义模型版本未设置");
 					model = {
 						model: "Custom_OpenAI",
@@ -155,7 +157,7 @@ function CreateRoom() {
 				prologue,
 				promptId,
 				model,
-			); 
+			);
 			if (result) {
 				setIsOpen(false);
 				toast.success("创建聊天成功");
@@ -163,13 +165,13 @@ function CreateRoom() {
 				setIsOpen(false);
 				toast.error("创建聊天失败");
 			}
-		}catch(error){
-			console.log(error)
-			if(error instanceof Error){
-				toast.error(error.message)
-				return
+		} catch (error) {
+			console.log(error);
+			if (error instanceof Error) {
+				toast.error(error.message);
+				return;
 			}
-			toast.error("未知错误")
+			toast.error("未知错误");
 		}
 	};
 
@@ -182,11 +184,14 @@ function CreateRoom() {
 				</HStack>
 			</Pressable>
 
-			<Modal isOpen={isOpen} onClose={() => {
-				setIsOpen(false)
-				setModelName(undefined)
-				setPromptId(undefined)
-			}}>
+			<Modal
+				isOpen={isOpen}
+				onClose={() => {
+					setIsOpen(false);
+					setModelName(undefined);
+					setPromptId(undefined);
+				}}
+			>
 				<ModalBackdrop />
 				<ModalContent>
 					<ModalHeader>
@@ -296,19 +301,17 @@ function CreateRoom() {
 
 const EditCharacter = () => {
 	const { id } = useLocalSearchParams();
-	return(
+	return (
 		<Box>
-		<Pressable onPress={()=>router.push(`/character/${id}/editor`)}>
-			<HStack className="items-center" space="md">
-				<Icon as={EditIcon} />
-				<Heading>编辑角色卡</Heading>
-			</HStack>
-		</Pressable>
-	</Box>
-	)
-}
-
-
+			<Pressable onPress={() => router.push(`/character/${id}/editor`)}>
+				<HStack className="items-center" space="md">
+					<Icon as={EditIcon} />
+					<Heading>编辑角色卡</Heading>
+				</HStack>
+			</Pressable>
+		</Box>
+	);
+};
 
 /**
  * 删除角色卡

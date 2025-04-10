@@ -18,16 +18,16 @@ export type ConvertCharacterResult = {
 		post_history_instructions: string;
 	};
 	knowledgeBase?: KnowledgeBaseEntry[];
-	regex?:{
-		name: string,
-		replace: string,
-		placement: string,
-		is_Enabled: boolean,
-		is_Global: boolean,
-		is_Send: boolean,
-		is_Render: boolean,
-		firstArchived: string,
-	}[]
+	regex?: {
+		name: string;
+		replace: string;
+		placement: string;
+		is_Enabled: boolean;
+		is_Global: boolean;
+		is_Send: boolean;
+		is_Render: boolean;
+		firstArchived: string;
+	}[];
 	firstArchived: string;
 };
 
@@ -62,6 +62,6 @@ export type ConvertSillyTavernChatHistory = {
 	id: number;
 	type: "text";
 	is_Sender: number;
-	content: string;
+	content: string[];
 	role: "user" | "assistant";
 };

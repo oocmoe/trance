@@ -1,12 +1,12 @@
 "use client";
 
-import React from "react";
-import { Pressable, Text, View } from "react-native";
 import { createMenu } from "@gluestack-ui/menu";
 import type { VariantProps } from "@gluestack-ui/nativewind-utils";
 import { tva } from "@gluestack-ui/nativewind-utils/tva";
-import { Motion, AnimatePresence } from "@legendapp/motion";
+import { AnimatePresence, Motion } from "@legendapp/motion";
 import { cssInterop } from "nativewind";
+import React from "react";
+import { Pressable, Text, View } from "react-native";
 
 const menuStyle = tva({
 	base: "rounded-md bg-background-0 border border-outline-100 p-1 shadow-hard-5",

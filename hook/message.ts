@@ -13,6 +13,14 @@ export function useMessageByRoomId(roomId: number) {
 	return data;
 }
 
+export function useMessageById(id: number) {
+	const { data, error, updatedAt } = useLiveQuery(
+		db.select().from(message).where(eq(message.id, id)),
+	);
+	return data;
+}
+
+
 export function useMessageDescByRoomId(roomId: number) {
 	const { data, error, updatedAt } = useLiveQuery(
 		db

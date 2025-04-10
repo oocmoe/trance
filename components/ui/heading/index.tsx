@@ -1,7 +1,8 @@
-import React, { forwardRef, memo } from "react";
 import { H1, H2, H3, H4, H5, H6 } from "@expo/html-elements";
 import type { VariantProps } from "@gluestack-ui/nativewind-utils";
 import { cssInterop } from "nativewind";
+import type React from "react";
+import { forwardRef, memo } from "react";
 import { headingStyle } from "./styles";
 
 type IHeadingProps = VariantProps<typeof headingStyle> &

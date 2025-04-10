@@ -1,15 +1,5 @@
 "use client";
 
-import React from "react";
-import {
-	Pressable,
-	View,
-	Text,
-	ScrollView,
-	VirtualizedList,
-	FlatList,
-	SectionList,
-} from "react-native";
 import { H4 } from "@expo/html-elements";
 import { createActionsheet } from "@gluestack-ui/actionsheet";
 import { PrimitiveIcon, UIIcon } from "@gluestack-ui/icon";
@@ -17,11 +7,21 @@ import type { VariantProps } from "@gluestack-ui/nativewind-utils";
 import { tva } from "@gluestack-ui/nativewind-utils/tva";
 import { withStyleContext } from "@gluestack-ui/nativewind-utils/withStyleContext";
 import {
-	Motion,
 	AnimatePresence,
+	Motion,
 	createMotionAnimatedComponent,
 } from "@legendapp/motion";
 import { cssInterop } from "nativewind";
+import React from "react";
+import {
+	FlatList,
+	Pressable,
+	ScrollView,
+	SectionList,
+	Text,
+	View,
+	VirtualizedList,
+} from "react-native";
 
 const AnimatedPressable = createMotionAnimatedComponent(Pressable);
 

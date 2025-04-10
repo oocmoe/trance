@@ -41,7 +41,9 @@ export default function HomeScreen() {
 	if (migrationStatus === "error") {
 		return (
 			<View className="flex-1 justify-center items-center">
-				<Heading>如果你看见了这个消息，说明数据库版本发生了变化，但是测试版中为了拓展的可能性暂时还没有配置数据库版本更新操作，请尝试清除应用数据即可恢复正常</Heading>
+				<Heading>
+					如果你看见了这个消息，说明数据库版本发生了变化，但是测试版中为了拓展的可能性暂时还没有配置数据库版本更新操作，请尝试清除应用数据即可恢复正常
+				</Heading>
 				<Text>Initialization Failure : {error?.message}</Text>
 			</View>
 		);
