@@ -7,10 +7,12 @@ import {
 	ButtonText,
 } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Fab, FabIcon, FabLabel } from "@/components/ui/fab";
 import { HStack } from "@/components/ui/hstack";
-import { Icon, TrashIcon } from "@/components/ui/icon";
+import { AddIcon, CloseIcon, Icon, TrashIcon } from "@/components/ui/icon";
 import { Input, InputField } from "@/components/ui/input";
 import { Modal, ModalBackdrop, ModalContent } from "@/components/ui/modal";
+import { Portal } from "@/components/ui/portal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
@@ -31,8 +33,9 @@ import {
 	createMessage,
 	deleteMessageById,
 	readMessageContentById,
+	updateMessageGroupToFirst,
+	updateMessageGroupToLast,
 	updatePushMessage,
-	updateUnshiftMessageGroup,
 } from "@/utils/db/message";
 import { tranceHi } from "@/utils/message/middleware";
 import { transformRenderMessage } from "@/utils/message/transform";
@@ -40,6 +43,8 @@ import * as Clipboard from "expo-clipboard";
 import { Stack, router, useLocalSearchParams } from "expo-router";
 import { atom, useAtom } from "jotai";
 import {
+	ArrowLeft,
+	ArrowRight,
 	BookCopyIcon,
 	CopyIcon,
 	EllipsisIcon,
@@ -84,9 +89,9 @@ export default function RoomScreen() {
 					}}
 				/>
 				<MessagesList />
+				<ChatBubbleMessageGroup />
 				<ActionBar />
 				<ChatBubbleLongPressModal />
-				<ChatBubbleMessageGroup />
 			</Box>
 		);
 	return <RoomSkeleton />;
@@ -354,7 +359,7 @@ const ChatBubbleLongPressModal = () => {
 	};
 
 	const handleBubbleMessageGroup = () => {
-		setIsOpen(false)
+		setIsOpen(false);
 		setIsChatBubbleMessageGroupModal(true);
 	};
 
@@ -392,12 +397,6 @@ const ChatBubbleLongPressModal = () => {
 							<Icon as={CopyIcon} />
 						</HStack>
 					</Pressable>
-					<Pressable onPress={handleCopy}>
-						<HStack className="justify-between items-center">
-							<Text>复制消息</Text>
-							<Icon as={CopyIcon} />
-						</HStack>
-					</Pressable>
 					<Pressable onPress={handleCopySource}>
 						<HStack className="justify-between items-center">
 							<Text>复制源消息</Text>
@@ -419,65 +418,57 @@ const ChatBubbleLongPressModal = () => {
 const ChatBubbleMessageGroup = () => {
 	const [isOpen, setIsOpen] = useAtom(chatBubbleMessageGroupModalAtom);
 	const [actionBubble] = useAtom(actionBubbleAtom);
-	const [message,setMessage] = React.useState<string[] | undefined>(undefined)
-	React.useEffect(()=>{
-		if(!actionBubble) return
-		const fetchMessage = async () => {
-			if(!actionBubble) return
-			try{
-				const result = await readMessageContentById(actionBubble)
-				setMessage(result)
-			} catch (error) {
-				const message = error instanceof Error ? error.message : "未知错误";
-				toast.error(message)}
-		}
-		fetchMessage()
-	},[actionBubble])
 
-
-	const handleChangeMessage = async (index: number) => {
+	const handleChangeMessage = async (way: "left" | "right") => {
 		if (!actionBubble) {
 			toast.error("消息状态丢失");
 			return;
 		}
 		try {
-			const rows = await updateUnshiftMessageGroup(actionBubble, index);
-			if (rows) {
-				toast.success("切换消息成功");
-				setIsOpen(false);
+			if (way === "left") {
+				await updateMessageGroupToLast(actionBubble);
 			}
+			await updateMessageGroupToFirst(actionBubble);
 		} catch (error) {
 			const message = error instanceof Error ? error.message : "未知错误";
 			toast.error(message);
 		}
 	};
-
-	return (
-		<Box>
-			<Modal
-				isOpen={isOpen}
-				onClose={() => {
-					setIsOpen(false);
-				}}
-				size="xs"
-			>
-				<ModalBackdrop className="bg-transparent" />
-				<ModalContent className="gap-y-8 max-h-96">
-					<ScrollView>
-						<VStack space="sm">
-							{message?.map((content, index) => (
-								<Pressable onPress={()=>handleChangeMessage(index)} key={String(index)}>
-									<Card>
-										<Text>{content.slice(0,14)}</Text>
-									</Card>
-								</Pressable>
-							))}
-						</VStack>
-					</ScrollView>
-				</ModalContent>
-			</Modal>
-		</Box>
-	);
+	if (isOpen)
+		return (
+			<Box>
+				<Fab
+					onPress={() => handleChangeMessage("left")}
+					size="sm"
+					placement="bottom left"
+					isHovered={false}
+					isDisabled={false}
+					isPressed={false}
+				>
+					<FabIcon as={ArrowLeft} />
+				</Fab>
+				<Fab
+					onPress={() => setIsOpen(false)}
+					size="sm"
+					placement="bottom center"
+					isHovered={false}
+					isDisabled={false}
+					isPressed={false}
+				>
+					<FabIcon as={CloseIcon} />
+				</Fab>
+				<Fab
+					onPress={() => handleChangeMessage("right")}
+					size="sm"
+					placement="bottom right"
+					isHovered={false}
+					isDisabled={false}
+					isPressed={false}
+				>
+					<FabIcon as={ArrowRight} />
+				</Fab>
+			</Box>
+		);
 };
 
 const ActionBar = () => {

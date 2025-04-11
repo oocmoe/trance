@@ -316,7 +316,8 @@ const TextTest = () => {
 				<ModalBackdrop />
 				<ModalContent>
 					<ModalHeader className="flex flex-row justify-between items-center">
-						<Heading>模型文字通信测试 2.0 Flash</Heading>
+						<Heading>模型文字通信测试</Heading>
+
 
 						<Button isDisabled={isLoading} onPress={handleText}>
 							{isLoading ? (

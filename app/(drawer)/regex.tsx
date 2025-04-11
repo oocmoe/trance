@@ -83,12 +83,12 @@ function RgexList() {
 		);
 	return (
 		<ScrollView>
-			<VStack className="m-3">
+			<VStack className="m-3" space="md">
 				{list.map((item) => (
 					<Pressable
 						key={item.id}
 						onPress={() => router.push(`/regex/${item.id}`)}
-						className="h-20 overflow-hidden"
+						className="overflow-hidden"
 					>
 						<Card variant="filled">
 							<Text bold>{item.name}</Text>

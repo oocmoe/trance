@@ -13,10 +13,13 @@ import {
  * @param roomId
  * @returns
  */
-export async function transformHistroyMessage(roomId: number,messageId?: number) {
+export async function transformHistroyMessage(
+	roomId: number,
+	messageId?: number,
+) {
 	const result = await readHistroyMessage(roomId);
 	if (!result) throw new Error("读取消息记录失败");
-	if(messageId){
+	if (messageId) {
 		result.filter((msg) => msg.id < messageId);
 	}
 	if (result.length === 0)
@@ -32,6 +35,16 @@ export async function transformHistroyMessage(roomId: number,messageId?: number)
 			lastAssistantContent = item.content[0];
 			lastAssistantIndex = i;
 			break;
+		}
+	}
+	if (messageId) {
+		const lastUserIndex = result.reduce(
+			(lastIndex, msg, currentIndex) =>
+				msg.role === "user" ? currentIndex : lastIndex,
+			-1,
+		);
+		if (lastUserIndex !== -1) {
+			result.splice(lastUserIndex, 1);
 		}
 	}
 	const history = result

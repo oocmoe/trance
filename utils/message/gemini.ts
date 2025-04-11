@@ -173,9 +173,13 @@ async function tranceHiGeminiText(
 				temperature:1.1
 			},
 		});
+		
+		console.log(JSON.stringify(history))
+		console.log(message)
 		const response = await chat.sendMessage({
 			message: message,
 		});
+	
 		if (!response.candidates || response.candidates.length === 0) {
 			const blockReason = response.promptFeedback?.blockReason;
 			const safetyRatings = response.promptFeedback?.safetyRatings || [];
@@ -219,6 +223,7 @@ async function tranceHiGeminiText(
 		if (!response.text) {
 			throw new Error("MISSING_TEXT");
 		}
+		console.log(response.text)
 		return response.text;
 	} catch (error) {
 		if (error instanceof Error) {

@@ -80,7 +80,7 @@ export async function updatePushMessage(
 ) {
 	try{
 		const updatedContent = await readMessageContentById(messageId)
-		updatedContent.push(content)
+		updatedContent.unshift(content)
 		const rows = await db.update(message).set({
 			content: updatedContent
 		}).where(eq(message.id, messageId))
@@ -91,15 +91,12 @@ export async function updatePushMessage(
 	}
 }
 
-export async function updateUnshiftMessageGroup(messageId: number, index: number) {
+export async function updateMessageGroupToLast(messageId: number) {
   try {
     const updatedContent: string[] = await readMessageContentById(messageId) as unknown as string[];
 
-    if (index < 0 || index >= updatedContent.length) {
-      throw new Error("消息 Index 超出范围");
-    }
-    const [item] = updatedContent.splice(index, 1);
-    updatedContent.unshift(item);
+    const [firstItem] = updatedContent.splice(0, 1);
+    updatedContent.push(firstItem);
 
     const rows = await db.update(message).set({
       content: updatedContent,
@@ -111,6 +108,28 @@ export async function updateUnshiftMessageGroup(messageId: number, index: number
     throw error;
   }
 }
+
+
+export async function updateMessageGroupToFirst(messageId: number) {
+  try {
+    const updatedContent: string[] = await readMessageContentById(messageId) as unknown as string[];
+
+    const lastItem = updatedContent.pop();
+    if (lastItem !== undefined) {
+      updatedContent.unshift(lastItem);
+    }
+
+    const rows = await db.update(message).set({
+      content: updatedContent,
+    }).where(eq(message.id, messageId));
+
+    return rows.changes;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
 export async function readHistroyMessage(roomId: number) {
 	try {
 		const rows = await db

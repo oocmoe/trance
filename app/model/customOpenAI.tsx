@@ -270,7 +270,7 @@ const RemoteModelConfigSelect = () => {
 				<ModalBackdrop />
 				<ModalContent>
 					<ModalHeader className="flex flex-row justify-between items-center">
-						<Heading>远程模型 /chat/model_config</Heading>
+						<Heading>远程模型</Heading>
 
 						<Button onPress={fetchModelConfig}>
 							<ButtonIcon as={PlugZapIcon} />
@@ -343,7 +343,6 @@ const RemoteModelsSelect = () => {
 			const headers: Record<string, string> = {
 				"Content-Type": "application/json",
 			};
-
 			if (apiKey) {
 				headers.Authorization = `Bearer ${apiKey}`;
 			}
@@ -393,7 +392,7 @@ const RemoteModelsSelect = () => {
 				<ModalBackdrop />
 				<ModalContent>
 					<ModalHeader className="flex flex-row justify-between items-center">
-						<Heading>远程模型 /models</Heading>
+						<Heading>远程模型</Heading>
 
 						<Button onPress={fetchModelConfig}>
 							<ButtonIcon as={PlugZapIcon} />

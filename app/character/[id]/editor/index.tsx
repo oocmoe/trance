@@ -328,11 +328,18 @@ const CharacterCover = () => {
 			}
 			setCover(coverBase64);
 		} catch (error) {
-			if (error instanceof Error) {
-				toast.error(error.message);
-				return;
+			toast.error(error instanceof Error ? error.message : "未知错误");
+		}
+	};
+	const handleSave = async () => {
+		try {
+			const rows = await updateCharacterFiledById(Number(id), "cover", cover);
+			if(rows){
+				toast.success("更换成功");
+				setIsOpen(false);
 			}
-			toast.error("未知错误");
+		} catch (error) {
+			toast.error(error instanceof Error ? error.message : "未知错误");
 		}
 	};
 	return (
@@ -385,7 +392,7 @@ const CharacterCover = () => {
 						>
 							<ButtonText>取消</ButtonText>
 						</Button>
-						<Button>
+						<Button onPress={handleSave}>
 							<ButtonText>保存</ButtonText>
 						</Button>
 					</ModalFooter>
@@ -396,7 +403,7 @@ const CharacterCover = () => {
 };
 
 /**
- * 修改角色卡封面
+ * 修改角色卡描述
  * @returns
  */
 const CharacterDescription = () => {
