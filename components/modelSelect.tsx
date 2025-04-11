@@ -34,6 +34,7 @@ import { Input, InputField } from "./ui/input";
 import { Switch } from "./ui/switch";
 import { Text } from "./ui/text";
 import { VStack } from "./ui/vstack";
+
 const models = [
 	{
 		order: 1,
@@ -44,6 +45,11 @@ const models = [
 		order: 2,
 		label: "Gemini",
 		value: "Gemini",
+	},
+	{
+		order: 3,
+		label: "Grok",
+		value: "Grok",
 	},
 ];
 
@@ -148,6 +154,7 @@ export const ModelSelect = () => {
 							</Select>
 							{model === "Custom_OpenAI" && <CustomModelOpenAIVersionSelect />}
 							{model === "Gemini" && <GeminiModelVersionSelect />}
+							{model === "Grok" && <GrokModelVersionSelect />}
 						</VStack>
 					</ModalBody>
 					<ModalFooter>
@@ -198,6 +205,10 @@ const CustomModelOpenAIVersionSelect = () => {
 		</Input>
 	);
 };
+
+/**
+ * Gemini
+ */
 
 const geminiModelVersion = [
 	{
@@ -264,6 +275,74 @@ const GeminiModelVersionSelect = () => {
 							</SelectDragIndicatorWrapper>
 
 							{geminiModelVersion.map((item) => (
+								<SelectItem
+									key={item.order}
+									label={item.label}
+									value={item.value}
+								/>
+							))}
+						</SelectContent>
+					</SelectPortal>
+				</Select>
+			)}
+		</Box>
+	);
+};
+
+/**
+ * Grok
+ */
+
+const grokModelVersion = [
+	{ order: 1, label: "Grok-3", value: "grok-3" },
+	{ order: 2, label: "Grok-3-latest", value: "grok-3-latest" },
+	{ order: 3, label: "Grok-3-fast", value: "grok-3-fast" },
+	{ order: 4, label: "Grok-3-fast-latest", value: "grok-3-fast-latest" },
+	{ order: 5, label: "Grok-3-mini", value: "grok-3-mini" },
+	{ order: 6, label: "Grok-3-mini-latest", value: "grok-3-mini-latest" },
+	{ order: 7, label: "Grok-3-mini-fast", value: "grok-3-mini-fast" },
+	{
+		order: 8,
+		label: "Grok-3-mini-fast-latest",
+		value: "grok-3-mini-fast-latest",
+	},
+	{ order: 9, label: "Grok-2-vision", value: "grok-2-vision" },
+	{ order: 10, label: "Grok-2-vision-latest", value: "grok-2-vision-latest" },
+	{ order: 11, label: "Grok-2-image", value: "grok-2-image" },
+	{ order: 12, label: "Grok-2-image-latest", value: "grok-2-image-latest" },
+	{ order: 13, label: "Grok-2", value: "grok-2" },
+	{ order: 14, label: "Grok-2-latest", value: "grok-2-latest" },
+	{ order: 15, label: "Grok-vision-beta", value: "grok-vision-beta" },
+	{ order: 16, label: "Grok-beta", value: "grok-beta" },
+];
+
+const GrokModelVersionSelect = () => {
+	const [modelVersion, setModelVersion] = useAtom(modelVersionAtom);
+	const [isCustomVersion, setIsCustomVersion] = useAtom(isCustomVersionAtom);
+	console.log(isCustomVersion)
+	return (
+		<Box>
+			{isCustomVersion ? (
+				<Box className="gap-y-2">
+					<Text>自定义模型参数名</Text>
+					<Input>
+						<InputField value={modelVersion} onChangeText={setModelVersion} />
+					</Input>
+				</Box>
+			) : (
+				<Select defaultValue={modelVersion} onValueChange={setModelVersion}>
+					<SelectTrigger variant="outline" size="md">
+						<SelectInput className="flex-1" />
+						<SelectIcon className="mr-3" as={ChevronDownIcon} />
+					</SelectTrigger>
+					<SelectPortal>
+						<SelectBackdrop />
+						<SelectContent>
+							<SelectDragIndicatorWrapper>
+								<SelectDragIndicator />
+							</SelectDragIndicatorWrapper>
+
+							{grokModelVersion.map((item) => (
 								<SelectItem
 									key={item.order}
 									label={item.label}

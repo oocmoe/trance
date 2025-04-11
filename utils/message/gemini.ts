@@ -170,6 +170,7 @@ async function tranceHiGeminiText(
 			history: history,
 			config: {
 				safetySettings: GeminiSafetySettings as SafetySetting[],
+				temperature:1.1
 			},
 		});
 		const response = await chat.sendMessage({

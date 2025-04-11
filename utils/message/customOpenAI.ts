@@ -20,6 +20,17 @@ export async function tranceHiCustomoOpenAI(
 	messageId?: number
 ) {
 	try {
+		if(roomOptions.model?.model === "Grok"){
+			if (type === "text") {
+				const messages = await customoOpenAIChatMessageReady(
+					content,
+					roomOptions,
+					messageId
+				);
+				const result = await tranceHiGrokOpenAIText(messages, roomOptions);
+				return result;
+			}
+		}
 		if (type === "text") {
 			const messages = await customoOpenAIChatMessageReady(
 				content,
@@ -75,6 +86,28 @@ async function customoOpenAIChatMessageReady(
 	}
 }
 
+async function tranceHiGrokOpenAIText(messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[],
+	roomOptions: RoomOptions,)  {
+		try {
+			const key = await SecureStore.getItem("TRANCE_MODEL_GROK_KEY");
+			if (key === null) throw new Error("未设置 Grok 密钥");
+			const client = new OpenAI({
+				baseURL: "https://api.x.ai/v1",
+				apiKey: key,
+			});
+			const completion = await client.chat.completions.create({
+				model: roomOptions.model?.version as string,
+				messages: messages,
+				temperature:1.1
+			});
+			console.log(completion);
+			return completion.choices[0];
+		} catch (error) {
+			console.log(error)
+			throw error
+		}
+	}
+
 async function tranceHiCustomoOpenAIText(
 	messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[],
 	roomOptions: RoomOptions,
@@ -91,6 +124,7 @@ async function tranceHiCustomoOpenAIText(
 		const completion = await client.chat.completions.create({
 			model: roomOptions.model?.version as string,
 			messages: messages,
+			temperature:1.1
 		});
 		console.log(completion);
 		return completion.choices[0];

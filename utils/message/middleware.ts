@@ -19,6 +19,12 @@ export async function tranceHi(
 				return result;
 			}
 		}
+		if (roomOptions.model.model === "Grok") {
+			if (type === "text") {
+				const result = tranceHiCustomoOpenAI(content, type, roomOptions,messageId);
+				return result;
+			}
+		}
 		if (roomOptions.model.model === "Gemini") {
 			if (type === "text") {
 				const result = tranceHiGemini(content, type, roomOptions,messageId);
