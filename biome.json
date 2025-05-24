@@ -10,9 +10,12 @@
 		"ignore": []
 	},
 	"formatter": {
+		"attributePosition": "auto",
 		"enabled": true,
 		"indentStyle": "tab",
-		"indentWidth": 2
+		"indentWidth": 2,
+		"lineWidth": 120,
+    "lineEnding": "lf"
 	},
 	"organizeImports": {
 		"enabled": true
@@ -27,8 +30,19 @@
 		}
 	},
 	"javascript": {
-		"formatter": {
-			"quoteStyle": "double"
-		}
-	}
+    "formatter": {
+      "arrowParentheses":"always",
+      "bracketSameLine": false,
+      "bracketSpacing": true,
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "semicolons": "always",
+      "trailingCommas": "all"
+    }
+  },
+  "json": {
+    "formatter": {
+      "trailingCommas": "none"
+    }
+  }
 }

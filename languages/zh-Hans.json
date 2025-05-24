@@ -1,0 +1,15 @@
+{
+	"trance": "喘息",
+	"drawer": {
+		"my": "我的",
+		"index":"喘息",
+		"message":"消息",
+		"character": "彼此",
+		"knowledgeBase":"知识库",
+		"extension":"拓展",
+		"regex":"正则脚本",
+		"prompt":"提示词",
+		"model":"AI 模型",
+		"setting":"设置"
+	}
+}

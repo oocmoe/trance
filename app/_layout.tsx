@@ -1,44 +1,85 @@
-// app/_layout.tsx
-import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import "@/global.css";
-import { colorModeAtom } from "@/store/theme";
-import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
-import { Stack } from "expo-router";
+
+import { DarkTheme, DefaultTheme, type Theme, ThemeProvider } from "@react-navigation/native";
+import { StatusBar } from "expo-status-bar";
 import * as SQLite from "expo-sqlite";
-import { useAtom } from "jotai";
-import React from "react";
-import { StatusBar } from "react-native";
+import { Platform } from "react-native";
+import { NAV_THEME } from "@/lib/constants";
+import { useColorScheme } from "@/lib/useColorScheme";
+import { PortalHost } from "@rn-primitives/portal";
+import { setAndroidNavigationBar } from "@/lib/android-navigation-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useAtom } from "jotai";
+import { tranceIsDarkModeAtom } from "@/store/core";
 import { Toaster } from "sonner-native";
+import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
+import React from "react";
+import { Stack } from "expo-router";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+
+const LIGHT_THEME: Theme = {
+	...DefaultTheme,
+	colors: NAV_THEME.light,
+};
+const DARK_THEME: Theme = {
+	...DarkTheme,
+	colors: NAV_THEME.dark,
+};
 
 const db = SQLite.openDatabaseSync("trance.db");
 
-export default function RootLayout() {
-	const [colorMode] = useAtom(colorModeAtom);
+const useIsomorphicLayoutEffect =
+	Platform.OS === "web" && typeof window === "undefined" ? React.useEffect : React.useLayoutEffect;
 
+export {
+	// Catch any errors thrown by the Layout component.
+	ErrorBoundary,
+} from "expo-router";
+
+export default function RootLayout() {
 	useDrizzleStudio(db);
+	const [isDarkMode, setIsDarkMode] = useAtom(tranceIsDarkModeAtom);
+	// rnr default
+	const hasMounted = React.useRef(false);
+	const { colorScheme, setColorScheme } = useColorScheme();
+	const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false);
+	useIsomorphicLayoutEffect(() => {
+		if (hasMounted.current) {
+			return;
+		}
+		if (Platform.OS === "web") {
+			// Adds the background color to the html element to prevent white background on overscroll.
+			document.documentElement.classList.add("bg-background");
+		}
+		setAndroidNavigationBar(colorScheme);
+		setIsColorSchemeLoaded(true);
+		hasMounted.current = true;
+	}, []);
+	React.useEffect(() => {
+		if (isDarkMode) {
+			setColorScheme("dark");
+		} else {
+			setColorScheme("light");
+		}
+	}, [isDarkMode, setColorScheme]);
 	return (
-		<GestureHandlerRootView style={{ flex: 1 }}>
-			<GluestackUIProvider mode={colorMode}>
-				<StatusBar translucent backgroundColor="transparent" />
-				<Stack
-					screenOptions={{
-						headerShown: false,
-						presentation: "transparentModal",
-					}}
-				>
-					<Stack.Screen name="index" />
-					<Stack.Screen name="+not-found" />
-					<Stack.Screen name="(drawer)" />
-				</Stack>
-			</GluestackUIProvider>
-			<Toaster
-				closeButton
-				richColors
-				visibleToasts={1}
-				swipeToDismissDirection="left"
-				duration={1000}
-			/>
-		</GestureHandlerRootView>
+		<SafeAreaProvider>
+			<GestureHandlerRootView style={{ flex: 1 }}>
+				<ThemeProvider value={isDarkMode ? DARK_THEME : LIGHT_THEME}>
+					<StatusBar backgroundColor="transparent" /> 
+					<Stack
+						screenOptions={{
+							headerShown: false,
+							presentation: "transparentModal",
+						}}
+					>
+						<Stack.Screen name="(drawer)" />
+						<Stack.Screen name="+not-found" />
+					</Stack>
+					<PortalHost />
+					<Toaster richColors closeButton visibleToasts={1} duration={1200} />
+				</ThemeProvider>
+			</GestureHandlerRootView>
+		</SafeAreaProvider>
 	);
 }

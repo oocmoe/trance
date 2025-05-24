@@ -1,91 +1,68 @@
-import { Box } from "@/components/ui/box";
-import { HStack } from "@/components/ui/hstack";
-import { Icon } from "@/components/ui/icon";
-import { Image } from "@/components/ui/image";
-import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
+import { useRoomList } from "@/hook/useRoom";
+import { router } from "expo-router";
+import { FlatList, Pressable, View } from "react-native";
+import { Image } from "expo-image";
 import { Text } from "@/components/ui/text";
-import { VStack } from "@/components/ui/vstack";
-import { useMessageRecordByRoomId } from "@/hook/message";
-import { useRoomList } from "@/hook/room";
-import type { RenderRoomList } from "@/types/render";
-import { Link } from "expo-router";
-import { atom, useAtom } from "jotai";
-import { MessageCircleDashedIcon } from "lucide-react-native";
-import React from "react";
-import { ScrollView } from "react-native";
-
-// 房间列表状态
-const renderRoomListAtom = atom<RenderRoomList>();
+import { SafeAreaView } from "react-native-safe-area-context";
+import { SearchX } from "lucide-react-native";
+import Icon from "@/components/Icon";
+import { format } from "date-fns";
+import { Heading } from "@/components/ui/heading";
 export default function MessageScreen() {
-	renderRoomList();
 	return (
-		<Box className="h-full p-3">
-			<RoomList />
-		</Box>
+		<View className="flex-1">
+			<SafeAreaView className="flex-1">
+				<Header />
+				<MessageList />
+			</SafeAreaView>
+		</View>
 	);
 }
 
-// 房间列表
-function renderRoomList() {
-	const list = useRoomList();
-	const [, setRenderRoomList] = useAtom(renderRoomListAtom);
-	React.useEffect(() => {
-		setRenderRoomList(list.data);
-	}, [list.data, setRenderRoomList]);
+function Header() {
+	return (
+		<View className="flex flex-row justify-between items-center p-3">
+			<View>
+				<Heading size="2xl">消息</Heading>
+			</View>
+		</View>
+	);
 }
 
-// 渲染角色卡列表
-const RoomList = () => {
-	const [list] = useAtom(renderRoomListAtom);
-	if (!list)
-		return (
-			<Box>
-				<HStack className="h-20 m-2" space="md">
-					<Skeleton className="w-16 h-16 rounded-full" />
-					<VStack className="m-2" space="md">
-						<SkeletonText className="w-20 h-3" />
-						<SkeletonText className="w-16 h-2" />
-					</VStack>
-				</HStack>
-			</Box>
-		);
-	if (list.length === 0)
-		return (
-			<Box className="h-full justify-center items-center">
-				<Box className="flex flex-col items-center gap-y-4">
-					<Icon size="xl" as={MessageCircleDashedIcon} />
-					<Text>未找到相关聊天</Text>
-				</Box>
-			</Box>
-		);
+function MessageList() {
+	const roomList = useRoomList();
 	return (
-		<ScrollView>
-			<VStack>
-				{list.map((item) => (
-					<Link
-						href={{ pathname: "/room/[id]", params: { id: item.id } }}
-						key={item.id}
-						className="h-20 overflow-hidden"
-					>
-						<HStack className="flex-1 mx-2" space="md">
-							<Image
-								source={item.cover}
-								alt={item.name}
-								className="h-16 w-16 rounded-full"
-							/>
-							<VStack className="flex-1 mx-2">
-								<Text bold>{item.name}</Text>
-								<MessageCounter roomId={item.id} />
-							</VStack>
-						</HStack>
-					</Link>
-				))}
-			</VStack>
-		</ScrollView>
+		<View className="flex-1">
+			{roomList.length > 0 ? (
+				<FlatList
+					data={roomList}
+					numColumns={1}
+					keyExtractor={(item) => item.id.toString()}
+					renderItem={({ item }) => (
+						<View>
+							<Pressable
+								onPress={() => {
+									router.push(`/room/${item.id}`);
+								}}
+								className="active:opacity-80"
+							>
+								<View className="p-3  flex flex-row justify-between items-center">
+									<Image source={item.cover} className="w-32 h-24 rounded-md" contentFit="cover" />
+									<View className="flex-1 ml-3 flex flex-col gap-y-1">
+										<Text className="font-bold">{item.name}</Text>
+										<Text>{format(new Date(item.created_at), "yyyy-MM-dd HH:mm:ss")}</Text>
+									</View>
+								</View>
+							</Pressable>
+						</View>
+					)}
+				/>
+			) : (
+				<View className="flex-1 justify-center items-center">
+					<Icon as={SearchX} />
+					<Text>未找到相关房间</Text>
+				</View>
+			)}
+		</View>
 	);
-};
-
-const MessageCounter = ({ roomId }: { roomId: number }) => {
-	const message = useMessageRecordByRoomId(roomId);
-	return <Text>共 {message} 条消息</Text>;
-};
+}

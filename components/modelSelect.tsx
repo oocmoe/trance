@@ -1,41 +1,26 @@
 import {
-	Modal,
-	ModalBackdrop,
-	ModalBody,
-	ModalContent,
-	ModalFooter,
-	ModalHeader,
-} from "@/components/ui/modal";
-import {
 	Select,
-	SelectBackdrop,
 	SelectContent,
-	SelectDragIndicator,
-	SelectDragIndicatorWrapper,
-	SelectIcon,
-	SelectInput,
+	SelectGroup,
 	SelectItem,
-	SelectPortal,
+	SelectLabel,
 	SelectTrigger,
+	SelectValue,
 } from "@/components/ui/select";
-import { readRoomFieldById, updateRoomFieldById } from "@/utils/db/room";
-import { useLocalSearchParams } from "expo-router";
-import { Storage } from "expo-sqlite/kv-store";
-import { atom, useAtom } from "jotai";
-import { BotIcon, ChevronDownIcon } from "lucide-react-native";
+import { Pressable, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Label } from "./ui/label";
 import React from "react";
-import { Pressable } from "react-native";
-import { toast } from "sonner-native";
-import { Box } from "./ui/box";
-import { Button, ButtonText } from "./ui/button";
-import { HStack } from "./ui/hstack";
-import { Icon } from "./ui/icon";
-import { Input, InputField } from "./ui/input";
-import { Switch } from "./ui/switch";
 import { Text } from "./ui/text";
-import { VStack } from "./ui/vstack";
+import { Switch } from "./ui/switch";
+import { Input } from "./ui/input";
+import Icon from "./Icon";
+import { Edit, Edit2, Edit3, Save } from "lucide-react-native";
+import { atom, useAtom } from "jotai";
 
-const models = [
+const isEditAtom = atom(false);
+
+const model = [
 	{
 		order: 1,
 		label: "Custom OpenAI",
@@ -46,175 +31,13 @@ const models = [
 		label: "Gemini",
 		value: "Gemini",
 	},
-	{
-		order: 3,
-		label: "Grok",
-		value: "Grok",
-	},
 ];
-
-const modeAtom = atom<Models>();
-const modelVersionAtom = atom<ModelVersionMap[Models]>();
-const isCustomVersionAtom = atom<boolean>(false);
-
-export const ModelSelect = () => {
-	const { id } = useLocalSearchParams();
-	const [isOpen, setIsOpen] = React.useState<boolean>(false);
-	const [isCustomVersion, setIsCustomVersion] = useAtom(isCustomVersionAtom);
-	const [model, setModel] = useAtom(modeAtom);
-	const [modelVersion, setModelVersion] = useAtom(modelVersionAtom);
-	const handleSaveModel = async () => {
-		if (!model || !modelVersion) return;
-		const data = {
-			model: model,
-			version: modelVersion,
-		};
-		try {
-			const result = await updateRoomFieldById(Number(id), "model", data);
-			if (result) {
-				toast.success("保存成功");
-				setIsOpen(false);
-			}
-		} catch (error) {
-			if (error instanceof Error) {
-				toast.error(error.message);
-				return;
-			}
-			toast.error("未知错误");
-		}
-	};
-
-	React.useEffect(() => {
-		const fetchModel = async () => {
-			const result = (await readRoomFieldById(
-				Number(id),
-				"model",
-			)) as ModelList;
-			if (result) {
-				setModel(result.model);
-				setModelVersion(result.version);
-			}
-		};
-		fetchModel();
-	}, [id, setModel, setModelVersion]);
-
-	return (
-		<Box>
-			<Pressable onPress={() => setIsOpen(true)}>
-				<HStack className="items-center" space="sm">
-					<Icon as={BotIcon} />
-					<Text>选择模型</Text>
-				</HStack>
-			</Pressable>
-			<Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-				<ModalBackdrop />
-				<ModalContent>
-					<ModalHeader>
-						<Box className="w-full">
-							<HStack className="justify-between items-center">
-								<Text>选择模型</Text>
-								<HStack className="items-center">
-									<Text>自定义版本号</Text>
-									<Switch
-										value={isCustomVersion}
-										onValueChange={setIsCustomVersion}
-									/>
-								</HStack>
-							</HStack>
-						</Box>
-					</ModalHeader>
-					<ModalBody>
-						<VStack space="md">
-							<Select
-								defaultValue={model}
-								onValueChange={(value) => {
-									setModel(value as Models);
-									setModelVersion(undefined);
-								}}
-							>
-								<SelectTrigger variant="outline" size="md">
-									<SelectInput className="flex-1" />
-									<SelectIcon className="mr-3" as={ChevronDownIcon} />
-								</SelectTrigger>
-								<SelectPortal>
-									<SelectBackdrop />
-									<SelectContent>
-										<SelectDragIndicatorWrapper>
-											<SelectDragIndicator />
-										</SelectDragIndicatorWrapper>
-										{models.map((item) => (
-											<SelectItem
-												key={item.order}
-												label={item.label}
-												value={item.value}
-											/>
-										))}
-									</SelectContent>
-								</SelectPortal>
-							</Select>
-							{model === "Custom_OpenAI" && <CustomModelOpenAIVersionSelect />}
-							{model === "Gemini" && <GeminiModelVersionSelect />}
-							{model === "Grok" && <GrokModelVersionSelect />}
-						</VStack>
-					</ModalBody>
-					<ModalFooter>
-						<Button
-							variant="outline"
-							action="secondary"
-							onPress={() => {
-								setIsOpen(false);
-							}}
-						>
-							<ButtonText>取消</ButtonText>
-						</Button>
-						<Button
-							isDisabled={!model || !modelVersion}
-							onPress={handleSaveModel}
-						>
-							<ButtonText>保存</ButtonText>
-						</Button>
-					</ModalFooter>
-				</ModalContent>
-			</Modal>
-		</Box>
-	);
-};
-
-const CustomModelOpenAIVersionSelect = () => {
-	const [modelVersion, setModelVersion] = useAtom(modelVersionAtom);
-	const [isCustomVersion, setIsCustomVersion] = useAtom(isCustomVersionAtom);
-	React.useEffect(() => {
-		const fetchModelVersion = async () => {
-			const result = await Storage.getItem("TRANCE_MODEL_CUSTOM_OPENAI_MODEL");
-			if (result) setModelVersion(result);
-		};
-		fetchModelVersion();
-	}, [setModelVersion]);
-	if (isCustomVersion)
-		return (
-			<Box className="gap-y-2">
-				<Text>自定义模型参数名</Text>
-				<Input>
-					<InputField value={modelVersion} onChangeText={setModelVersion} />
-				</Input>
-			</Box>
-		);
-	return (
-		<Input isDisabled>
-			<InputField value={modelVersion} />
-		</Input>
-	);
-};
-
-/**
- * Gemini
- */
 
 const geminiModelVersion = [
 	{
 		order: 1,
-		label: "Gemini 2.5 Pro Exp 0325",
-		value: "gemini-2.5-pro-exp-03-25",
+		label: "Gemini 2.5 Flash Preview 05-20",
+		value: "gemini-2.5-flash-preview-05-20",
 	},
 	{
 		order: 2,
@@ -244,115 +67,145 @@ const geminiModelVersion = [
 	},
 	{
 		order: 7,
-		label: "Gemini 2.5 Pro Preview 0325",
-		value: "gemini-2.5-pro-preview-03-25",
+		label: "Gemini 2.5 Pro Preview",
+		value: "gemini-2.5-pro-preview-05-06",
 	},
 ];
 
-const GeminiModelVersionSelect = () => {
-	const [modelVersion, setModelVersion] = useAtom(modelVersionAtom);
-	const [isCustomVersion, setIsCustomVersion] = useAtom(isCustomVersionAtom);
+export default function ModelSelect({
+	modelName,
+	modelVersion,
+	setModelName,
+	setModelVersion,
+	onSave,
+}: {
+	modelName: string;
+	modelVersion: string;
+	setModelName: React.Dispatch<React.SetStateAction<string>>;
+	setModelVersion: React.Dispatch<React.SetStateAction<string>>;
+	onSave: () => void;
+}) {
+	const [isCustomVersion, setIsCustomVersion] = React.useState<boolean>(false);
+	const [isEdit, setIsEdit] = useAtom(isEditAtom);
 	return (
-		<Box>
-			{isCustomVersion ? (
-				<Box className="gap-y-2">
-					<Text>自定义模型参数名</Text>
-					<Input>
-						<InputField value={modelVersion} onChangeText={setModelVersion} />
-					</Input>
-				</Box>
-			) : (
-				<Select defaultValue={modelVersion} onValueChange={setModelVersion}>
-					<SelectTrigger variant="outline" size="md">
-						<SelectInput className="flex-1" />
-						<SelectIcon className="mr-3" as={ChevronDownIcon} />
-					</SelectTrigger>
-					<SelectPortal>
-						<SelectBackdrop />
-						<SelectContent>
-							<SelectDragIndicatorWrapper>
-								<SelectDragIndicator />
-							</SelectDragIndicatorWrapper>
-
-							{geminiModelVersion.map((item) => (
-								<SelectItem
-									key={item.order}
-									label={item.label}
-									value={item.value}
-								/>
-							))}
-						</SelectContent>
-					</SelectPortal>
-				</Select>
+		<View className="flex flex-col gap-y-2">
+			<View className="flex flex-row justify-between items-center">
+				<Text className="text-xl font-bold">模型选择</Text>
+				{isEdit ? (
+					<Pressable
+						onPress={() => {
+							setIsEdit(false);
+							onSave?.();
+						}}
+					>
+						<Icon as={Save} />
+					</Pressable>
+				) : (
+					<Pressable onPress={() => setIsEdit(true)}>
+						<Icon as={Edit} />
+					</Pressable>
+				)}
+			</View>
+			{isEdit && (
+				<View className="flex flex-row justify-between items-center gap-x-2">
+					<Text>自定义模型版本</Text>
+					<Switch checked={isCustomVersion} onCheckedChange={setIsCustomVersion} />
+				</View>
 			)}
-		</Box>
+			<View className="flex flex-row justify-between items-center">
+				<Label>模型名称</Label>
+				<SelectModelName modelName={modelName} setModelName={setModelName} />
+			</View>
+			{modelName !== "Custom_OpenAI" && (
+				<View className="flex flex-row justify-between items-center">
+					<Label>模型版本</Label>
+					{isCustomVersion ? (
+						<CustomModelVersion modelVersion={modelVersion} setModelVersion={setModelVersion} />
+					) : (
+						<SelectModelVersion modelName={modelName} modelVersion={modelVersion} setModelVersion={setModelVersion} />
+					)}
+				</View>
+			)}
+		</View>
+	);
+}
+
+const SelectModelName = ({
+	modelName,
+	setModelName,
+}: { modelName: string; setModelName: React.Dispatch<React.SetStateAction<string>> }) => {
+	const [isEdit] = useAtom(isEditAtom);
+
+	const insets = useSafeAreaInsets();
+	const contentInsets = {
+		top: insets.top,
+		bottom: insets.bottom,
+		left: 12,
+		right: 12,
+	};
+	return (
+		<Select value={{ label: modelName, value: modelName }} onValueChange={(e) => setModelName(e?.value as string)}>
+			<SelectTrigger disabled={!isEdit} className="w-[250px]">
+				<SelectValue className="text-foreground text-sm native:text-lg" placeholder="Select a model" />
+			</SelectTrigger>
+			<SelectContent insets={contentInsets} className="w-[250px]">
+				<SelectGroup>
+					{model.map((item) => (
+						<SelectItem key={item.order} label={item.label} value={item.value} />
+					))}
+				</SelectGroup>
+			</SelectContent>
+		</Select>
 	);
 };
 
-/**
- * Grok
- */
+const SelectModelVersion = ({
+	modelName,
+	modelVersion,
+	setModelVersion,
+}: {
+	modelName: string;
+	modelVersion: string;
+	setModelVersion: React.Dispatch<React.SetStateAction<string>>;
+}) => {
+	const [isEdit] = useAtom(isEditAtom);
 
-const grokModelVersion = [
-	{ order: 1, label: "Grok-3", value: "grok-3" },
-	{ order: 2, label: "Grok-3-latest", value: "grok-3-latest" },
-	{ order: 3, label: "Grok-3-fast", value: "grok-3-fast" },
-	{ order: 4, label: "Grok-3-fast-latest", value: "grok-3-fast-latest" },
-	{ order: 5, label: "Grok-3-mini", value: "grok-3-mini" },
-	{ order: 6, label: "Grok-3-mini-latest", value: "grok-3-mini-latest" },
-	{ order: 7, label: "Grok-3-mini-fast", value: "grok-3-mini-fast" },
-	{
-		order: 8,
-		label: "Grok-3-mini-fast-latest",
-		value: "grok-3-mini-fast-latest",
-	},
-	{ order: 9, label: "Grok-2-vision", value: "grok-2-vision" },
-	{ order: 10, label: "Grok-2-vision-latest", value: "grok-2-vision-latest" },
-	{ order: 11, label: "Grok-2-image", value: "grok-2-image" },
-	{ order: 12, label: "Grok-2-image-latest", value: "grok-2-image-latest" },
-	{ order: 13, label: "Grok-2", value: "grok-2" },
-	{ order: 14, label: "Grok-2-latest", value: "grok-2-latest" },
-	{ order: 15, label: "Grok-vision-beta", value: "grok-vision-beta" },
-	{ order: 16, label: "Grok-beta", value: "grok-beta" },
-];
-
-const GrokModelVersionSelect = () => {
-	const [modelVersion, setModelVersion] = useAtom(modelVersionAtom);
-	const [isCustomVersion, setIsCustomVersion] = useAtom(isCustomVersionAtom);
-	console.log(isCustomVersion)
+	const insets = useSafeAreaInsets();
+	const contentInsets = {
+		top: insets.top,
+		bottom: insets.bottom,
+		left: 12,
+		right: 12,
+	};
 	return (
-		<Box>
-			{isCustomVersion ? (
-				<Box className="gap-y-2">
-					<Text>自定义模型参数名</Text>
-					<Input>
-						<InputField value={modelVersion} onChangeText={setModelVersion} />
-					</Input>
-				</Box>
-			) : (
-				<Select defaultValue={modelVersion} onValueChange={setModelVersion}>
-					<SelectTrigger variant="outline" size="md">
-						<SelectInput className="flex-1" />
-						<SelectIcon className="mr-3" as={ChevronDownIcon} />
-					</SelectTrigger>
-					<SelectPortal>
-						<SelectBackdrop />
-						<SelectContent>
-							<SelectDragIndicatorWrapper>
-								<SelectDragIndicator />
-							</SelectDragIndicatorWrapper>
+		<Select
+			value={{ label: modelVersion, value: modelVersion }}
+			onValueChange={(e) => setModelVersion(e?.value as string)}
+		>
+			<SelectTrigger disabled={!isEdit} className="w-[250px]">
+				<SelectValue className="text-foreground text-sm native:text-lg" placeholder="Select a version" />
+			</SelectTrigger>
+			<SelectContent insets={contentInsets} className="w-[250px]">
+				<SelectGroup>
+					{geminiModelVersion.map((item) => (
+						<SelectItem key={item.order} label={item.label} value={item.value} />
+					))}
+				</SelectGroup>
+			</SelectContent>
+		</Select>
+	);
+};
 
-							{grokModelVersion.map((item) => (
-								<SelectItem
-									key={item.order}
-									label={item.label}
-									value={item.value}
-								/>
-							))}
-						</SelectContent>
-					</SelectPortal>
-				</Select>
-			)}
-		</Box>
+const CustomModelVersion = ({
+	modelVersion,
+	setModelVersion,
+}: {
+	modelVersion: string;
+	setModelVersion: React.Dispatch<React.SetStateAction<string>>;
+}) => {
+	return (
+		<View className="w-80">
+			<Input value={modelVersion} onChangeText={setModelVersion} />
+		</View>
 	);
 };

@@ -1,191 +1,225 @@
-import { Box } from "@/components/ui/box";
-import { Button, ButtonText } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Heading } from "@/components/ui/heading";
-import { HStack } from "@/components/ui/hstack";
-import { Icon } from "@/components/ui/icon";
-import {
-	Modal,
-	ModalBackdrop,
-	ModalBody,
-	ModalContent,
-	ModalFooter,
-	ModalHeader,
-} from "@/components/ui/modal";
-import { Switch } from "@/components/ui/switch";
+import { useRegexGroupById, useRegexListByGroupId } from "@/hook/useRegex";
+import { router, Stack, useLocalSearchParams, useNavigation, usePathname } from "expo-router";
+import { Pressable, ScrollView, View } from "react-native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/text";
-import { Textarea, TextareaInput } from "@/components/ui/textarea";
-import { VStack } from "@/components/ui/vstack";
-import type { Regex } from "@/db/schema/regex";
-import { useRegexById } from "@/hook/regex";
-import { deleteRegexById, updateRegexFieldById } from "@/utils/db/regex";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { Trash2Icon } from "lucide-react-native";
-import React from "react";
-import { ScrollView } from "react-native-gesture-handler";
+import { Switch } from "@/components/ui/switch";
+import type { RegexGroupTable } from "@/db/schema";
 import { toast } from "sonner-native";
-
-export default function RegexByIdScreen() {
+import { createRegex, updateRegexGroupField } from "@/db/client";
+import { Card } from "@/components/ui/card";
+import Icon from "@/components/Icon";
+import { ArrowRight, Cog, Import, Pen, Settings, Settings2 } from "lucide-react-native";
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogDescription,
+	DialogFooter,
+	DialogClose,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import React from "react";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectLabel,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { pickerJSON, pickerRegex } from "@/utils/picker";
+import { converterSillyTavernRegexToTrance } from "@/utils/converter";
+import { Heading } from "@/components/ui/heading";
+export default function RegexGroupIdScreen() {
+	const { id } = useLocalSearchParams();
+	const regexGroup = useRegexGroupById(Number(id));
 	return (
-		<Box className="h-full p-3">
-			<Box className="flex-1">
-				<ScrollView>
-					<RegexDetails />
-					<RegexStatus />
-				</ScrollView>
-			</Box>
-			<DeleteRegex />
-		</Box>
+		<>
+			<Stack.Screen options={{ title: regexGroup.name, headerRight: () => <ScreenHeaderRight /> }} />
+			<View className="flex-1">
+				<View className="flex-1">
+					<ImportRegex />
+					<RegexGroupName regexGroup={regexGroup} />
+					<RegexGroupIsEnable regexGroup={regexGroup} />
+					<RegexGroupType regexGroup={regexGroup} />
+					<RegexList />
+				</View>
+			</View>
+		</>
 	);
 }
 
-const RegexDetails = () => {
+function ScreenHeaderRight() {
 	const { id } = useLocalSearchParams();
-	const regex = useRegexById(Number(id));
 	return (
-		<Box>
-			{regex && (
-				<VStack space="md">
-					<Heading>{regex.name}</Heading>
-					<Card>
-						<VStack space="sm">
-							<Text>查找</Text>
-							<Textarea isDisabled>
-								<TextareaInput value={regex.replace} />
-							</Textarea>
-						</VStack>
-					</Card>
-					<Card>
-						<VStack space="sm">
-							<Text>替换</Text>
-							<Textarea isDisabled>
-								<TextareaInput value={regex.placement} />
-							</Textarea>
-						</VStack>
-					</Card>
-				</VStack>
-			)}
-		</Box>
+		<View className="flex flex-row justify-between items-center gap-x-2">
+			<Pressable onPress={() => router.push(`/regex/${id}/option`)}>
+				<Icon as={Settings2} />
+			</Pressable>
+		</View>
 	);
-};
+}
 
-const RegexStatus = () => {
+function ImportRegex() {
 	const { id } = useLocalSearchParams();
-	const regex = useRegexById(Number(id));
-	const handleUpdateStatus = async (value: boolean, field: keyof Regex) => {
-		const result = await updateRegexFieldById(Number(id), field, value);
-	};
-	return (
-		<Box>
-			{regex && (
-				<VStack space="md">
-					<Box>
-						<HStack space="md" className="justify-between  items-center">
-							<Text>正则开关</Text>
-							<Switch
-								value={regex.is_Enabled}
-								onChange={(e) =>
-									handleUpdateStatus(e.nativeEvent.value, "is_Enabled")
-								}
-							/>
-						</HStack>
-					</Box>
-					<Box>
-						<HStack space="md" className="justify-between  items-center">
-							<Text>全局正则</Text>
-							<Switch
-								value={regex.is_Global}
-								onChange={(e) =>
-									handleUpdateStatus(e.nativeEvent.value, "is_Global")
-								}
-							/>
-						</HStack>
-					</Box>
-					<Box>
-						<HStack space="md" className="justify-between  items-center">
-							<Text>发送时使用</Text>
-							<Switch
-								value={regex.is_Send}
-								onChange={(e) =>
-									handleUpdateStatus(e.nativeEvent.value, "is_Send")
-								}
-							/>
-						</HStack>
-					</Box>
-					<Box>
-						<HStack space="md" className="justify-between  items-center">
-							<Text>渲染时使用</Text>
-							<Switch
-								value={regex.is_Render}
-								onChange={(e) =>
-									handleUpdateStatus(e.nativeEvent.value, "is_Render")
-								}
-							/>
-						</HStack>
-					</Box>
-				</VStack>
-			)}
-		</Box>
-	);
-};
-
-const DeleteRegex = () => {
-	const { id } = useLocalSearchParams();
-	const [isOpen, setIsOpen] = React.useState<boolean>(false);
-	const router = useRouter();
-
-	const handleDeleteRegex = async () => {
-		const result = await deleteRegexById(Number(id));
-		if (!result) {
-			toast.error("删除失败");
-			return;
+	const handleImportRegex = async () => {
+		try {
+			const data = await pickerRegex();
+			if (!data) return;
+			const regexData = {
+				...data,
+				regex_group_id: Number(id),
+			};
+			if (data) {
+				await createRegex(Number(id), regexData);
+			}
+		} catch (error) {
+			console.error(error);
+			toast.error(error instanceof Error ? error.message : "!ERROR_UNKNOWN");
 		}
-		setIsOpen(false);
-		router.push("/(drawer)/regex");
-		toast.success("删除成功");
 	};
 	return (
-		<>
-			<Button onPress={() => setIsOpen(true)} action="negative">
-				<ButtonText>删除正则</ButtonText>
-			</Button>
-			<Modal onClose={() => setIsOpen(false)} isOpen={isOpen}>
-				<ModalBackdrop />
-				<ModalContent className="max-w-[305px] items-center">
-					<ModalHeader>
-						<Box className="w-[48px] h-[48px] rounded-full items-center justify-center">
-							<Icon as={Trash2Icon} className="stroke-error-600" size="xl" />
-						</Box>
-					</ModalHeader>
-					<ModalBody className="mt-0 mb-4">
-						<Heading size="md" className="text-typography-950 mb-2 text-center">
-							删除角色卡
-						</Heading>
-						<Text size="sm" className="text-typography-500 text-center">
-							它将永远离你而去,你下定决心了吗
-						</Text>
-					</ModalBody>
-					<ModalFooter className="w-full">
-						<Button
-							variant="outline"
-							action="secondary"
-							size="sm"
-							onPress={() => setIsOpen(false)}
-							className="flex-grow"
-						>
-							<ButtonText>算了</ButtonText>
-						</Button>
-						<Button
-							action="negative"
-							onPress={handleDeleteRegex}
-							size="sm"
-							className="flex-grow"
-						>
-							<ButtonText>永别了</ButtonText>
-						</Button>
-					</ModalFooter>
-				</ModalContent>
-			</Modal>
-		</>
+		<View className="flex flex-row justify-between items-center p-3">
+			<Heading>导入正则</Heading>
+			<Pressable onPress={handleImportRegex}>
+				<Icon as={Import} />
+			</Pressable>
+		</View>
 	);
-};
+}
+
+function RegexGroupIsEnable({ regexGroup }: { regexGroup: RegexGroupTable }) {
+	const handleChangeIsEnable = async (value: boolean) => {
+		try {
+			await updateRegexGroupField(regexGroup.id, "is_enabled", value);
+		} catch (error) {
+			console.error(error);
+			toast.error(error instanceof Error ? error.message : "!ERROR_UNKNOWN");
+		}
+	};
+	return (
+		<View className="flex flex-row justify-between items-center p-3">
+			<Text className="font-bold">开关</Text>
+			<Switch checked={regexGroup.is_enabled} onCheckedChange={handleChangeIsEnable} />
+		</View>
+	);
+}
+
+function RegexGroupType({ regexGroup }: { regexGroup: RegexGroupTable }) {
+	const insets = useSafeAreaInsets();
+	const contentInsets = {
+		top: insets.top,
+		bottom: insets.bottom,
+		left: 12,
+		right: 12,
+	};
+	const handleChange = async (value: string) => {
+		try {
+			await updateRegexGroupField(regexGroup.id, "type", value as "character" | "global");
+		} catch (error) {
+			console.error(error);
+			toast.error(error instanceof Error ? error.message : "!ERROR_UNKNOWN");
+		}
+	};
+	return (
+		<View className="flex flex-row justify-between items-center p-3">
+			<Text className="font-bold">作用范围</Text>
+			<Select
+				onValueChange={(e) => handleChange(e?.value as string)}
+				defaultValue={{ value: regexGroup.type, label: regexGroup.type }}
+			>
+				<SelectTrigger>
+					<SelectValue className="text-foreground text-sm native:text-lg" placeholder={regexGroup.type} />
+				</SelectTrigger>
+				<SelectContent insets={contentInsets}>
+					<SelectGroup>
+						<SelectItem label="character" value="character">
+							character
+						</SelectItem>
+						<SelectItem label="global" value="global">
+							global
+						</SelectItem>
+					</SelectGroup>
+				</SelectContent>
+			</Select>
+		</View>
+	);
+}
+
+function RegexGroupName({ regexGroup }: { regexGroup: RegexGroupTable }) {
+	const [isOpen, setIsOpen] = React.useState<boolean>(false);
+	const [name, setName] = React.useState<string>("");
+	React.useEffect(() => {
+		if (regexGroup.name) {
+			setName(regexGroup.name);
+		}
+	}, [regexGroup]);
+	const handleChangeName = async () => {
+		try {
+			await updateRegexGroupField(regexGroup.id, "name", name);
+		} catch (error) {
+			console.error(error instanceof Error ? error.message : "!ERROR_UNKNOWN");
+		}
+	};
+	return (
+		<View>
+			<View className="flex flex-row justify-between items-center p-3">
+				<Text className="font-bold">正则组名称</Text>
+				<Pressable onPress={() => setIsOpen(true)}>
+					<Icon as={Pen} />
+				</Pressable>
+			</View>
+			<Dialog open={isOpen} onOpenChange={() => setIsOpen(false)}>
+				<DialogContent className="sm:max-w-[425px]">
+					<DialogHeader>
+						<DialogTitle>正则组名称</DialogTitle>
+						<DialogDescription>
+							<Input className="w-full" value={name} onChangeText={setName} />
+						</DialogDescription>
+					</DialogHeader>
+					<DialogFooter className="flex flex-row justify-end">
+						<DialogClose asChild>
+							<Button variant={"outline"}>
+								<Text>Cancel</Text>
+							</Button>
+						</DialogClose>
+						<Button disabled={name.length === 0} onPress={handleChangeName}>
+							<Text>保存</Text>
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+		</View>
+	);
+}
+
+function RegexList() {
+	const { id } = useLocalSearchParams();
+	const regex = useRegexListByGroupId(Number(id));
+	return (
+		<ScrollView>
+			<View className="flex flex-col gap-y-2 p-3">
+				{regex.map((item) => (
+					<Card key={item.id}>
+						<Pressable onPress={() => router.push(`/regex/${id}/${item.id}`)} className="p-3">
+							<View className="flex flex-row justify-between items-center">
+								<View className="flex flex-col gap-y-1">
+									<Badge className={item.is_enabled ? "bg-green-400" : "bg-gray-400"}>
+										<Text>{item.is_enabled ? "启用中" : "已禁用"}</Text>
+									</Badge>
+									<Text>{item.name}</Text>
+								</View>
+								<Icon as={ArrowRight} />
+							</View>
+						</Pressable>
+					</Card>
+				))}
+			</View>
+		</ScrollView>
+	);
+}

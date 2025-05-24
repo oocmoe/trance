@@ -1,141 +1,75 @@
-import { Box } from "@/components/ui/box";
-import { Button, ButtonText } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { HStack } from "@/components/ui/hstack";
-import { Icon } from "@/components/ui/icon";
-import { Image } from "@/components/ui/image";
-import { Input, InputField } from "@/components/ui/input";
-import {
-	Modal,
-	ModalBackdrop,
-	ModalBody,
-	ModalContent,
-	ModalFooter,
-	ModalHeader,
-} from "@/components/ui/modal";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Pressable, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/text";
-import { VStack } from "@/components/ui/vstack";
-import { USER_avtarAtom, USER_nameAtom } from "@/store/core";
-import { pickUserAvatar } from "@/utils/file/picker";
-import { Storage } from "expo-sqlite/kv-store";
 import { useAtom } from "jotai";
-import { CircleUserRoundIcon, UserPenIcon } from "lucide-react-native";
-import React from "react";
-import { Pressable } from "react-native";
+import { tranceUserAvatarAtom, tranceUsernameAtom } from "@/store/core";
+import { Image } from "expo-image";
 import { toast } from "sonner-native";
-
+import { pickerUserAvatar } from "@/utils/picker";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useEffect, useState } from "react";
 export default function MyScreen() {
 	return (
-		<Box className="h-full p-3">
-			<VStack space="3xl">
-				<UserDetail />
-				<UserName />
-				<UserAvatar />
-			</VStack>
-		</Box>
+		<SafeAreaView className="flex-1 p-3 pt-16">
+			<View className="flex flex-col gap-y-4 justify-center items-center">
+				<MyAvatar />
+				<MyName />
+			</View>
+		</SafeAreaView>
 	);
 }
 
-const UserDetail = () => {
-	const [avatar, setAvatar] = useAtom(USER_avtarAtom);
-	const [name, setName] = useAtom(USER_nameAtom);
-	return (
-		<Box>
-			<Card className="h-32">
-				<HStack space="md">
-					{avatar ? (
-						<Image source={avatar} className="h-16 w-16 rounded-full" />
-					) : (
-						<Skeleton className="h-16 w-16 rounded-full" />
-					)}
-					<Text bold>{name}</Text>
-				</HStack>
-			</Card>
-		</Box>
-	);
-};
-
-const UserName = () => {
-	const [isOpen, setIsOpen] = React.useState<boolean>(false);
-	const [name, setName] = React.useState<string>();
-	const [, setUserName] = useAtom(USER_nameAtom);
-	React.useEffect(() => {
-		const initName = async () => {
-			const result = await Storage.getItem("TRANCE_USER_NAME");
-			if (result) {
-				setName(result);
-			}
-		};
-		initName();
-	}, []);
-	const handleChangeName = async () => {
-		if (!name) return;
-		Storage.setItem("TRANCE_USER_NAME", name);
-		setUserName(name);
-		setIsOpen(false);
-		toast.success("保存成功");
+function MyAvatar() {
+	const [userAvatar, setUserAvatar] = useAtom(tranceUserAvatarAtom);
+	const handleChangeCover = async () => {
+		try {
+			const result = await pickerUserAvatar();
+			if (result) setUserAvatar(result);
+		} catch (error) {
+			toast.error(error instanceof Error ? error.message : "!ERROR_UNKNOWN");
+		}
 	};
 	return (
-		<Box>
-			<Pressable onPress={() => setIsOpen(true)}>
-				<Box>
-					<HStack className="items-center" space="md">
-						<Icon as={UserPenIcon} />
-						<Text>更改用户名</Text>
-					</HStack>
-				</Box>
+		<View className="flex flex-col justify-center items-center">
+			<Pressable onPress={handleChangeCover}>
+				<Avatar className="h-32 w-32" alt="trance_user_avatar">
+					<AvatarImage source={{ uri: userAvatar }} />
+					<AvatarFallback>
+						<Text>OoC</Text>
+					</AvatarFallback>
+				</Avatar>
 			</Pressable>
-			<Modal isOpen={isOpen}>
-				<ModalBackdrop />
-				<ModalContent>
-					<ModalHeader>
-						<Text>更改用户名</Text>
-					</ModalHeader>
-					<ModalBody>
-						<Input>
-							<InputField value={name} onChangeText={setName} />
-						</Input>
-					</ModalBody>
-					<ModalFooter>
-						<Button
-							variant="outline"
-							action="secondary"
-							onPress={() => {
-								setIsOpen(false);
-							}}
-						>
-							<ButtonText>取消</ButtonText>
-						</Button>
-						<Button onPress={handleChangeName} isDisabled={name?.length === 0}>
-							<ButtonText>保存</ButtonText>
-						</Button>
-					</ModalFooter>
-				</ModalContent>
-			</Modal>
-		</Box>
+		</View>
 	);
-};
+}
 
-const UserAvatar = () => {
-	const [, setAvatar] = useAtom(USER_avtarAtom);
-	const handleChangeAvatar = async () => {
-		const result = await pickUserAvatar();
-		if (!result) return;
-		Storage.setItem("TRANCE_USER_AVATAR", result.uri);
-		setAvatar(result.uri);
-		toast.success("更换成功");
-	};
+function MyName() {
+	const [username, setUserName] = useAtom(tranceUsernameAtom);
 	return (
-		<Box>
-			<Pressable onPress={handleChangeAvatar}>
-				<Box>
-					<HStack className="items-center" space="md">
-						<Icon as={CircleUserRoundIcon} />
-						<Text>更换头像</Text>
-					</HStack>
-				</Box>
-			</Pressable>
-		</Box>
+		<Dialog>
+			<DialogTrigger asChild>
+				<Pressable>
+					<Text className="font-bold text-3xl">{username}</Text>
+				</Pressable>
+			</DialogTrigger>
+			<DialogContent className="w-96">
+				<DialogHeader>
+					<DialogTitle>修改用户名</DialogTitle>
+				</DialogHeader>
+				<Input value={username} onChangeText={setUserName} />
+			</DialogContent>
+		</Dialog>
 	);
-};
+}

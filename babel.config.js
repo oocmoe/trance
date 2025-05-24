@@ -1,21 +1,8 @@
-module.exports = (api) => {
-	api.cache(true);
-	return {
-		presets: [
-			["babel-preset-expo", { jsxImportSource: "nativewind" }],
-			"nativewind/babel",
-		],
-		plugins: [
-			[
-				"module-resolver",
-				{
-					root: ["./"],
-					alias: { "@": "./", "tailwind.config": "./tailwind.config.js" },
-				},
-			],
-			["inline-import", { extensions: [".sql"] }],
-			"@babel/plugin-proposal-export-namespace-from",
-			"react-native-reanimated/plugin",
-		],
-	};
+// biome-ignore lint/complexity/useArrowFunction: <explanation>
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: [['babel-preset-expo', { jsxImportSource: 'nativewind' }], 'nativewind/babel'],
+    plugins: [["inline-import", { "extensions": [".sql"] }]]
+  };
 };

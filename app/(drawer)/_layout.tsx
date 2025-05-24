@@ -1,228 +1,170 @@
-// app/(drawer)/_layout.tsx
-import { ThemeSwitch } from "@/components/themeSwitch";
-import { Box } from "@/components/ui/box";
-import { Heading } from "@/components/ui/heading";
-import { HStack } from "@/components/ui/hstack";
-import { Icon, MessageCircleIcon } from "@/components/ui/icon";
-import { Image } from "@/components/ui/image";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Text } from "@/components/ui/text";
-import { VStack } from "@/components/ui/vstack";
-import { useThemeDrawer, useTranceTheme } from "@/hook/theme";
-import { USER_avtarAtom, USER_nameAtom } from "@/store/core";
-import { colorModeAtom } from "@/store/theme";
-import { router } from "expo-router";
+import "@/global.css";
+import { View } from "react-native";
+import { useColorScheme } from "@/lib/useColorScheme";
+import { Pressable } from "react-native-gesture-handler";
 import { Drawer } from "expo-router/drawer";
-import { Storage } from "expo-sqlite/kv-store";
+import { Text } from "@/components/ui/text";
+import { DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawer";
+import i18n from "@/languages/i18n";
 import { useAtom } from "jotai";
+import { tranceUsernameAtom } from "@/store/core";
+
 import {
-	BookUserIcon,
-	BotIcon,
-	CogIcon,
-	HammerIcon,
-	LibraryIcon,
-	RegexIcon,
+	Blocks,
+	Bot,
+	Circle,
+	Cog,
+	Hammer,
+	Library,
+	MessageCircle,
+	MessageCircleIcon,
+	Plug,
+	Regex,
+	Settings,
+	Settings2,
+	User,
+	UserIcon,
+	UserRound,
+	UsersRound,
 } from "lucide-react-native";
-import React from "react";
-import { Pressable } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import TranceUserAvatar from "@/components/user-avatar";
+import { useRouter } from "expo-router";
+import { ColorModeToggle } from "@/components/ColorModeToggle";
 
 export default function DrawerLayout() {
-	const [colorMode] = useAtom(colorModeAtom);
-	const themeConfig = useTranceTheme();
+	const { colorScheme, isDarkColorScheme } = useColorScheme();
 	return (
 		<Drawer
-			drawerContent={() => <CustomDrawerContent />}
+			drawerContent={(props) => <CustomDrawer {...props} />}
 			screenOptions={{
-				...themeConfig.Drawer.options,
+				headerShown: false,
+				drawerStyle: {
+					width: 300,
+					borderEndEndRadius: 0,
+				},
 				swipeEdgeWidth: 768,
 			}}
 		>
 			<Drawer.Screen
-				name="my"
+				name="index"
 				options={{
-					title: "我的",
+					drawerIcon: () => <Circle color={isDarkColorScheme ? "white" : "black"} />,
+					title: i18n.t("drawer.index"),
 				}}
 			/>
 			<Drawer.Screen
 				name="message"
 				options={{
-					title: "消息",
+					drawerIcon: () => <MessageCircle color={isDarkColorScheme ? "white" : "black"} />,
+					title: i18n.t("drawer.message"),
 				}}
 			/>
 			<Drawer.Screen
 				name="character"
 				options={{
-					title: "角色卡",
+					drawerIcon: () => <UsersRound color={isDarkColorScheme ? "white" : "black"} />,
+					title: i18n.t("drawer.character"),
 				}}
 			/>
-			<Drawer.Screen
-				name="model"
-				options={{
-					title: "模型",
-				}}
-			/>
+
 			<Drawer.Screen
 				name="knowledgeBase"
 				options={{
-					title: "知识库",
+					drawerIcon: () => <Library color={isDarkColorScheme ? "white" : "black"} />,
+					title: i18n.t("drawer.knowledgeBase"),
 				}}
 			/>
+
 			<Drawer.Screen
 				name="prompt"
 				options={{
-					title: "提示词",
+					drawerIcon: () => <Hammer color={isDarkColorScheme ? "white" : "black"} />,
+					title: i18n.t("drawer.prompt"),
 				}}
 			/>
+
+			<Drawer.Screen
+				name="model"
+				options={{
+					drawerIcon: () => <Bot color={isDarkColorScheme ? "white" : "black"} />,
+					title: i18n.t("drawer.model"),
+				}}
+			/>
+
 			<Drawer.Screen
 				name="regex"
 				options={{
-					title: "正则脚本",
+					drawerIcon: () => <Regex color={isDarkColorScheme ? "white" : "black"} />,
+					title: i18n.t("drawer.regex"),
 				}}
 			/>
+
 			<Drawer.Screen
 				name="setting"
 				options={{
-					title: "设置",
+					drawerIcon: () => <Settings color={isDarkColorScheme ? "white" : "black"} />,
+					title: i18n.t("drawer.setting"),
+				}}
+			/>
+
+			{/* <Drawer.Screen
+				name="extension"
+				options={{
+					drawerIcon: () => (
+						<Blocks color={isDarkColorScheme ? "white" : "black"} />
+					),
+					title: i18n.t("drawer.extension"),
+				}}
+			/> */}
+
+			<Drawer.Screen
+				name="my"
+				options={{
+					title: i18n.t("drawer.my"),
+					drawerItemStyle: { display: "none" },
 				}}
 			/>
 		</Drawer>
 	);
 }
 
-// 导航列表
-const drawerNavList = [
-	{
-		sortId: 1,
-		name: "消息",
-		path: "(drawer)/message",
-		icon: MessageCircleIcon,
-	},
-	{
-		sortId: 2,
-		name: "角色卡",
-		path: "(drawer)/character",
-		icon: BookUserIcon,
-	},
-
-	{
-		sortId: 3,
-		name: "提示词",
-		path: "(drawer)/prompt",
-		icon: HammerIcon,
-	},
-	{
-		sortId: 4,
-		name: "AI 模型",
-		path: "(drawer)/model",
-		icon: BotIcon,
-	},
-	{
-		sortId: 5,
-		name: "知识库",
-		path: "(drawer)/knowledgeBase",
-		icon: LibraryIcon,
-	},
-	{
-		sortId: 6,
-		name: "正则脚本",
-		path: "(drawer)/regex",
-		icon: RegexIcon,
-	},
-	{
-		sortId: 7,
-		name: "设置",
-		path: "(drawer)/setting",
-		icon: CogIcon,
-	},
-];
-
-// 自定义侧边栏
-const CustomDrawerContent = () => {
-	const [avatar, setAvatar] = useAtom(USER_avtarAtom);
-	const [name, setName] = useAtom(USER_nameAtom);
-	const themeConfig = useThemeDrawer();
-	React.useEffect(() => {
-		const initAvatar = async () => {
-			const avatar = await Storage.getItem("TRANCE_USER_AVATAR");
-			const name = await Storage.getItem("TRANCE_USER_NAME");
-			if (!name) {
-				await Storage.setItem("TRANCE_USER_NAME", "User");
-				const name = await Storage.getItem("TRANCE_USER_NAME");
-				setName(name || "");
-			}
-			if (avatar) {
-				setAvatar(avatar);
-			}
-			if (name) {
-				setName(name);
-			}
-		};
-		initAvatar();
-	}, [setAvatar, setName]);
+function CustomDrawer(props: any) {
 	return (
-		<Box className="flex-1">
-			<SafeAreaView>
-				<VStack>
-					<Box className="h-32 p-3">
-						<HStack className="justify-between">
-							<VStack space="sm">
-								{avatar ? (
-									<Pressable onPress={() => router.push("/(drawer)/my")}>
-										<Image
-											source={avatar}
-											className="h-16 w-16 rounded-full"
-											alt="userAvatar"
-										/>
-									</Pressable>
-								) : (
-									<Pressable onPress={() => router.push("/(drawer)/my")}>
-										<Skeleton className="w-16 h-16 rounded-full" />
-									</Pressable>
-								)}
-								{name && (
-									<Text
-										style={{
-											color: themeConfig.options.drawerInactiveTintColor,
-										}}
-										bold
-									>
-										{name}
-									</Text>
-								)}
-							</VStack>
-							<ThemeSwitch />
-						</HStack>
-					</Box>
-					<Box className="p-6">
-						<VStack space="4xl">
-							{drawerNavList.map((item) => (
-								<Pressable
-									onPress={() => router.push(item.path as any)}
-									key={item.sortId}
-								>
-									<HStack space="2xl" className="items-center">
-										<Icon
-											style={{
-												color: themeConfig.options.drawerInactiveTintColor,
-											}}
-											size="xl"
-											as={item.icon}
-										/>
-										<Heading
-											style={{
-												color: themeConfig.options.drawerInactiveTintColor,
-											}}
-										>
-											{item.name}
-										</Heading>
-									</HStack>
-								</Pressable>
-							))}
-						</VStack>
-					</Box>
-				</VStack>
-			</SafeAreaView>
-		</Box>
+		<View style={{ flex: 1 }}>
+			<DrawerContentScrollView {...props} contentContainerStyle={{ flexGrow: 1 }}>
+				<CustomDrawerHeader />
+				<View style={{ flexGrow: 1 }}>
+					<DrawerItemList {...props} />
+				</View>
+				<CustomDrawerFooter />
+			</DrawerContentScrollView>
+		</View>
 	);
-};
+}
+
+function CustomDrawerHeader() {
+	const [username] = useAtom(tranceUsernameAtom);
+	const router = useRouter();
+	return (
+		<View className="h-24">
+			<View className="flex flex-row gap-x-2">
+				<Pressable onPress={() => router.push("/my")}>
+					<TranceUserAvatar />
+				</Pressable>
+				<View className="flex flex-col">
+					<Text className="font-black">{username}</Text>
+				</View>
+			</View>
+		</View>
+	);
+}
+
+function CustomDrawerFooter() {
+	return (
+		<View className="h-16">
+			<View className="flex flex-row gap-x-8 mx-4 justify-between items-center">
+				<ColorModeToggle />
+			</View>
+		</View>
+	);
+}

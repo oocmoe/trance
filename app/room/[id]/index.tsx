@@ -1,563 +1,545 @@
-import { HighlightedAssistantText } from "@/components/highlighted";
-import { Box } from "@/components/ui/box";
-import {
-	Button,
-	ButtonIcon,
-	ButtonSpinner,
-	ButtonText,
-} from "@/components/ui/button";
+import Icon from "@/components/Icon";
+import { ChatBubbleAssistantImage } from "@/components/room-chatbubbleImage";
+import { ChatBubbleAssistantText, ChatBubbleUserText } from "@/components/room-chatbubbleText";
 import { Card } from "@/components/ui/card";
-import { Fab, FabIcon, FabLabel } from "@/components/ui/fab";
-import { HStack } from "@/components/ui/hstack";
-import { AddIcon, CloseIcon, Icon, TrashIcon } from "@/components/ui/icon";
-import { Input, InputField } from "@/components/ui/input";
-import { Modal, ModalBackdrop, ModalContent } from "@/components/ui/modal";
-import { Portal } from "@/components/ui/portal";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
-import { VStack } from "@/components/ui/vstack";
-import type { Messages } from "@/db/schema/message";
-import { useCharacterById } from "@/hook/character";
+import { TRANCE_THEME_PROFILE_DEFAULT } from "@/constant/theme/default";
+import { TRANCE_THEME_PROFILE_OCEAN } from "@/constant/theme/ocean";
+import { TRANCE_THEME_PROFILE_PEACH } from "@/constant/theme/peach";
 import {
-	useMessageById,
-	useMessageByRoomId,
-	useMessageDescByRoomId,
-	useMessageRecordByRoomId,
-} from "@/hook/message";
-import { useRoomById } from "@/hook/room";
-import { useThemeRoom, useThemeStack, useTranceTheme } from "@/hook/theme";
-import { USER_avtarAtom, USER_nameAtom, modalAtom } from "@/store/core";
-import { type RoomOptions, roomOptionsAtom } from "@/store/roomOptions";
-import { colorModeAtom, tranceThemeAtom } from "@/store/theme";
+	createRoomFloorMessage,
+	createRoomNewMessage,
+	deleteRoomFloorById,
+	readRegexWithTranceHiTextRender,
+	readRoomMessageRespawnUser,
+	updateRoomFloorMessagePagination,
+} from "@/db/client";
+import type { RoomFloorTable, RoomMessageTable } from "@/db/schema";
+import { useCharacterCoverById } from "@/hook/useCharacter";
 import {
-	createMessage,
-	deleteMessageById,
-	readMessageContentById,
-	updateMessageGroupToFirst,
-	updateMessageGroupToLast,
-	updatePushMessage,
-} from "@/utils/db/message";
-import { tranceHi } from "@/utils/message/middleware";
-import { transformRenderMessage } from "@/utils/message/transform";
-import * as Clipboard from "expo-clipboard";
-import { Stack, router, useLocalSearchParams } from "expo-router";
-import { atom, useAtom } from "jotai";
+	useRoomById,
+	useRoomFloorListByRoomId,
+	useRoomMessageByRoomFloorId,
+	useRoomOptionsById,
+	useRoomTheme,
+} from "@/hook/useRoom";
+import { tranceUserAvatarAtom } from "@/store/core";
+import { TranceRoomThemeConfig, type TranceChatBubbleMessage, type TranceHi } from "@/types/trance.types";
+import { tranceHi } from "@/utils/message";
+import { transformChatBubbleMessage, transformRegexText, transformUserPlaceholder } from "@/utils/transform";
+import { Image, ImageBackground } from "expo-image";
+import { router, Stack, useLocalSearchParams } from "expo-router";
+import { atom, useAtom, useAtomValue } from "jotai";
 import {
-	ArrowLeft,
-	ArrowRight,
-	BookCopyIcon,
-	CopyIcon,
-	EllipsisIcon,
-	MessageCircle,
-	MessageCircleMore,
-	MessageCirclePlus,
-	SendHorizonalIcon,
+	ArrowLeftCircle,
+	ArrowRightCircle,
+	CircleChevronDown,
+	Ellipsis,
+	MessageSquareDiff,
+	MessageSquareHeart,
+	Pen,
+	PlusCircle,
+	Send,
+	Settings,
+	Trash,
+	X,
 } from "lucide-react-native";
-import { Message } from "openai/resources/beta/threads/messages";
+import { cssInterop } from "nativewind";
 import React from "react";
-import { FlatList, Image, Pressable } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { ActivityIndicator, FlatList, Pressable, View } from "react-native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "~/components/ui/context-menu";
 
-const actionBubbleAtom = atom<number>();
-const actionBarLoadingAtom = atom<boolean>(false);
-const chatBubbleMessageGroupModalAtom = atom<boolean>(false);
+// nativewind
+cssInterop(Input, { className: "style" });
+
+// jotai
+const isSendingAtom = atom<boolean>(false);
+// const theme = TRANCE_THEME_PROFILE_OCEAN.light;
 
 export default function RoomScreen() {
 	const { id } = useLocalSearchParams();
-	const [, setRoomOptions] = useAtom(roomOptionsAtom);
-	const [colorMode] = useAtom(colorModeAtom);
-	const [themeConfig] = useAtom(tranceThemeAtom);
 	const room = useRoomById(Number(id));
-	React.useEffect(() => {
-		if (room) {
-			setRoomOptions({
-				id: Number(id),
-				model: room.model ?? undefined,
-				prompt: room.prompt ?? undefined,
-				personnel: room.personnel,
-			});
-		}
-	}, [id, room, setRoomOptions]);
-	if (room)
+	const theme = useRoomTheme(Number(id));
+	if (theme)
 		return (
-			<Box className="h-full">
+			<>
 				<Stack.Screen
 					options={{
 						title: room.name,
-						headerRight: () => <HeaderRight />,
+						headerRight: () => (
+							<Pressable onPress={() => router.push(`/room/${id}/option`)}>
+								<Icon as={Ellipsis} style={{ color: theme.stackOptions.headerTintColor }} />
+							</Pressable>
+						),
+						...theme.stackOptions,
 					}}
 				/>
-				<MessagesList />
-				<ChatBubbleMessageGroup />
-				<ActionBar />
-				<ChatBubbleLongPressModal />
-			</Box>
+				<View className="flex-1 w-full">
+					{theme.imageBackground.render === "character" && (
+						<View className="flex-1">
+							<ImageBackground
+								source={theme.imageBackground.customImage ? theme.imageBackground.customImage : room.cover}
+								style={theme.imageBackground.backgroundStyle}
+								blurRadius={theme.imageBackground.blurRadius}
+							>
+								<View style={theme.imageBackground.overlay} />
+								{theme.stackOptions.headerShown === false && <SafeAreaView />}
+								<RoomFloorList />
+								<UserActionBar />
+							</ImageBackground>
+						</View>
+					)}
+					{theme.imageBackground.render === "none" && (
+						<>
+							<RoomFloorList />
+							<UserActionBar />
+						</>
+					)}
+				</View>
+			</>
 		);
-	return <RoomSkeleton />;
 }
 
-const RoomSkeleton = () => {
-	return (
-		<Box className="h-full">
-			<Skeleton className="h-full" />
-		</Box>
-	);
-};
-
-const HeaderRight = () => {
+function RoomFloorList() {
 	const { id } = useLocalSearchParams();
-	const themeConfig = useThemeStack();
-	return (
-		<Button onPress={() => router.push(`/room/${id}/detail`)} variant="link">
-			<ButtonIcon
-				style={{
-					color: themeConfig.options.headerTintColor,
+	const roomFloor = useRoomFloorListByRoomId(Number(id));
+	if (roomFloor.length > 0)
+		return (
+			<FlatList
+				contentContainerStyle={{
+					flexGrow: 1,
+					justifyContent: "flex-end",
+					padding: 16,
 				}}
-				as={EllipsisIcon}
+				data={roomFloor}
+				renderItem={({ item }) => <RoomFloor roomFloor={item} />}
+				inverted
 			/>
-		</Button>
-	);
-};
+		);
+}
 
-const MessagesList = () => {
+function RoomFloor({ roomFloor }: { roomFloor: RoomFloorTable }) {
 	const { id } = useLocalSearchParams();
-	const [messageLists, setMessageLists] = React.useState<Messages[]>([]);
-	const [offset, setOffset] = React.useState<number>(10);
-	const [isMessageLoading, setIsMessageLoading] =
-		React.useState<boolean>(false);
+	const theme = useRoomTheme(Number(id));
+	if (theme) {
+		if (roomFloor.is_sender === 0) {
+			return (
+				<View style={theme.roomFloor.sender0}>
+					{theme.avatar.is_ShowAssistantAvatar && (
+						<ChatCharacterAvatar character_id={roomFloor.character_id as number} />
+					)}
 
-	const messages = useMessageDescByRoomId(Number(id));
-
-	React.useEffect(() => {
-		setMessageLists(messages);
-	}, [messages]);
-
-	return (
-		<FlatList
-			contentContainerStyle={{
-				flexGrow: 1,
-				justifyContent: "flex-end",
-				padding: 16,
-			}}
-			data={messageLists}
-			onEndReachedThreshold={0.2}
-			keyExtractor={(item) => item.id.toString()}
-			renderItem={({ item }) => <ChatBubble item={item} />}
-			ItemSeparatorComponent={() => <Box style={{ height: 16 }} />}
-			inverted
-		/>
-	);
-};
-
-const ChatBubble = ({ item }: { item: Messages }) => {
-	const [, setRoomOptions] = useAtom(roomOptionsAtom);
-	const [roomOptions] = useAtom(roomOptionsAtom);
-	const [assistantaAvatar, setAssistantaAvatar] = React.useState<string>();
-	const [assistantaName, setAssistantaName] = React.useState<string>();
-	const [userAvatar] = useAtom(USER_avtarAtom);
-	const [userName] = useAtom(USER_nameAtom);
-	const [actionBubble, setActionBubble] = useAtom(actionBubbleAtom);
-	const [chatBubbleModal, setChatBubbleModal] = useAtom(
-		modalAtom("chatBubbleModal"),
-	);
-	const [content, setContent] = React.useState<string>();
-	const themeConfig = useTranceTheme();
-	if (roomOptions.personnel) {
-		const character = useCharacterById(Number(roomOptions.personnel));
-		React.useEffect(() => {
-			setAssistantaAvatar(character?.cover);
-			setAssistantaName(character?.name);
-		}, [character]);
+					<ChatBubble roomFloor={roomFloor} />
+				</View>
+			);
+		}
+		if (roomFloor.is_sender === 1) {
+			return (
+				<View style={theme.roomFloor.sender1}>
+					<ChatBubble roomFloor={roomFloor} />
+					{theme.avatar.is_ShowUserAvatar && <ChatUserAvatar />}
+				</View>
+			);
+		}
 	}
+}
 
-	const handleLongPressBubble = (id: number) => {
-		setActionBubble(id);
-		setChatBubbleModal(true);
+function ChatBubble({ roomFloor }: { roomFloor: RoomFloorTable }) {
+	const { id } = useLocalSearchParams();
+	// context menu
+	const insets = useSafeAreaInsets();
+	const contentInsets = {
+		top: insets.top,
+		bottom: insets.bottom + 24,
+		left: 12,
+		right: 12,
 	};
+
+	// message init
+	const messages = useRoomMessageByRoomFloorId(roomFloor.id);
+	const [message, setMessage] = React.useState<RoomMessageTable | undefined>(undefined);
+	const [messageIndex, setMessageIndex] = React.useState<number>(0);
+	const room = useRoomById(Number(id));
+	const roomOptions = useRoomOptionsById(Number(id));
 	React.useEffect(() => {
-		const pureMessage = async () => {
-			const result = await transformRenderMessage(item.content[0]);
-			setContent(result);
+		if (!messages) return;
+		setMessage(messages.find((item) => item.id === roomFloor.room_message_sort[0]));
+	}, [roomFloor, messages]);
+
+	React.useEffect(() => {
+		const transformMessage = async () => {
+			try {
+				if (!message) {
+					return;
+				}
+				const regex = await readRegexWithTranceHiTextRender(roomFloor.character_id as number);
+				const transformRegexMessage = transformRegexText(message.content, regex);
+				message.content = transformRegexMessage;
+				setMessage(message);
+			} catch (error) {
+				console.log(error);
+				toast.error(error instanceof Error ? error.message : "!ERROR_UNKNOWN");
+			}
 		};
-		pureMessage();
-	}, [item.content]);
-	// Assistant
-	if (item.is_Sender === 0) {
-		return (
-			<Pressable onLongPress={() => handleLongPressBubble(item.id)}>
-				<Box>
-					<HStack className="max-w-[80%]" space="sm">
-						{themeConfig.Room.profile.is_AssistantAvatarShow &&
-							(assistantaAvatar ? (
-								<Pressable
-									onPress={() =>
-										router.push(`/character/${roomOptions.personnel}`)
-									}
-								>
-									<Image
-										source={{ uri: assistantaAvatar }}
-										alt="avatar"
-										style={themeConfig.Room?.componentStyle?.assistantAvatar}
-									/>
-								</Pressable>
-							) : (
-								<Skeleton
-									style={themeConfig.Room?.componentStyle?.assistantAvatar}
-								/>
-							))}
+		if (!message) return;
+		transformMessage();
+	}, [message, roomFloor.character_id]);
 
-						{content ? (
-							<VStack>
-								{themeConfig.Room.profile.is_AssistantNameShow && (
-									<Text style={themeConfig.Room.componentStyle?.assistantName}>
-										{assistantaName}
-									</Text>
-								)}
-
-								<Box
-									style={themeConfig.Room?.componentStyle?.assistantChatBubble}
-								>
-									<HighlightedAssistantText str={content} />
-								</Box>
-							</VStack>
-						) : (
-							<Skeleton
-								className="w-32 h-8 rounded-sm"
-								style={themeConfig.Room?.componentStyle?.assistantChatBubble}
-							/>
-						)}
-					</HStack>
-				</Box>
-			</Pressable>
-		);
-	}
-	// User
-	if (item.is_Sender === 1) {
-		return (
-			<Pressable onLongPress={() => handleLongPressBubble(item.id)}>
-				<Box className="max-w-[70%] ml-[30%]">
-					<HStack space="sm" className="self-end">
-						{content ? (
-							<VStack className="items-end">
-								{themeConfig.Room.profile.is_UserNameShow && (
-									<Text style={themeConfig.Room.componentStyle?.assistantName}>
-										{userName}
-									</Text>
-								)}
-								<Box
-									className=""
-									style={themeConfig.Room?.componentStyle?.userChatBubble}
-								>
-									<HighlightedAssistantText str={content} />
-								</Box>
-							</VStack>
-						) : (
-							<Skeleton
-								className="w-24 h-8  rounded-sm"
-								style={themeConfig.Room?.componentStyle?.userChatBubble}
-							/>
-						)}
-						{themeConfig.Room.profile.is_UserAvatarShow &&
-							(userAvatar ? (
-								<Image
-									source={{ uri: userAvatar }}
-									alt="avatar"
-									style={themeConfig.Room?.componentStyle?.userAvatar}
-								/>
-							) : (
-								<Skeleton
-									style={themeConfig.Room?.componentStyle?.userAvatar}
-								/>
-							))}
-					</HStack>
-				</Box>
-			</Pressable>
-		);
-	}
-};
-
-const ChatBubbleLongPressModal = () => {
-	const { id } = useLocalSearchParams();
-	const [roomOptions] = useAtom(roomOptionsAtom);
-	const [actionBubble, setActionBubble] = useAtom(actionBubbleAtom);
-	const messages = useMessageByRoomId(Number(id));
-	const message = messages.find((item) => item.id === actionBubble);
-	const [isActionBarLoading, setIsActionBarLoading] =
-		useAtom(actionBarLoadingAtom);
-	const [isOpen, setIsOpen] = useAtom(modalAtom("chatBubbleModal"));
-	const [isChatBubbleMessageGroupModal, setIsChatBubbleMessageGroupModal] =
-		useAtom(chatBubbleMessageGroupModalAtom);
-	const handleDeleteMessage = async () => {
+	// action
+	const [isMessageIndexChangeShow, setIsMessageIndexChangeShow] = React.useState<boolean>(false);
+	const [isSending, setIsSending] = useAtom(isSendingAtom);
+	const handleRespawnMessage = async () => {
+		setIsSending(true);
+		if(!messages) return
 		try {
-			if (!actionBubble) throw new Error("消息ID状态丢失");
-			const rows = await deleteMessageById(actionBubble);
-			if (rows) {
-				setIsOpen(false);
-				toast.success("删除成功");
+			const userLatestInput = await readRoomMessageRespawnUser(Number(id),roomFloor.id)
+			const hi: TranceHi = {
+				userLatestInput:userLatestInput.content,
+				userLatestInputId:userLatestInput.id,
+				type: "text",
+				room_id: Number(id),
+				room_floor_id: roomFloor.id,
+				personnel: room.personnel,
+				prompt_group_id: roomOptions.prompt_group_id || undefined,
+				is_Respawn: true,
+				model: {
+					model_name: roomOptions.model?.name as string,
+					model_version: roomOptions.model?.version as string,
+					is_Stream: false,
+				},
+			};
+			const result = await tranceHi(hi);
+			if (result) {
+				const props = {
+					role: "assistant" as const,
+					content: result,
+					type: "text" as const,
+					room_floor_id: roomFloor.id,
+				};
+				await createRoomFloorMessage(roomFloor.id, props);
 			}
 		} catch (error) {
-			const message = error instanceof Error ? error.message : "未知错误";
-			toast.error(message);
-		}
-	};
-	const handleCopySource = async () => {
-		try {
-			if (!actionBubble) throw new Error("消息ID状态丢失");
-			const message = messages.find((item) => item.id === actionBubble);
-			if (!message) throw new Error("消息状态丢失");
-			await Clipboard.setStringAsync(message.content[0]);
-			setIsOpen(false);
-			toast.success("复制成功");
-		} catch (error) {
-			throw error instanceof Error ? error.message : new Error("未知错误");
-		}
-	};
-
-	const handleCopy = async () => {
-		try {
-			if (!actionBubble) throw new Error("消息ID状态丢失");
-			const message = messages.find((item) => item.id === actionBubble);
-			if (!message) throw new Error("消息状态丢失");
-			const result = await transformRenderMessage(message.content[0]);
-			await Clipboard.setStringAsync(result);
-			setIsOpen(false);
-			toast.success("复制成功");
-		} catch (error) {
-			throw error instanceof Error ? error.message : new Error("未知错误");
-		}
-	};
-	const handleAnotherMessage = async () => {
-		try {
-			setIsActionBarLoading(true);
-			if (!actionBubble) throw new Error("消息ID状态丢失");
-			const lastUserContent = messages.at(-2)?.content[0];
-			if (!lastUserContent) throw new Error("暂不支持首个消息或无用户回复");
-			const message = messages.find((item) => item.id === actionBubble);
-			if (!message) throw new Error("消息状态丢失");
-			setIsOpen(false);
-			const result = await tranceHi(
-				lastUserContent,
-				"text",
-				roomOptions as RoomOptions,
-				actionBubble,
-			);
-			if (!result) {
-				toast.error("生成新消息失败");
-				return;
-			}
-			const rows = await updatePushMessage(actionBubble, result as string);
-			if (rows) {
-				toast.success("生成新消息成功");
-			}
-		} catch (error) {
-			const message = error instanceof Error ? error.message : "未知错误";
-			toast.error(message);
+			console.error(error);
+			toast.error(error instanceof Error ? error.message : "!ERROR_UNKNOWN");
 		} finally {
-			setIsActionBarLoading(false);
+			setIsSending(false);
 		}
 	};
-
-	const handleBubbleMessageGroup = () => {
-		setIsOpen(false);
-		setIsChatBubbleMessageGroupModal(true);
-	};
-
-	return (
-		<Box>
-			<Modal
-				isOpen={isOpen}
-				onClose={() => {
-					setIsOpen(false);
-					setActionBubble(undefined);
-				}}
-				size="xs"
-			>
-				<ModalBackdrop className="bg-transparent" />
-				<ModalContent className="gap-y-8">
-					{message?.is_Sender === 0 && (
-						<Pressable onPress={handleAnotherMessage}>
-							<HStack className="justify-between items-center">
-								<Text>生成新消息</Text>
-								<Icon as={MessageCirclePlus} />
-							</HStack>
-						</Pressable>
-					)}
-					{message?.is_Sender === 0 && (
-						<Pressable onPress={handleBubbleMessageGroup}>
-							<HStack className="justify-between items-center">
-								<Text>查看消息组</Text>
-								<Icon as={MessageCircleMore} />
-							</HStack>
-						</Pressable>
-					)}
-					<Pressable onPress={handleCopy}>
-						<HStack className="justify-between items-center">
-							<Text>复制消息</Text>
-							<Icon as={CopyIcon} />
-						</HStack>
-					</Pressable>
-					<Pressable onPress={handleCopySource}>
-						<HStack className="justify-between items-center">
-							<Text>复制源消息</Text>
-							<Icon as={BookCopyIcon} />
-						</HStack>
-					</Pressable>
-					<Pressable onPress={handleDeleteMessage}>
-						<HStack className="justify-between items-center">
-							<Text className="text-red-500">删除</Text>
-							<Icon color="red" as={TrashIcon} />
-						</HStack>
-					</Pressable>
-				</ModalContent>
-			</Modal>
-		</Box>
-	);
-};
-
-const ChatBubbleMessageGroup = () => {
-	const [isOpen, setIsOpen] = useAtom(chatBubbleMessageGroupModalAtom);
-	const [actionBubble] = useAtom(actionBubbleAtom);
-
-	const handleChangeMessage = async (way: "left" | "right") => {
-		if (!actionBubble) {
-			toast.error("消息状态丢失");
-			return;
-		}
-		try {
-			if (way === "left") {
-				await updateMessageGroupToLast(actionBubble);
-			}
-			await updateMessageGroupToFirst(actionBubble);
-		} catch (error) {
-			const message = error instanceof Error ? error.message : "未知错误";
-			toast.error(message);
-		}
-	};
-	if (isOpen)
+	if (message)
 		return (
-			<Box>
-				<Fab
-					onPress={() => handleChangeMessage("left")}
-					size="sm"
-					placement="bottom left"
-					isHovered={false}
-					isDisabled={false}
-					isPressed={false}
-				>
-					<FabIcon as={ArrowLeft} />
-				</Fab>
-				<Fab
-					onPress={() => setIsOpen(false)}
-					size="sm"
-					placement="bottom center"
-					isHovered={false}
-					isDisabled={false}
-					isPressed={false}
-				>
-					<FabIcon as={CloseIcon} />
-				</Fab>
-				<Fab
-					onPress={() => handleChangeMessage("right")}
-					size="sm"
-					placement="bottom right"
-					isHovered={false}
-					isDisabled={false}
-					isPressed={false}
-				>
-					<FabIcon as={ArrowRight} />
-				</Fab>
-			</Box>
-		);
-};
+			<View>
+				<ContextMenu>
+					<ContextMenuTrigger className="active:opacity-80">
+						{message ? (
+							<View>
+								<ChatBubbleMessageMiddleware roomFloor={roomFloor} messages={message} />
+							</View>
+						) : (
+							<Skeleton className="w-64 h-16" />
+						)}
+					</ContextMenuTrigger>
 
-const ActionBar = () => {
-	const [userInput, setUserInput] = React.useState<string>();
-	const [isLoading, setIsLoading] = useAtom(actionBarLoadingAtom);
-	const [roomOptions] = useAtom(roomOptionsAtom);
-	const themeConfig = useThemeRoom();
-	const handleSayHi = async () => {
-		const userInputTemp = userInput;
-		try {
-			setIsLoading(true);
-			if (!userInput) throw new Error("输入内容不能为空");
-			if (!roomOptions.id) throw new Error("房间未初始化");
-
-			setUserInput("");
-			const saveUserInputResult = await createMessage(
-				roomOptions.id,
-				"text",
-				1,
-				userInput,
-				"user",
-			);
-			if (!saveUserInputResult) throw new Error("保存用户输入失败");
-			const result = await tranceHi(
-				userInput,
-				"text",
-				roomOptions as RoomOptions,
-			);
-			const rows = await createMessage(
-				roomOptions.id,
-				"text",
-				0,
-				result as string,
-				"assistant",
-			);
-		} catch (error) {
-			if (error instanceof Error) {
-				toast.error(error.message);
-				setUserInput(userInputTemp);
-				return;
-			}
-			setUserInput(userInputTemp);
-			toast.error("未知错误");
-		} finally {
-			setIsLoading(false);
-		}
-	};
-	return (
-		<Box style={themeConfig.componentStyle?.actionBar} className="p-3">
-			<HStack space="sm" className="justify-between items-center">
-				<Input className="flex-1 h-auto min-h-[36px] max-h-[200px] overflow-y-auto resize-none">
-					<InputField
-						style={themeConfig.componentStyle?.userInputField}
-						onChangeText={setUserInput}
-						multiline
-						value={userInput}
+					<ContextMenuContent align="start" insets={contentInsets} className="w-64 p-2">
+						<ContextMenuItem
+							onPress={() =>
+								router.push({
+									pathname: "/room/[id]/roomFloorMessageContentEditModal",
+									params: { id: id as string, roomMessageId: roomFloor.room_message_sort[0] },
+								})
+							}
+							className="flex flex-row items-center gap-x-2"
+						>
+							<Icon as={Pen} />
+							<Text>编辑内容</Text>
+						</ContextMenuItem>
+						{/* <ContextMenuItem className="flex flex-row items-center gap-x-2">
+						<Icon as={Copy} />
+						<Text>复制消息</Text>
+					</ContextMenuItem>
+					<ContextMenuItem className="flex flex-row items-center gap-x-2">
+						<Icon as={BookCopy} />
+						<Text>复制源消息</Text>
+					</ContextMenuItem> */}
+						{roomFloor.is_sender === 0 && (
+							<ContextMenuItem onPress={handleRespawnMessage} className="flex flex-row items-center gap-x-2">
+								<Icon as={MessageSquareDiff} />
+								<Text>再次生成</Text>
+							</ContextMenuItem>
+						)}
+						<ContextMenuItem
+							onPress={() => setIsMessageIndexChangeShow(true)}
+							className="flex flex-row items-center gap-x-2"
+						>
+							<Icon as={MessageSquareHeart} />
+							<Text>选择回复</Text>
+						</ContextMenuItem>
+						<ContextMenuItem
+							onPress={async () => await deleteRoomFloorById(roomFloor.id)}
+							className="flex flex-1 flex-row items-center gap-x-2"
+						>
+							<Icon as={Trash} />
+							<Text className="text-red-400">删除消息</Text>
+						</ContextMenuItem>
+					</ContextMenuContent>
+				</ContextMenu>
+				{isMessageIndexChangeShow && (
+					<ChatBubbleFloorMessagePagination
+						floor={roomFloor}
+						messageIndex={messageIndex}
+						setIsShow={setIsMessageIndexChangeShow}
+						setMessageIndex={setMessageIndex}
 					/>
-				</Input>
-				{themeConfig.componentStyle?.sendButtonText ? (
-					<Button
-						onPress={handleSayHi}
-						isDisabled={userInput?.length === 0 || isLoading}
-						style={themeConfig.componentStyle?.sendButton}
-					>
-						{isLoading ? (
-							<ButtonSpinner />
-						) : (
-							<ButtonText style={themeConfig.componentStyle?.sendButtonText}>
-								发送
-							</ButtonText>
-						)}
-					</Button>
-				) : (
-					<Button
-						onPress={handleSayHi}
-						isDisabled={userInput?.length === 0 || isLoading}
-						style={themeConfig.componentStyle?.sendButton}
-					>
-						{isLoading ? (
-							<ButtonSpinner />
-						) : (
-							<ButtonIcon
-								style={themeConfig.componentStyle?.sendButtonIcon}
-								as={SendHorizonalIcon}
-							/>
-						)}
-					</Button>
 				)}
-			</HStack>
-		</Box>
+			</View>
+		);
+}
+
+function ChatBubbleFloorMessagePagination({
+	floor,
+	messageIndex,
+	setIsShow,
+	setMessageIndex,
+}: {
+	floor: RoomFloorTable;
+	messageIndex: number;
+	setIsShow: React.Dispatch<React.SetStateAction<boolean>>;
+	setMessageIndex: React.Dispatch<React.SetStateAction<number>>;
+}) {
+	const maxIndex = floor.room_message_sort.length;
+	const handlePagination = async (direction: "next" | "previous") => {
+		try {
+			const result = await updateRoomFloorMessagePagination(floor.id, direction);
+			if (!result) return;
+			if (direction === "next") {
+				setMessageIndex(messageIndex === maxIndex - 1 ? 0 : messageIndex + 1);
+			} else {
+				setMessageIndex(messageIndex === 0 ? maxIndex - 1 : messageIndex - 1);
+			}
+		} catch (error) {
+			console.error(error);
+			toast.error(error instanceof Error ? error.message : "!ERROR_UNKNOWN");
+		}
+	};
+	return (
+		<View className="flex flex-row justify-between items-center px-2 mt-4">
+			<View className="flex flex-row items-center gap-x-4">
+				<Pressable onPress={() => setIsShow(false)}>
+					<Icon as={X} />
+				</Pressable>
+				<Text>
+					{messageIndex + 1} / {maxIndex}
+				</Text>
+			</View>
+			<View className="flex flex-row items-center gap-x-4">
+				<Pressable onPress={() => handlePagination("previous")}>
+					<Icon as={ArrowLeftCircle} />
+				</Pressable>
+				<Pressable onPress={() => handlePagination("next")}>
+					<Icon as={ArrowRightCircle} />
+				</Pressable>
+			</View>
+		</View>
 	);
-};
+}
+
+function ChatBubbleMessageMiddleware({
+	roomFloor,
+	messages,
+}: { roomFloor: RoomFloorTable; messages: RoomMessageTable }) {
+	const { id } = useLocalSearchParams();
+	const [renderMessage, setRenderMessage] = React.useState<TranceChatBubbleMessage | undefined>(undefined);
+	const theme = useRoomTheme(Number(id));
+	React.useEffect(() => {
+		const initMessage = async () => {
+			try {
+				const regex = await readRegexWithTranceHiTextRender(roomFloor.character_id as number);
+				const transformRegexMessage = transformRegexText(messages.content, regex);
+				const userRegexContent = await transformUserPlaceholder(transformRegexMessage);
+				messages.content = userRegexContent;
+				const transformMessage = transformChatBubbleMessage(messages);
+				setRenderMessage(transformMessage);
+			} catch (error) {
+				console.error(error);
+				toast.error(error instanceof Error ? error.message : "!ERROR_UNKNOWN");
+			}
+		};
+		initMessage();
+	}, [messages, roomFloor]);
+	if (theme) {
+		if (renderMessage?.role === "assistant") {
+			return (
+				<View className="flex flex-col gap-y-0.5">
+					{renderMessage.message.map((item) => {
+						if (item.type === "text")
+							return <ChatBubbleAssistantText key={item.id} str={item.content[0]} theme={theme} />;
+						if (item.type === "image") return <ChatBubbleAssistantImage key={item.id} gallery={item.content} />;
+					})}
+				</View>
+			);
+		}
+		if (renderMessage?.role === "user") {
+			return (
+				<View>
+					{renderMessage.message.map((item) => (
+						<ChatBubbleUserText key={item.id} str={item.content[0]} theme={theme} />
+					))}
+				</View>
+			);
+		}
+		if (renderMessage?.role === "system") {
+			return (
+				<View>
+					<Text>System</Text>
+				</View>
+			);
+		}
+	}
+}
+
+function UserActionBar() {
+	const { id } = useLocalSearchParams();
+	const [isFold, setIsFold] = React.useState<boolean>(false);
+	const [inputHeight, setInputHeight] = React.useState<number>(32);
+	const [userInputText, setUserInputText] = React.useState<string>("");
+	const [isSending, setIsSending] = useAtom(isSendingAtom);
+	const roomOptions = useRoomOptionsById(Number(id));
+	const room = useRoomById(Number(id));
+	const theme = useRoomTheme(Number(id));
+	// input height change
+
+	const handleTranceSayHi = async () => {
+		if (userInputText.length === 0) return;
+		const userInputTemp = userInputText;
+		setUserInputText("");
+		setIsSending(true);
+		try {
+			const newMessageProps = {
+				room_id: Number(id),
+				type: "text" as const,
+				role: "user" as const,
+				content: userInputText,
+				is_sender: 1,
+			};
+			const userResultId = await createRoomNewMessage(newMessageProps);
+			const hi: TranceHi = {
+				userLatestInput: userInputText,
+				userLatestInputId: userResultId,
+				type: "text",
+				room_id: Number(id),
+				personnel: room.personnel,
+				prompt_group_id: roomOptions.prompt_group_id || undefined,
+				is_Respawn: false,
+				model: {
+					model_name: roomOptions.model?.name as string,
+					model_version: roomOptions.model?.version as string,
+					is_Stream: false,
+				},
+			};
+			const result = await tranceHi(hi);
+			if (result) {
+				await createRoomNewMessage({
+					room_id: Number(id),
+					character_id: room.personnel[0],
+					type: "text",
+					content: result,
+					role: "assistant",
+					is_sender: 0,
+				});
+			}
+		} catch (error) {
+			console.error(error);
+			toast.error(error instanceof Error ? error.message : "!ERROR_UNKNOWN");
+			setUserInputText(userInputTemp);
+		} finally {
+			setIsSending(false);
+		}
+	};
+	if (theme)
+		return (
+			<View style={theme.actionBar.ActionBarStyle}>
+				<View className="flex flex-row justify-between items-center gap-x-4">
+					<Pressable onPress={() => setIsFold(!isFold)}>
+						<Icon as={isFold ? CircleChevronDown : PlusCircle} />
+					</Pressable>
+
+					<View className="flex-1">
+						<Input
+							style={theme.actionBar.TextInputStyle}
+							className="border rounded-md px-3 flex-1"
+							textAlignVertical="auto"
+							multiline
+							value={userInputText}
+							onChangeText={setUserInputText}
+							numberOfLines={3}
+						/>
+					</View>
+					<View>
+						<Pressable style={theme.actionBar.SendButton.buttonStyle} onPress={handleTranceSayHi}>
+							{isSending ? (
+								<ActivityIndicator size={"small"} color={"#9ca3af"} />
+							) : (
+								<>
+									{theme.actionBar.SendButton.is_ShowText && (
+										<Text style={theme.actionBar.SendButton.buttonTextStyle}>
+											{theme.actionBar.SendButton.buttonText.length > 0
+												? theme.actionBar.SendButton.buttonText
+												: "发送"}
+										</Text>
+									)}
+									{theme.actionBar.SendButton.is_ShowIcon && (
+										<Icon style={theme.actionBar.SendButton.buttonIconStyle} as={Send} />
+									)}
+								</>
+							)}
+						</Pressable>
+					</View>
+				</View>
+				{isFold && <UserActionBarFold />}
+			</View>
+		);
+}
+
+function UserActionBarFold() {
+	const { id } = useLocalSearchParams();
+	return (
+		<View className="p-3">
+			<View className="flex flex-col">
+				<View className="flex flex-row">
+					<Pressable
+						onPress={() => router.push(`/room/${id}/option`)}
+						className="flex flex-col gap-y-1 justify-center items-center active:opacity-80"
+					>
+						<Card className="p-3">
+							<Icon as={Settings} />
+						</Card>
+
+						<Text>房间设置</Text>
+					</Pressable>
+				</View>
+			</View>
+		</View>
+	);
+}
+
+function ChatCharacterAvatar({ character_id }: { character_id: number }) {
+	const { id } = useLocalSearchParams();
+	const theme = useRoomTheme(Number(id));
+	const cover = useCharacterCoverById(character_id);
+	if (theme)
+		return (
+			<Pressable onPress={() => router.push(`/character/${character_id}`)}>
+				<Image style={theme.avatar.assistant} source={cover} alt="Character Cover" />
+			</Pressable>
+		);
+}
+
+function ChatUserAvatar() {
+	const { id } = useLocalSearchParams();
+	const theme = useRoomTheme(Number(id));
+	const cover = useAtomValue(tranceUserAvatarAtom);
+	if (theme) return <Image style={theme.avatar.user} source={cover} alt="User Avatar" />;
+}

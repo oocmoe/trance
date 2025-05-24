@@ -1,0 +1,14 @@
+{
+  "trance": "trance",
+  "drawer": {
+    "index":"Index",
+    "my": "My",
+    "message": "Message",
+    "character": "Character",
+    "knowledgeBase":"KnowledgeBase",
+    "prompt":"Prompt",
+    "model":"AI Model",
+    "regex": "Regex Script",
+    "setting":"Setting"
+  }
+}

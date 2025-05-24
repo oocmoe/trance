@@ -1,102 +1,49 @@
-import { Box } from "@/components/ui/box";
-import { Button, ButtonIcon } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Heading } from "@/components/ui/heading";
-import { HStack } from "@/components/ui/hstack";
-import { ArrowRightIcon, Icon } from "@/components/ui/icon";
-import { Switch } from "@/components/ui/switch";
-import { Text } from "@/components/ui/text";
-import { VStack } from "@/components/ui/vstack";
-import { useKnowledgeBaseById } from "@/hook/knowledgeBase";
-import { updateKnowledgeBaseFiledById } from "@/utils/db/knowledgeBase";
-import { Stack, router, useLocalSearchParams, useRouter } from "expo-router";
-import { EllipsisIcon } from "lucide-react-native";
+import Icon from "@/components/Icon";
+import { useKnowledgeBaseById, useKnowledgeEntryByKnowledgeBaseId } from "@/hook/useKnowledgeBase";
+import { Link, router, Stack, useLocalSearchParams } from "expo-router";
+import { Cog, Pen, Settings2 } from "lucide-react-native";
 import React from "react";
-import { Pressable } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
-export default function knowledgeBaseByIdScreen() {
+import { Pressable, ScrollView, View } from "react-native";
+import { CardNavItem } from "@/components/card-navItem";
+export default function KnowledgeBaseIdScreen() {
+	const { id } = useLocalSearchParams();
+	const knowledgeBase = useKnowledgeBaseById(Number(id));
 	return (
-		<Box className="h-full p-3">
+		<>
 			<Stack.Screen
 				options={{
-					headerRight: () => {
-						return <HeaderRight />;
-					},
+					title: knowledgeBase.name,
+					headerRight: () => (
+						<Link href={`/knowledgeBase/${id}/option`}>
+							<Icon as={Settings2} />
+						</Link>
+					),
 				}}
 			/>
-			<KnowledgeBaseIsEnableSwitch />
-			<KnowledgeBaseEntryList />
-		</Box>
+			<View className="flex-1">
+				<KnowledgeBaseEntryList />
+			</View>
+		</>
 	);
 }
 
-const HeaderRight = () => {
+function KnowledgeBaseEntryList() {
 	const { id } = useLocalSearchParams();
+	const knowledgeEntryList = useKnowledgeEntryByKnowledgeBaseId(Number(id));
 	return (
-		<Button
-			onPress={() => router.push(`/knowledgeBase/${id}/detail`)}
-			variant="link"
-		>
-			<ButtonIcon as={EllipsisIcon} />
-		</Button>
+		<View className="flex-1">
+			<ScrollView>
+				<View className="flex flex-col gap-y-2 p-3">
+					{knowledgeEntryList.map((item) => (
+						<CardNavItem
+							key={item.id}
+							label={item.name ?? ""}
+							href={`/knowledgeBase/${id}/${item.id}`}
+							status={item.is_enabled ? "active" : "offline"}
+						/>
+					))}
+				</View>
+			</ScrollView>
+		</View>
 	);
-};
-
-const KnowledgeBaseIsEnableSwitch = () => {
-	const { id } = useLocalSearchParams();
-	const list = useKnowledgeBaseById(Number(id));
-	const handleChange = async () => {
-		try {
-			await updateKnowledgeBaseFiledById(
-				Number(id),
-				"is_Enabled",
-				!list.is_Enabled,
-			);
-		} catch (error) {
-			throw error instanceof Error
-				? error.message
-				: new Error("转换提示词信息失败");
-		}
-	};
-	return (
-		<Box>
-			<HStack className="justify-between items-center">
-				<Text>是否全局启用</Text>
-				{list && (
-					<Switch onValueChange={handleChange} value={list.is_Enabled} />
-				)}
-			</HStack>
-		</Box>
-	);
-};
-
-const KnowledgeBaseEntryList = () => {
-	const { id } = useLocalSearchParams();
-	const list = useKnowledgeBaseById(Number(id));
-	const router = useRouter();
-	return (
-		<ScrollView className="flex-1">
-			{list?.entries && (
-				<VStack space="sm">
-					{list.entries.map((item) => {
-						return (
-							<Pressable
-								onPress={() =>
-									router.push(`/knowledgeBase/${id}/entry/${item.id}`)
-								}
-								key={item.id}
-							>
-								<Card>
-									<HStack className="justify-between items-center">
-										<Heading>{item.name}</Heading>
-										<Icon as={ArrowRightIcon} />
-									</HStack>
-								</Card>
-							</Pressable>
-						);
-					})}
-				</VStack>
-			)}
-		</ScrollView>
-	);
-};
+}

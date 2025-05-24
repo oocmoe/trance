@@ -1,15 +1,47 @@
-// store/core.ts
-import { atom } from "jotai";
-import { atomFamily } from "jotai/utils";
+import { atomWithStorage, createJSONStorage } from "jotai/utils";
+import { Storage } from "expo-sqlite/kv-store";
+import { atom, ExtractAtomValue } from "jotai";
 
-/**
- * 模态框状态
- * 使用时须传入唯一ID
- */
-export const modalAtom = atomFamily((id: string) => atom(false));
+// app
+export const tranceAppIsBootstrappedAtom = atomWithStorage(
+	"TRANCE_ISBOOTSTRAPPED",
+	false,
+	createJSONStorage<boolean>(() => Storage),
+);
 
-// 用户全局头像
-export const USER_avtarAtom = atom<string>();
+export const tranceIsDarkModeAtom = atomWithStorage(
+	"TRANCE_ISDARKMODE",
+	false,
+	createJSONStorage<boolean>(() => Storage),
+);
 
-// 用户全局名称
-export const USER_nameAtom = atom<string>();
+export const tranceDefaultModelAtom = atomWithStorage(
+	"TRANCE_ROOM_DEFAULT_MODEL",
+	undefined,
+	createJSONStorage<
+		| {
+				name: string;
+				version: string;
+		  }
+		| undefined
+	>(() => Storage),
+);
+
+export const tranceDefaultPromptGroupAtom = atomWithStorage(
+	"TRANCE_ROOM_DEFAULT_PROMPTGROUP",
+	undefined,
+	createJSONStorage<number | undefined>(() => Storage),
+);
+
+// user
+export const tranceUsernameAtom = atomWithStorage(
+	"TRANCE_USER_NAME",
+	"·(OoC)·",
+	createJSONStorage<string>(() => Storage),
+);
+
+export const tranceUserAvatarAtom = atomWithStorage(
+	"TRANCE_USER_AVATAR",
+	"",
+	createJSONStorage<string>(() => Storage),
+);

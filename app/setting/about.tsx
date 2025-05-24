@@ -1,15 +1,22 @@
-import { Box } from "@/components/ui/box";
 import { Heading } from "@/components/ui/heading";
+import { Stack } from "expo-router";
+import { View } from "react-native";
 import { Text } from "@/components/ui/text";
-
 export default function AboutScreen() {
 	return (
-		<Box className="h-full p-3">
-			<Heading>喘息(trance) By OoC 萌</Heading>
-			<Text>版本: 0.8.1 开发者预览版</Text>
-			<Text>存储库: github.com/oocmoe/trance</Text>
-			<Text>联络: contact@ooc.moe</Text>
-			<Text>滥用投诉: abuse@ooc.moe</Text>
-		</Box>
+		<>
+			<Stack.Screen options={{ title: "关于 trance" }} />
+			<View className="p-3 flex flex-col gap-y-2">
+        <Heading>喘息 trance</Heading>
+        <Text>0.9.0</Text>
+        <Heading>存储库</Heading>
+        <Text>https://github.com/oocmoe/trance</Text>
+        <Heading>联络</Heading>
+        <Text>https://ooc.moe/trance</Text>
+        <Text>contact@ooc.moe</Text>
+        <Heading>滥用投诉</Heading>
+        <Text>abuse@ooc.moe</Text>
+      </View>
+		</>
 	);
 }

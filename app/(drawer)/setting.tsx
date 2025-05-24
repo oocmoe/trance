@@ -1,64 +1,67 @@
-// app/(drawer)/setting.tsx
-
-import { Box } from "@/components/ui/box";
 import { Card } from "@/components/ui/card";
+import { Link, router } from "expo-router";
+import { Pressable, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Text } from "@/components/ui/text";
+import Icon from "@/components/Icon";
+import { ArrowRight, Circle, Palette } from "lucide-react-native";
 import { Heading } from "@/components/ui/heading";
-import { HStack } from "@/components/ui/hstack";
-import { ArrowRightIcon, Icon } from "@/components/ui/icon";
-import { VStack } from "@/components/ui/vstack";
-import { type Href, Stack, router } from "expo-router";
-import { InfoIcon, PaintRollerIcon } from "lucide-react-native";
-import { Pressable } from "react-native";
-
-const lists = [
-	{
-		id: 1,
-		title: "主题",
-		path: "/setting/theme",
-		icon: PaintRollerIcon,
-	},
-	{
-		id: 2,
-		title: "关于 trance",
-		path: "/setting/about",
-		icon: InfoIcon,
-	},
-];
-
 export default function SettingScreen() {
 	return (
-		<Box>
-			<Stack.Screen
-				options={{
-					headerSearchBarOptions: {
-						placeholder: "搜索",
-					},
-				}}
-			/>
-
-			<SettingList />
-		</Box>
+		<View className="flex-1">
+			<SafeAreaView className="flex-1">
+				<ScreenHeader />
+				<SettingList />
+			</SafeAreaView>
+		</View>
 	);
 }
 
-const SettingList = () => {
+function ScreenHeader() {
 	return (
-		<VStack space="sm" className="p-3">
-			{lists.map((item) => (
-				<Pressable onPress={() => router.push(item.path as Href)} key={item.id}>
-					<Card key={item.id}>
-						<HStack className="justify-between items-center">
-							<Box>
-								<HStack className="justify-between items-center" space="sm">
-									<Icon as={item.icon} />
-									<Heading>{item.title}</Heading>
-								</HStack>
-							</Box>
-							<Icon as={ArrowRightIcon} />
-						</HStack>
-					</Card>
-				</Pressable>
-			))}
-		</VStack>
+		<View className="flex flex-row justify-between items-center p-3">
+			<View>
+				<Heading size="2xl">设置</Heading>
+			</View>
+		</View>
 	);
-};
+}
+
+function SettingList() {
+	return (
+		<View className="flex flex-col gap-y-2 p-3">
+			<Theme />
+			<About />
+		</View>
+	);
+}
+
+function Theme() {
+	return (
+		<Pressable onPress={() => router.push("/setting/theme")}>
+			<Card className="flex flex-row p-3 justify-between items-center">
+				<View className="flex flex-row items-center gap-x-2">
+					<Icon as={Palette} />
+					<Heading>主题</Heading>
+				</View>
+
+				<Icon as={ArrowRight} />
+			</Card>
+		</Pressable>
+	);
+}
+
+function About() {
+	return (
+		<Pressable onPress={() => router.push("/setting/about")}>
+			<Card className="flex flex-row p-3 justify-between items-center">
+				<View className="flex flex-row items-center gap-x-2">
+					<Icon as={Circle} />
+					<Heading>关于喘息</Heading>
+				</View>
+
+				<Icon as={ArrowRight} />
+			</Card>
+		</Pressable>
+	);
+}
