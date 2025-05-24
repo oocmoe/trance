@@ -52,7 +52,7 @@ function CharacterImport() {
 			<Pressable onPress={handleImport} className="active:opacity-80 w-full">
 				<Card className="p-6">
 					<Text className="font-bold text-xl">导入 PNG 格式角色卡</Text>
-					<Text className="text-gray-400">支持 SillyTavern Tavern V2 V1 格式</Text>
+					<Text className="text-gray-400">支持 SillyTavern Tavern V2 V3 格式</Text>
 				</Card>
 			</Pressable>
 		</View>

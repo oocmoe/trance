@@ -24,10 +24,11 @@ export async function converterImageToWebpBase64(uri: string) {
 export async function converterCharacterDataToTrance(characterJson: any, cover: string) {
 	try {
 		// Spec V2
-		if (characterJson.spec === "chara_card_v2") {
-			const result = await coverterCharacterTavernCardV2(characterJson, cover);
+		if (characterJson.spec === "chara_card_v2" || characterJson.spec === "chara_card_v3") {
+			const result = await converterCharacterTavernCardV2(characterJson, cover);
 			return result;
 		}
+		throw new Error("不支持此格式")
 	} catch (error) {
 		throw new Error(error instanceof Error ? error.message : "!ERROR_TRANCE_FUNCTION: converterCharacterDataToTrance");
 	}
@@ -36,8 +37,7 @@ export async function converterCharacterDataToTrance(characterJson: any, cover: 
 /**
  *
  */
-
-async function coverterCharacterTavernCardV2(characterJson: TavernCardV2, cover: string) {
+async function converterCharacterTavernCardV2(characterJson: TavernCardV2, cover: string) {
 	try {
 		const prologue = () => {
 			const first_mes = {
@@ -55,6 +55,7 @@ async function coverterCharacterTavernCardV2(characterJson: TavernCardV2, cover:
 			}
 			return Array(first_mes);
 		};
+		console.log(prologue())
 		const character = {
 			name: characterJson.data.name,
 			cover: cover,
