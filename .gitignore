@@ -45,5 +45,4 @@ expo-env.d.ts
 app.json
 *.lock
 eas.json
-eas.json
 /drizzle
