@@ -46,3 +46,4 @@ app.json
 *.lock
 eas.json
 /drizzle
+/playground
