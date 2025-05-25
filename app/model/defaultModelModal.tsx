@@ -1,9 +1,10 @@
-import ModelSelect from "@/components/ModelSelect";
+
 import React from "react";
 import { toast } from "sonner-native";
 import { Storage } from "expo-sqlite/kv-store";
 import { Stack } from "expo-router";
 import { View } from "react-native";
+import ModelSelect from "@/components/modelSelect";
 export default function DefaultModelModal() {
 	const [name, setName] = React.useState<string>("");
 	const [version, setVersion] = React.useState<string>("");

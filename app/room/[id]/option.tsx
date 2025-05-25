@@ -1,7 +1,7 @@
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/text";
-import ModelSelect from "@/components/ModelSelect";
+import ModelSelect from "@/components/modelSelect";
 import React from "react";
 import { useRoomOptionsById } from "@/hook/useRoom";
 import { Button } from "@/components/ui/button";
