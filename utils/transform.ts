@@ -289,6 +289,7 @@ export function transformRegexText(str: string, regex: Array<RegexTable>) {
 	let result = str;
 	for (const item of regex) {
 		if (!item.is_enabled || !item.replace) continue;
+
 		const patternParts = item.replace.match(/^\/(.*?)\/([gimsuy]*)$/);
 		const replacement = item.placement ?? "";
 		if (patternParts) {
@@ -335,7 +336,7 @@ export function transformChatBubbleMessage(roomMessage: RoomMessageTable): Tranc
 	};
 }
 function transformHTMLImageSrc(str: string) {
-	const imageSrcRegex = new RegExp(/(?<=<img[^>]*\bsrc=")[^"]+/g);
+	const imageSrcRegex = /(?<=<img[^>]*\bsrc=("|'))[^"']+(?=\1)|(?<=<img[^>]*\bsrc=)([^"'\s>]+)/g;
 	const imageSrc = str.match(imageSrcRegex);
 	if (imageSrc) return imageSrc;
 }
