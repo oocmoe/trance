@@ -71,6 +71,14 @@ export function useRoomMessageById(id: number) {
 	return data[0] ?? [];
 }
 
+
+export function useRoomFloorRecordByRoomId(id:number){
+		const { data, error, updatedAt } = useLiveQuery(
+		db.select().from(roomFloorTable).where(eq(roomFloorTable.room_id, id)),
+	);
+	return data.length ?? 0;
+}
+
 export function useRoomTheme(id: number) {
 	const { colorScheme } = useColorScheme();
 	const { data, error, updatedAt } = useLiveQuery(

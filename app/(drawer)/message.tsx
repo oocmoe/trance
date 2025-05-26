@@ -1,4 +1,4 @@
-import { useRoomList } from "@/hook/useRoom";
+import { useRoomFloorRecordByRoomId, useRoomList } from "@/hook/useRoom";
 import { router } from "expo-router";
 import { FlatList, Pressable, View } from "react-native";
 import { Image } from "expo-image";
@@ -8,6 +8,7 @@ import { SearchX } from "lucide-react-native";
 import Icon from "@/components/Icon";
 import { format } from "date-fns";
 import { Heading } from "@/components/ui/heading";
+import { MessageFlatListCard } from "@/components/message-flatListCard";
 export default function MessageScreen() {
 	return (
 		<View className="flex-1">
@@ -38,23 +39,9 @@ function MessageList() {
 					data={roomList}
 					numColumns={1}
 					keyExtractor={(item) => item.id.toString()}
+					contentContainerStyle={{ flexGrow: 1 }}
 					renderItem={({ item }) => (
-						<View>
-							<Pressable
-								onPress={() => {
-									router.push(`/room/${item.id}`);
-								}}
-								className="active:opacity-80"
-							>
-								<View className="p-3  flex flex-row justify-between items-center">
-									<Image source={item.cover} className="w-32 h-24 rounded-md" contentFit="cover" />
-									<View className="flex-1 ml-3 flex flex-col gap-y-1">
-										<Text className="font-bold">{item.name}</Text>
-										<Text>{format(new Date(item.created_at), "yyyy-MM-dd HH:mm:ss")}</Text>
-									</View>
-								</View>
-							</Pressable>
-						</View>
+						<MessageFlatListCard item={item} />
 					)}
 				/>
 			) : (
