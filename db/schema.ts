@@ -508,6 +508,7 @@ export const promptTable = sqliteTable("prompt", {
  * Export Table Type
  */
 export type CharacterTable = InferSelectModel<typeof characterTable>;
+export type RoomTable = InferSelectModel<typeof roomTable>;
 export type RoomFloorTable = InferSelectModel<typeof roomFloorTable>;
 export type RoomOptionTable = InferSelectModel<typeof roomOptionTable>;
 export type RoomMessageTable = InferSelectModel<typeof roomMessageTable>;
