@@ -77,7 +77,7 @@ export default function RootLayout() {
 						<Stack.Screen name="+not-found" />
 					</Stack>
 					<PortalHost />
-					<Toaster richColors closeButton visibleToasts={1} duration={1200} />
+					<Toaster richColors closeButton visibleToasts={1} duration={1200} position={"bottom-center"} />
 				</ThemeProvider>
 			</GestureHandlerRootView>
 		</SafeAreaProvider>
