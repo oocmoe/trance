@@ -10,6 +10,7 @@ import { Text } from "@/components/ui/text";
 import { toast } from "sonner-native";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Heading } from "@/components/ui/heading";
+import { tranceHiCustomOpenAITextTest } from "@/utils/model/customOpenAI";
 
 // jotai
 const keyAtom = atom<string>("");
@@ -19,12 +20,47 @@ export default function CustomOpenAIScreen() {
 	return (
 		<View className="flex-1">
 			<View className="flex flex-col gap-y-4 p-3">
+				<CustomOpenAITest />
 				<CustomOpenAIUrl />
 				<CustomOpenAIKey />
 			</View>
 			<CustomOpenFetchModel />
 		</View>
 	);
+}
+
+function CustomOpenAITest() {
+	const [content,setContent] = React.useState<string>("");
+	const [isLoading, setIsLoading] = React.useState(false);
+	const handleTest = async () =>{
+		try{
+			setIsLoading(true);
+			const url = await Storage.getItem("TRANCE_MODEL_CUSTOM_OPENAI_URL");
+			const version = await Storage.getItem("TRANCE_MODEL_CUSTOM_OPENAI_VERSION");
+			const key = await SecureStore.getItem("TRANCE_MODEL_CUSTOM_OPENAI_KEY");
+			if(!url || !version){
+				throw new Error("请先保存设置自定义 OpenAI URL 和模型版本");
+			}
+			const result = await tranceHiCustomOpenAITextTest(url, version, key ?? undefined);
+			if(result) setContent(result);
+		}catch(error){
+			console.error(error)
+			toast.error(error instanceof Error ? error.message : "!ERROR_UNKNOWN");
+		} finally {
+			setIsLoading(false);
+		}
+	}
+	return(
+		<View>
+			<View className="flex flex-row items-center justify-between">
+			<Heading>模型测试</Heading>
+			<Button variant={"outline"} disabled={isLoading} onPress={handleTest}>
+				{isLoading ? <ActivityIndicator /> : <Text>测试</Text>}
+			</Button>
+			</View>	
+			<Text>{content}</Text>
+		</View>
+	)
 }
 
 function CustomOpenAIUrl() {
@@ -126,7 +162,7 @@ function CustomOpenFetchModel() {
 			</View>
 			<View className="flex flex-row justify-between items-center">
 				<Label>获取远程模型</Label>
-				<Button disabled={isLoading} onPress={handleFetchModel}>
+				<Button variant={"outline"} disabled={isLoading} onPress={handleFetchModel}>
 					{isLoading ? <ActivityIndicator /> : <Text>连接</Text>}
 				</Button>
 			</View>
