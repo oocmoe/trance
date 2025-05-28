@@ -40,7 +40,7 @@ export const CharacterCard = ({ props }: { props: CharacterCardProps }) => {
           contentFit="cover"
         />
       </Animated.View>
-      <Heading className="m-3">{props.character.name}</Heading>
+      <Heading className="mt-2">{props.character.name}</Heading>
     </Pressable>
   );
 };

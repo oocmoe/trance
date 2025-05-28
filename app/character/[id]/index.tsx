@@ -41,6 +41,7 @@ import React from "react";
 import { Dialog, DialogClose, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Heading } from "@/components/ui/heading";
 
 // nativewind
 cssInterop(Image, { className: "style" });
@@ -95,10 +96,10 @@ function CharacterActionHero() {
 	const { id } = useLocalSearchParams();
 	const character = useCharacterById(Number(id));
 	return (
-		<View className="flex flex-row items-center gap-x-4">
-			<Image className="h-32 w-32 rounded-full" source={character.cover} alt="cover" />
-			<View className="flex flex-col gap-y-2">
-				<Text className="font-bold text-lg">{character.name}</Text>
+		<View className="flex flex-row bg-white dark:bg-slate-800 rounded-2xl p-3 gap-x-4 shadow">
+			<Image source={character.cover} className="h-32 w-32 rounded-full" />
+			<View className="flex flex-col">
+				<Heading>{character.name}</Heading>
 				{character.creator && <Text>{character.creator}</Text>}
 				{character.version && <Text>{character.version}</Text>}
 			</View>
