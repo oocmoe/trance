@@ -65,10 +65,7 @@ function ModelSetting() {
 			name: modelName,
 			version: modelVersion,
 		};
-		const rows = await updateRoomOptionField(Number(id), "model", model);
-		if (rows) {
-			toast.success("保存成功");
-		}
+		await updateRoomOptionField(Number(id), "model", model);
 	};
 	return (
 		<View>
