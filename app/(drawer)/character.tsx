@@ -15,6 +15,7 @@ import React from "react";
 import { cssInterop } from "nativewind";
 import { BlurView } from "expo-blur";
 import { Heading } from "@/components/ui/heading";
+import { CharacterCard } from "@/components/character-card";
 
 // nativewind
 cssInterop(PagerView, { className: "style" });
@@ -99,16 +100,7 @@ function CharacterList() {
 			keyExtractor={(item) => item.id.toString()}
 			renderItem={({ item }) => (
 				<View className="p-3 w-1/3">
-					<Pressable
-						onPress={() => {
-							setActiveCharacter(item.id);
-							router.push(`/character/${item.id}`);
-						}}
-						className="active:opacity-80"
-					>
-						<Image source={{ uri: item.cover }} className="h-52 w-full rounded-md shadow-sm" />
-						<Text className="mt-2 font-bold">{item.name}</Text>
-					</Pressable>
+					<CharacterCard props={{ character: item }} />
 				</View>
 			)}
 		/>
