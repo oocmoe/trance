@@ -6,3 +6,7 @@
 
 > ⚠️ **注意**  
 > 本项目还在开发中，在测试版到来前并没有配置数据库迁移规则，如果未来数据库表发生变动，将会丢失已有的数据！
+
+![preview01](docs\readme\trance_01.webp)
+![preview02](docs\readme\trance_02.webp)
+![preview03](docs\readme\trance_03.gif)
