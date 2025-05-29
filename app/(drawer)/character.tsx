@@ -30,8 +30,8 @@ export default function CharacterScreen() {
 	const activeCharacter = useAtomValue(activeCharacterAtom);
 	return (
 		<SafeAreaView className="flex-1">
-			<View>
-				<Header />
+			<Header />
+			<View className="flex-1">
 				<CharacterList />
 			</View>
 		</SafeAreaView>
