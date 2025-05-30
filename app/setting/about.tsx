@@ -8,7 +8,7 @@ export default function AboutScreen() {
 			<Stack.Screen options={{ title: "关于 trance" }} />
 			<View className="p-3 flex flex-col gap-y-2">
         <Heading>喘息 trance</Heading>
-        <Text>0.9.0</Text>
+        <Text>0.9.1</Text>
         <Heading>存储库</Heading>
         <Text>https://github.com/oocmoe/trance</Text>
         <Heading>联络</Heading>
