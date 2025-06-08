@@ -120,6 +120,7 @@ function RoomFloorList() {
 				inverted
 			/>
 		);
+	return <View className="flex-1" />
 }
 
 function RoomFloor({ roomFloor }: { roomFloor: RoomFloorTable }) {
