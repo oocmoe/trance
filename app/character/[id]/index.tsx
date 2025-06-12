@@ -13,6 +13,7 @@ import {
 	ArrowRight,
 	ArrowUp,
 	Briefcase,
+	Edit3,
 	HeartCrack,
 	Library,
 	MessageCirclePlus,
@@ -112,6 +113,7 @@ function CharacterActionList() {
 		<View className="flex flex-col gap-y-3">
 			<CharacterActionCreateNewChat />
 			<CharacterRoomList />
+			<CharacterEdit />
 			<CharacterKnowledgeBase />
 			<CharacterRegex />
 			<CharacterDelete />
@@ -200,6 +202,28 @@ function CharacterRoomList() {
 					<View className="flex flex-row gap-x-2">
 						<Icon as={MessagesSquare} />
 						<Text>与其的回忆</Text>
+					</View>
+					<View>
+						<Icon as={ArrowRight} />
+					</View>
+				</View>
+			</Card>
+		</View>
+	);
+}
+
+function CharacterEdit() {
+	const { id } = useLocalSearchParams();
+	return (
+		<View>
+			<Card
+				onTouchEnd={() => router.push(`/character/${id}/edit`)}
+				className="p-6 rounded-2xl shadow active:opacity-80"
+			>
+				<View className="flex flex-row justify-between items-center gap-x-2">
+					<View className="flex flex-row gap-x-2">
+						<Icon as={Edit3} />
+						<Text>编辑角色卡</Text>
 					</View>
 					<View>
 						<Icon as={ArrowRight} />

@@ -100,6 +100,22 @@ export async function readCharacterById(id: number) {
 	}
 }
 
+export async function updateCharacterField<K extends keyof CharacterTable>(
+	id: number,
+	field: K,
+	value: CharacterTable[K],
+) {
+	try {
+		const rows = await db
+			.update(characterTable)
+			.set({ [field]: value })
+			.where(eq(characterTable.id, id));
+		return rows.changes;
+	} catch (error) {
+		throw new Error(error instanceof Error ? error.message : "!ERROR_TRANCE_FUNCTION: updateCharacterField");
+	}
+}
+
 export async function deleteCharacterById(id: number) {
 	try {
 		const rows = await db.delete(characterTable).where(eq(characterTable.id, id));
@@ -270,18 +286,16 @@ export async function createRoomFloorMessage(room_floor_id: number, data: RoomMe
 export async function readRoomRenderMessage(hi: TranceHi) {
 	try {
 		if (hi.is_Respawn) {
-		const rows = await db.transaction(async (tx) => {
-			const roomFloorRows = await tx.select().from(roomFloorTable).where(
-          and(
-            eq(roomFloorTable.room_id, hi.room_id),
-            lt(roomFloorTable.id, hi.room_floor_id as number)
-          )
-        );
-			const messageId = roomFloorRows.map((item) => item.room_message_sort[0]);
-			const roomMessageRows = await tx.select().from(roomMessageTable).where(inArray(roomMessageTable.id, messageId));
-			return roomMessageRows;
-		});
-		return rows
+			const rows = await db.transaction(async (tx) => {
+				const roomFloorRows = await tx
+					.select()
+					.from(roomFloorTable)
+					.where(and(eq(roomFloorTable.room_id, hi.room_id), lt(roomFloorTable.id, hi.room_floor_id as number)));
+				const messageId = roomFloorRows.map((item) => item.room_message_sort[0]);
+				const roomMessageRows = await tx.select().from(roomMessageTable).where(inArray(roomMessageTable.id, messageId));
+				return roomMessageRows;
+			});
+			return rows;
 		}
 
 		const rows = await db.transaction(async (tx) => {
@@ -290,7 +304,7 @@ export async function readRoomRenderMessage(hi: TranceHi) {
 			const roomMessageRows = await tx.select().from(roomMessageTable).where(inArray(roomMessageTable.id, messageId));
 			return roomMessageRows;
 		});
-		return rows
+		return rows;
 	} catch (error) {
 		throw new Error(error instanceof Error ? error.message : "!ERROR_TRANCE_FUNCTION: readRoomMessageById");
 	}
