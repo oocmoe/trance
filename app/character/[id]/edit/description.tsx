@@ -31,12 +31,13 @@ export default function DescriptionScreen() {
 			<Stack.Screen
 				options={{
 					headerShown: true,
+					title:"角色描述",
 					headerRight: () => (
 						<ButtonEditTrigger isEditing={isEditing} setIsEditing={setIsEditing} onSubmit={handleSubmit} />
 					),
 				}}
 			/>
-			<SafeAreaView className="flex-1">
+			<SafeAreaView className="flex-1 p-3">
 				<DescriptionTextArea />
 			</SafeAreaView>
 		</>
