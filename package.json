@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@google/genai": "^0.9.0",
+    "@gorhom/bottom-sheet": "^5.1.6",
     "@react-native-community/slider": "4.5.5",
     "@react-navigation/drawer": "^7.3.9",
     "@react-navigation/native": "^7.0.0",
